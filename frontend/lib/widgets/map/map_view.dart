@@ -5,30 +5,36 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hacktose_intolerant_app/config/map/map_styles.dart';
 
 class MapView extends StatefulWidget {
-  const MapView({super.key});
+  final Function(LatLng) onMapTap;
+  final Set<Marker> markers;
+  final Set<Polyline> polylines;
+
+  const MapView({
+    super.key,
+    required this.onMapTap, 
+    required this.markers,
+    required this.polylines,
+    });
 
   @override
   State<MapView> createState() => _MapViewState();
 }
 
 class _MapViewState extends State<MapView> {
-  GoogleMapController? mapController;
-
-  // CONSTANTS
+  GoogleMapController? _mapController;
   final LatLng _initPos = const LatLng(10.3157, 123.8854); // Cebu City
-
-  // zoom levels
   final double _defaultZoomLevel = 18.0;
-  final double _minZoomLevel = 15.0;
+  final double _minZoomLevel = 10.0;
   final double _maxZoomLevel = 20.0;
 
-  @override
-  void initState() {
-    super.initState();
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,6 +47,9 @@ class _MapViewState extends State<MapView> {
       ),
       minMaxZoomPreference: MinMaxZoomPreference(_minZoomLevel, _maxZoomLevel),
       zoomControlsEnabled: false,
+      onTap: widget.onMapTap,
+      markers: widget.markers,
+      polylines: widget.polylines,
       style: customMapStyle,
     );
   }
