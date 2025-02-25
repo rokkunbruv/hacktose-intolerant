@@ -40,6 +40,7 @@ dependencies:
   provider: ^6.1.2
   dio: ^5.8.0+1
   flutter_polyline_points: ^2.1.0
+  flutter_native_splash: ^2.4.4
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +68,7 @@ flutter:
   assets:
     - .env
     - assets/fonts/
+    - assets/img/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -87,7 +89,6 @@ flutter:
           weight: 300
     - family: Pipanganan
       fonts:
-        - asset: assets/fonts/Pipanganan.otf
-  
+        - asset: assets/fonts/Pipanganan.otf  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
