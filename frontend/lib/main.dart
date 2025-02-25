@@ -40,8 +40,8 @@ class MyApp extends StatelessWidget {
       ),
       // home: const JeepneyRouteFinderPage(),
       // home: const SearchRoutesPage(),
-      // home: const HomePage(),
-      home: const SearchLocationPage(),
+      home: const HomePage(),
+      // home: const SearchLocationPage(),
     );
   }
 }
