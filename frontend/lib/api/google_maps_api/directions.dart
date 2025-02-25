@@ -1,13 +1,8 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:hacktose_intolerant_app/classes/direction/direction_path.dart';
-import 'package:hacktose_intolerant_app/classes/route/route.dart';
-import 'package:hacktose_intolerant_app/utils/route/calculate_route_details.dart';
+import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
 
 /// service to fetch directions from the Google Directions API.
 class DirectionsApi {
@@ -28,22 +23,22 @@ class DirectionsApi {
       },
     );
 
-    if (response.statusCode == 200) {
-      final data = response.data;
-      
-      List<CommuteRoute> routes = [];
-
-      if (data['routes'] != null) {
-        for (var routeJson in data['routes']) {
-          DirectionPath path = DirectionPath.fromJson(routeJson);
-          CommuteRoute route = CommuteRoute(path: path);
-
-          routes.add(route);
-        }
-      }
-      return routes;
-    } else {
-      throw Exception('Failed to load directions');
+    final data = response.data;
+    
+    if (data['status'] == 'REQUEST_DENIED') {
+      throw Exception('Google Maps API key is invalid.');
     }
+    
+    List<CommuteRoute> routes = [];
+
+    if (data['routes'] != null) {
+      for (var routeJson in data['routes']) {
+        DirectionPath path = DirectionPath.fromJson(routeJson);
+        CommuteRoute route = CommuteRoute(path: path);
+
+        routes.add(route);
+      }
+    }
+    return routes;
   }
 }
