@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
-
-import 'package:hacktose_intolerant_app/utils/route/calculate_route_details.dart';
-import 'package:hacktose_intolerant_app/classes/route/route.dart';
+import 'package:hacktose_intolerant_app/pages/route/route_details_page.dart';
+import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
 import 'package:hacktose_intolerant_app/theme/colors.dart';
 import 'package:hacktose_intolerant_app/theme/text_styles.dart';
 
@@ -20,6 +18,12 @@ class RouteItem extends StatefulWidget {
 }
 
 class _RouteItemState extends State<RouteItem> {
+  void navigateToRouteDetailsPage() {
+    Navigator.of(context).push(MaterialPageRoute(builder: 
+    (context) => RouteDetailsPage(route: widget.route)
+    ));
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,6 +45,7 @@ class _RouteItemState extends State<RouteItem> {
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
         ),
+        onPressed: navigateToRouteDetailsPage,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -61,7 +66,6 @@ class _RouteItemState extends State<RouteItem> {
             ),
           ],
         ),
-        onPressed: () {},
       ),
     );
   }

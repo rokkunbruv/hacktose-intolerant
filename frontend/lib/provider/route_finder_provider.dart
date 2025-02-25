@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import 'package:hacktose_intolerant_app/api/google_maps_api/directions.dart';
-import 'package:hacktose_intolerant_app/classes/route/route.dart';
+import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
+import 'package:hacktose_intolerant_app/config/map/marker_styles.dart';
 import 'package:hacktose_intolerant_app/utils/route/calculate_route_details.dart';
+import 'package:hacktose_intolerant_app/utils/route/decode_polyline.dart';
 
 class RouteFinderProvider extends ChangeNotifier {
   // controllers for text fields.
@@ -52,23 +53,13 @@ class RouteFinderProvider extends ChangeNotifier {
       originController.text = '${location.latitude}, ${location.longitude}';
       isSettingOrigin = false;
 
-      originMarker = Marker(
-        markerId: const MarkerId('origin'),
-        position: location,
-        infoWindow: const InfoWindow(title: 'Origin'),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
-      );
+      originMarker = createOriginMarker(location);
     } else {
       destination = location;
       destinationController.text = '${location.latitude}, ${location.longitude}';
       isSettingOrigin = true;
 
-      destinationMarker = Marker(
-        markerId: const MarkerId('destination'),
-        position: location,
-        infoWindow: const InfoWindow(title: 'Destination'),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-      );
+      destinationMarker = createDestinationMarker(location);
     }
 
     if (originController.text.isNotEmpty && destinationController.text.isNotEmpty) {
@@ -102,7 +93,7 @@ class RouteFinderProvider extends ChangeNotifier {
       );
 
       for (CommuteRoute route in routes) {
-        routePolylines[route] = (_decodePolyline(route.path.overviewPolyline));
+        routePolylines[route] = decodePolyline(route.path.overviewPolyline);
         
         RouteDetails details = calculateRouteDetails(route, passengerType, jeepneyType);
 
@@ -117,28 +108,6 @@ class RouteFinderProvider extends ChangeNotifier {
     }
   }
 
-  /// decode polyline for a specific route
-  Set<Polyline> _decodePolyline(String encodedPolyline) {
-    PolylinePoints polylinePoints = PolylinePoints();
-    List<PointLatLng> decodedPoints =
-        polylinePoints.decodePolyline(encodedPolyline);
-
-    List<LatLng> polylineCoordinates = decodedPoints
-        .map((point) => LatLng(point.latitude, point.longitude))
-        .toList();
-
-    if (polylineCoordinates.isEmpty) return {};
-
-    return {
-      Polyline(
-        polylineId: PolylineId('route_${routePolylines.length}'),
-        color: Colors.blue,
-        width: 5,
-        points: polylineCoordinates,
-      ),
-    };
-  }
-
   /// select a route and calculate its fare.
   void selectRoute(CommuteRoute route) {
     selectedRoute = route;
@@ -146,12 +115,12 @@ class RouteFinderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get polylines for the selected route
+  /// get polylines for the selected route
   Set<Polyline> getSelectedRoutePolylines() {
     return routePolylines[selectedRoute] ?? {};
   }
 
-  /// Clears all markers, routes, and UI fields.
+  /// clears all markers, routes, and UI fields.
   void clearAll() {
     origin = null;
     destination = null;
@@ -165,6 +134,7 @@ class RouteFinderProvider extends ChangeNotifier {
     totalFare = 0;
     isSettingOrigin = true;
     routePolylines.clear();
+    
     notifyListeners();
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:hacktose_intolerant_app/classes/route/route.dart';
+import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
 import 'package:hacktose_intolerant_app/classes/direction/direction_path.dart';
 import 'package:hacktose_intolerant_app/classes/route/jeepney_ride.dart';
 import 'package:hacktose_intolerant_app/constants/passenger_types.dart';

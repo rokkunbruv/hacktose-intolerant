@@ -5,13 +5,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hacktose_intolerant_app/config/map/map_styles.dart';
 
 class MapView extends StatefulWidget {
-  final Function(LatLng) onMapTap;
+  final Function(LatLng)? onMapTap;
   final Set<Marker> markers;
   final Set<Polyline> polylines;
 
   const MapView({
     super.key,
-    required this.onMapTap, 
+    this.onMapTap, 
     required this.markers,
     required this.polylines,
     });

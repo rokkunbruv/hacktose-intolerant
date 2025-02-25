@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:hacktose_intolerant_app/widgets/route/route_item.dart';
-import 'package:hacktose_intolerant_app/classes/route/route.dart';
+import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
 
 class RouteList extends StatelessWidget {
   final List<CommuteRoute> routes;
