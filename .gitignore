@@ -1,4 +1,5 @@
 .env
+jeepEnv/
 **/venv/
 **/cebu_jeepney_routes.json/
 backend/commuteProj/venv/
