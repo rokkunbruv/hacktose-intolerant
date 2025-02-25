@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.hacktose_intolerant_app">
     <application
-        android:label="hacktose_intolerant_app"
+        android:label="Tultul"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

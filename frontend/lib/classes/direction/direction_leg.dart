@@ -1,4 +1,4 @@
-import 'package:hacktose_intolerant_app/classes/direction/direction_step.dart';
+import 'package:tultul/classes/direction/direction_step.dart';
 
 /// models a leg of the journey.
 class DirectionLeg {

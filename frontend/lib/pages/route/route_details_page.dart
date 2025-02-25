@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
-import 'package:hacktose_intolerant_app/classes/route/jeepney_ride.dart';
-import 'package:hacktose_intolerant_app/widgets/map/map_view.dart';
-import 'package:hacktose_intolerant_app/widgets/generic/draggable_container.dart';
-import 'package:hacktose_intolerant_app/theme/colors.dart';
-import 'package:hacktose_intolerant_app/theme/text_styles.dart';
-import 'package:hacktose_intolerant_app/provider/route_finder_provider.dart';
-import 'package:hacktose_intolerant_app/utils/route/decode_polyline.dart';
+import 'package:tultul/classes/route/commute_route.dart';
+import 'package:tultul/classes/route/jeepney_ride.dart';
+import 'package:tultul/widgets/map/map_view.dart';
+import 'package:tultul/widgets/generic/draggable_container.dart';
+import 'package:tultul/theme/colors.dart';
+import 'package:tultul/theme/text_styles.dart';
+import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/utils/route/decode_polyline.dart';
 
 class RouteDetailsPage extends StatefulWidget {
   final CommuteRoute route;

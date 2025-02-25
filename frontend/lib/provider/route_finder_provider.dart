@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:hacktose_intolerant_app/api/google_maps_api/directions.dart';
-import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
-import 'package:hacktose_intolerant_app/config/map/marker_styles.dart';
-import 'package:hacktose_intolerant_app/utils/route/calculate_route_details.dart';
-import 'package:hacktose_intolerant_app/utils/route/decode_polyline.dart';
+import 'package:tultul/api/google_maps_api/directions.dart';
+import 'package:tultul/classes/route/commute_route.dart';
+import 'package:tultul/styles/map/marker_styles.dart';
+import 'package:tultul/utils/route/calculate_route_details.dart';
+import 'package:tultul/utils/route/decode_polyline.dart';
 
 class RouteFinderProvider extends ChangeNotifier {
   // controllers for text fields.

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:hacktose_intolerant_app/theme/colors.dart';
-import 'package:hacktose_intolerant_app/theme/text_styles.dart';
+import 'package:tultul/styles/widget/box_shadow_style.dart';
+import 'package:tultul/theme/colors.dart';
+import 'package:tultul/theme/text_styles.dart';
 
 class DropdownSelectButton extends StatefulWidget {
   final List<String> items;
@@ -52,11 +53,7 @@ class _DropdownSelectButtonState extends State<DropdownSelectButton> {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withAlpha(64),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
+          createBoxShadow(),
         ],
       ),
       child: DropdownButton<String>(

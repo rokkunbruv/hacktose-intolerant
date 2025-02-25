@@ -1,4 +1,4 @@
-import 'package:hacktose_intolerant_app/classes/direction/direction_leg.dart';
+import 'package:tultul/classes/direction/direction_leg.dart';
 
 /// models an entire route.
 class DirectionPath {

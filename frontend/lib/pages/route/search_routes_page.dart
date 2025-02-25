@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:hacktose_intolerant_app/widgets/map/map_view.dart';
-import 'package:hacktose_intolerant_app/widgets/generic/dropdown_select_button.dart';
-import 'package:hacktose_intolerant_app/widgets/generic/draggable_container.dart';
-import 'package:hacktose_intolerant_app/widgets/route/route_list.dart';
-import 'package:hacktose_intolerant_app/provider/route_finder_provider.dart';
-import 'package:hacktose_intolerant_app/theme/colors.dart';
-import 'package:hacktose_intolerant_app/theme/text_styles.dart';
+import 'package:tultul/widgets/map/map_view.dart';
+import 'package:tultul/widgets/generic/dropdown_select_button.dart';
+import 'package:tultul/widgets/generic/draggable_container.dart';
+import 'package:tultul/widgets/route/route_list.dart';
+import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/theme/colors.dart';
+import 'package:tultul/theme/text_styles.dart';
 
 class SearchRoutesPage extends StatefulWidget {
   const SearchRoutesPage({super.key});
@@ -27,6 +27,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
   @override
   Widget build(BuildContext context) {
     final routeProvider = Provider.of<RouteFinderProvider>(context);
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,

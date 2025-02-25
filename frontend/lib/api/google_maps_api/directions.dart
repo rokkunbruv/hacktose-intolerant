@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:hacktose_intolerant_app/classes/direction/direction_path.dart';
-import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
+import 'package:tultul/classes/direction/direction_path.dart';
+import 'package:tultul/classes/route/commute_route.dart';
 
 /// service to fetch directions from the Google Directions API.
 class DirectionsApi {

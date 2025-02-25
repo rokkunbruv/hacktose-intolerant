@@ -1,5 +1,5 @@
-import 'package:hacktose_intolerant_app/classes/direction/direction_path.dart';
-import 'package:hacktose_intolerant_app/classes/route/jeepney_ride.dart';
+import 'package:tultul/classes/direction/direction_path.dart';
+import 'package:tultul/classes/route/jeepney_ride.dart';
 
 // contains information about a route
 class CommuteRoute {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:hacktose_intolerant_app/pages/route/route_details_page.dart';
-import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
-import 'package:hacktose_intolerant_app/theme/colors.dart';
-import 'package:hacktose_intolerant_app/theme/text_styles.dart';
+import 'package:tultul/pages/route/route_details_page.dart';
+import 'package:tultul/classes/route/commute_route.dart';
+import 'package:tultul/styles/widget/box_shadow_style.dart';
+import 'package:tultul/theme/colors.dart';
+import 'package:tultul/theme/text_styles.dart';
 
 class RouteItem extends StatefulWidget {
   final CommuteRoute route;
@@ -29,11 +30,7 @@ class _RouteItemState extends State<RouteItem> {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withAlpha(64),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
+          createBoxShadow(),
         ],
       ),
       child: ElevatedButton(

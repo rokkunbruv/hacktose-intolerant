@@ -4,10 +4,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:provider/provider.dart';
 
-// import 'package:hacktose_intolerant_app/pages/home_page.dart';
-import 'package:hacktose_intolerant_app/pages/route/search_routes_page.dart';
-import 'package:hacktose_intolerant_app/pages/route/route_details_page.dart';
-import 'package:hacktose_intolerant_app/provider/route_finder_provider.dart';
+import 'package:tultul/pages/home_page.dart';
+import 'package:tultul/pages/route/search_routes_page.dart';
+import 'package:tultul/pages/route/route_details_page.dart';
+import 'package:tultul/pages/route/search_location_page.dart';
+import 'package:tultul/provider/route_finder_provider.dart';
 
 Future<void> main() async {
   try {
@@ -38,8 +39,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const JeepneyRouteFinderPage(),
-      home: const SearchRoutesPage(),
-      // home: const RouteDetailsPage(),
+      // home: const SearchRoutesPage(),
+      // home: const HomePage(),
+      home: const SearchLocationPage(),
     );
   }
 }

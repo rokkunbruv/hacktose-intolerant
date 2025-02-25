@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:hacktose_intolerant_app/classes/route/commute_route.dart';
-import 'package:hacktose_intolerant_app/classes/direction/direction_path.dart';
-import 'package:hacktose_intolerant_app/classes/route/jeepney_ride.dart';
-import 'package:hacktose_intolerant_app/constants/passenger_types.dart';
-import 'package:hacktose_intolerant_app/constants/jeepney_types.dart';
+import 'package:tultul/classes/route/commute_route.dart';
+import 'package:tultul/classes/direction/direction_path.dart';
+import 'package:tultul/classes/route/jeepney_ride.dart';
+import 'package:tultul/constants/passenger_types.dart';
+import 'package:tultul/constants/jeepney_types.dart';
 
 /// Holds the result of the fare calculation.
 class RouteDetails {

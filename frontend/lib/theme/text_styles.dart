@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:hacktose_intolerant_app/theme/colors.dart';
+import 'package:tultul/theme/colors.dart';
 
 class AppTextStyles {
   static final TextStyle title = TextStyle(

@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:hacktose_intolerant_app/config/map/map_styles.dart';
+import 'package:tultul/styles/map/map_styles.dart';
 
 class MapView extends StatefulWidget {
   final Function(LatLng)? onMapTap;
-  final Set<Marker> markers;
-  final Set<Polyline> polylines;
+  final Set<Marker>? markers;
+  final Set<Polyline>? polylines;
 
   const MapView({
     super.key,
     this.onMapTap, 
-    required this.markers,
-    required this.polylines,
+    this.markers,
+    this.polylines,
     });
 
   @override
@@ -48,8 +48,8 @@ class _MapViewState extends State<MapView> {
       minMaxZoomPreference: MinMaxZoomPreference(_minZoomLevel, _maxZoomLevel),
       zoomControlsEnabled: false,
       onTap: widget.onMapTap,
-      markers: widget.markers,
-      polylines: widget.polylines,
+      markers: widget.markers ?? <Marker>{},
+      polylines: widget.polylines ?? <Polyline>{},
       style: customMapStyle,
     );
   }
