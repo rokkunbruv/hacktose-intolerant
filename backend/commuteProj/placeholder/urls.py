@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('placeholder/', views.placeholder, name='placeholder'),
+    path('get-jeepney-routes/', views.get_jeepney_routes, name='get_jeepney_routes'),
 ]
