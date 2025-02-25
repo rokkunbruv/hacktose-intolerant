@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.hacktose_intolerant_app">
     <application
         android:label="hacktose_intolerant_app"
         android:name="${applicationName}"
@@ -32,7 +33,7 @@
             android:value="2" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCNlpm7CepT3tumOiuC-tzRc0FXdg6WG94" />
+            android:value="AIzaSyAbiwFa2g-0V_4cfThTPSyGtMGKHaUreWo" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
