@@ -21,7 +21,9 @@ def get_jeepney_routes(request):
         "origin": {"address": origin},
         "destination": {"address": destination},
         "travelMode": "TRANSIT",
-        "routingPreference": "LESS_WALKING"
+        "transitPreferences": {
+            "routingPreference": "LESS_WALKING"
+        },
     }
 
     response = requests.post(url, headers=headers, json=data)
