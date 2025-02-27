@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:tultul/api/google_maps_api/directions.dart';
+import 'package:tultul/api/google_maps_api/directions_api.dart';
 import 'package:tultul/classes/route/commute_route.dart';
 import 'package:tultul/styles/map/marker_styles.dart';
 import 'package:tultul/utils/route/calculate_route_details.dart';

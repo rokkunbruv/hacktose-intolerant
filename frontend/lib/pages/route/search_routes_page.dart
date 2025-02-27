@@ -28,6 +28,10 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
   Widget build(BuildContext context) {
     final routeProvider = Provider.of<RouteFinderProvider>(context);
 
+    void navigateBack () {
+      Navigator.of(context).pop();
+    }
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -45,9 +49,12 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                     // BACK BUTTON
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Icon(
-                        Icons.chevron_left,
-                        color: AppColors.white,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.chevron_left,
+                          color: AppColors.white,
+                        ),
+                        onPressed: navigateBack,
                       )
                     ),
                     SizedBox(height: 8),
