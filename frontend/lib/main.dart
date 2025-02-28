@@ -9,7 +9,7 @@ import 'package:tultul/provider/route_finder_provider.dart';
 // import 'package:tultul/pages/route/search_routes_page.dart';
 // import 'package:tultul/pages/route/route_details_page.dart';
 // import 'package:tultul/pages/route/search_location_page.dart';
-import 'package:tultul/pages/jeeps/search_jeeps_page';
+import 'package:tultul/pages/jeeps/search_jeeps_page.dart';
 
 Future<void> main() async {
   try {
@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
       // home: const SearchLocationPage(),
       // home: const HomePage(),
       // home: const RouteStepsPage(),
+      home: const SearchJeepsPage(),
     );
   }
 }
