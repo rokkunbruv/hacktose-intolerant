@@ -6,12 +6,13 @@ class DraggableContainer extends StatefulWidget {
     super.key,
     required this.child,
   });
-  
+
   @override
   State<DraggableContainer> createState() => _DraggableContainerState();
 }
 
-class _DraggableContainerState extends State<DraggableContainer> with SingleTickerProviderStateMixin {
+class _DraggableContainerState extends State<DraggableContainer>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   double _dragPosition = 0.0;
@@ -37,11 +38,13 @@ class _DraggableContainerState extends State<DraggableContainer> with SingleTick
   }
 
   void _animateToPosition(double newPosition) {
-    _targetPosition = newPosition.clamp(0.0, MediaQuery.of(context).size.height - 100);
+    _targetPosition =
+        newPosition.clamp(0.0, MediaQuery.of(context).size.height - 100);
     // _animation = Tween<double>(begin: _dragPosition, end: _targetPosition)
     //     .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _animation = Tween<double>(begin: _dragPosition, end: _targetPosition)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.decelerate));
+        .animate(
+            CurvedAnimation(parent: _controller, curve: Curves.decelerate));
     _controller.forward(from: 0.0); // Restart animation
   }
 
@@ -55,12 +58,12 @@ class _DraggableContainerState extends State<DraggableContainer> with SingleTick
         onVerticalDragUpdate: (details) {
           setState(() {
             _dragPosition += details.delta.dy;
-            _dragPosition = _dragPosition.clamp(0.0, MediaQuery.of(context).size.height - 100);
+            _dragPosition = _dragPosition.clamp(
+                0.0, MediaQuery.of(context).size.height - 100);
           });
         },
         onVerticalDragEnd: (details) {
-          // Smoothly animate to the nearest resting position
-          _animateToPosition(_dragPosition);
+          // Smoothly animate to the nearest resting position          _animateToPosition(_dragPosition);
         },
         child: widget.child,
       ),
