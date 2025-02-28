@@ -13,37 +13,66 @@ class JeepneyProvider with ChangeNotifier {
   int currentIndex = 0;
   LatLng? currentPosition;
   Timer? _timer;
+  GoogleMapController? _mapController; 
+
+  /// Attach the Google Map controller
+  void setMapController(GoogleMapController controller) {
+    _mapController = controller;
+  }
 
   /// Load a specific route based on the given file name
   Future<void> loadRoute(String fileName) async {
-    String filePath = "assets/coordinates/$fileName.json"; 
-    debugPrint("📂 Loading file: $filePath");
+    String filePath = "assets/coordinates/$fileName.json";
+    debugPrint("\ud83d\udcc2 Loading file: $filePath");
 
     List<RouteModel> routes = await RouteService.loadRoutes(filePath);
     if (routes.isEmpty) {
-      debugPrint("🚨 No routes found in $fileName!");
+      debugPrint("\ud83d\udea8 No routes found in $fileName!");
       return;
     }
 
-    // Ensure the RouteModel class has a "coordinates" field
-    if (routes.length > 0) {
+    if (routes.isNotEmpty) {
       firstRoute = routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList();
     }
     if (routes.length > 1) {
       secondRoute = routes[1].coordinates.map((c) => LatLng(c[0], c[1])).toList();
     }
 
-    // Combine both routes for seamless movement
     fullRoute = [...firstRoute, ...secondRoute];
-
-    debugPrint("✅ Loaded Route: ${routes.map((r) => r.name).join(', ')}");
+    debugPrint("\u2705 Loaded Route: ${routes.map((r) => r.name).join(', ')}");
 
     _setRandomStartingPoint();
     notifyListeners();
     _startMoving();
+    _centerMapOnRoute(); 
   }
 
-  /// Select a random starting point along the entire route
+  /// Center the map to fit the route
+  void _centerMapOnRoute() {
+    if (_mapController == null || fullRoute.isEmpty) return;
+
+    LatLngBounds bounds = _getRouteBounds(fullRoute);
+    _mapController!.animateCamera(
+      CameraUpdate.newLatLngBounds(bounds, 50),
+    );
+
+    debugPrint("\ud83d\udccc Centered map on route");
+  }
+
+  /// Get the bounding box of the route
+  LatLngBounds _getRouteBounds(List<LatLng> route) {
+    double minLat = route.map((p) => p.latitude).reduce(min);
+    double maxLat = route.map((p) => p.latitude).reduce(max);
+    double minLng = route.map((p) => p.longitude).reduce(min);
+    double maxLng = route.map((p) => p.longitude).reduce(max);
+
+    return LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
+    );
+  }
+
+  /// Select a random starting point along the route
   void _setRandomStartingPoint() {
     if (fullRoute.isEmpty) return;
 
@@ -51,7 +80,7 @@ class JeepneyProvider with ChangeNotifier {
     currentIndex = random.nextInt(fullRoute.length);
     currentPosition = fullRoute[currentIndex];
 
-    debugPrint("📍 Random Start Position: $currentPosition");
+    debugPrint("\ud83d\udccd Random Start Position: $currentPosition");
   }
 
   /// Moves the jeepney along the full route, looping back at the end
@@ -60,11 +89,10 @@ class JeepneyProvider with ChangeNotifier {
     _timer = Timer.periodic(Duration(seconds: 10), (timer) {
       if (fullRoute.isEmpty) return;
 
-      // Move to the next point, looping back when reaching the end
       currentIndex = (currentIndex + 1) % fullRoute.length;
       currentPosition = fullRoute[currentIndex];
 
-      debugPrint("🚖 Moving to: $currentPosition");
+      debugPrint("\ud83d\ude96 Moving to: $currentPosition");
       notifyListeners();
     });
   }

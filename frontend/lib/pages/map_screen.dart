@@ -41,6 +41,9 @@ class _MapScreenState extends State<MapScreen> {
       body: Consumer<JeepneyProvider>(
         builder: (context, provider, child) {
           return MapView(
+            onMapCreated: (GoogleMapController controller) {
+              provider.setMapController(controller); // Attach map controller
+            },
             markers: provider.currentPosition != null
                 ? {
                     Marker(
@@ -51,21 +54,21 @@ class _MapScreenState extends State<MapScreen> {
                   }
                 : {},
             polylines: {
-                if (provider.firstRoute.isNotEmpty) 
-                  Polyline(
-                    polylineId: PolylineId("route_1"),
-                    points: provider.firstRoute,
-                    color: Colors.green,
-                    width: 5,
-                  ),
-                if (provider.secondRoute.isNotEmpty) 
-                  Polyline(
-                    polylineId: PolylineId("route_2"),
-                    points: provider.secondRoute,
-                    color: Colors.blue,
-                    width: 5,
-                  ),
-              },
+              if (provider.firstRoute.isNotEmpty) 
+                Polyline(
+                  polylineId: PolylineId("route_1"),
+                  points: provider.firstRoute,
+                  color: Colors.green,
+                  width: 5,
+                ),
+              if (provider.secondRoute.isNotEmpty) 
+                Polyline(
+                  polylineId: PolylineId("route_2"),
+                  points: provider.secondRoute,
+                  color: Colors.blue,
+                  width: 5,
+                ),
+            },
           );
         },
       ),

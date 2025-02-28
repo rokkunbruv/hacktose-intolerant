@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import 'package:tultul/styles/map/map_styles.dart';
 
 class MapView extends StatefulWidget {
   final Function(LatLng)? onMapTap;
+  final Function(GoogleMapController)? onMapCreated; // Accepts a controller callback
   final Set<Marker>? markers;
   final Set<Polyline>? polylines;
 
   const MapView({
     super.key,
     this.onMapTap, 
+    this.onMapCreated, // Added
     this.markers,
     this.polylines,
-    });
+  });
 
   @override
   State<MapView> createState() => _MapViewState();
@@ -29,6 +29,7 @@ class _MapViewState extends State<MapView> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    widget.onMapCreated?.call(controller); // Pass controller to external handler
   }
 
   @override
