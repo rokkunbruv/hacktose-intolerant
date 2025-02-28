@@ -8,6 +8,11 @@ class AppTextStyles {
     fontSize: 50,
     color: AppColors.black,
   );
+  static final TextStyle title1 = TextStyle(
+    fontFamily: 'Pipanganan',
+    fontSize: 30,
+    color: AppColors.black,
+  );
   static final TextStyle label1 = TextStyle(
     fontFamily: 'Overpass',
     fontSize: 30,
