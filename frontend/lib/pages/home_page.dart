@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
-
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
@@ -29,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       
       if (mounted) {
         positionProvider.startPositionUpdates();
-      } 
+      }
     });
   }
 
@@ -38,7 +36,7 @@ class _HomePageState extends State<HomePage> {
     Provider.of<PositionProvider>(context, listen: false).stopPositionUpdates();
     super.dispose();
   }
-  
+
   void navigateToRecentTripsPage() {}
 
   @override
@@ -46,16 +44,16 @@ class _HomePageState extends State<HomePage> {
     final positionProvider = Provider.of<PositionProvider>(context);
 
     return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 80,
-          title: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/img/title.png',
-            ),
+      appBar: AppBar(
+        toolbarHeight: 80,
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset(
+            'assets/img/title.png',
           ),
-          flexibleSpace: Container(
-              decoration: BoxDecoration(
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
             color: AppColors.bg,
             boxShadow: [
               BoxShadow(
@@ -64,72 +62,75 @@ class _HomePageState extends State<HomePage> {
                 offset: Offset(0, 2),
               ),
             ],
-          )),
+          ),
         ),
       ),
       body: Stack(
         children: <Widget>[
-          body: Stack(children: <Widget>[
-            // MAP VIEW
-            MapView(
-              markers: (positionProvider.currentPositionMarker != null) ? {
-                positionProvider.currentPositionMarker!
-              } : {}
-            ),
-
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.red,
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 32),
-                  child: Transform.translate(
-                    offset: Offset(0, -40),
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 16),
-                            child: Column(children: <Widget>[
-                              // WHERE TO
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.location_on,
-                                    color: AppColors.red,
-                                  ),
-                                  SizedBox(width: 16),
-                                  Expanded(
-                                    child: TextField(
-                                      decoration: InputDecoration(
-                                        labelText: 'Where to?',
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        isDense: true,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 8),
-                                      ),
-                                      readOnly: true,
-                                      onTap: navigateToSearchDestinationPage,
+          MapView(
+            markers: (positionProvider.currentPositionMarker != null)
+                ? {positionProvider.currentPositionMarker!}
+                : {},
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppColors.red,
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 32),
+              child: Transform.translate(
+                offset: Offset(0, -40),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.location_on,
+                                color: AppColors.red,
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    labelText: 'Where to?',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8,
                                     ),
                                   ),
-                                ],
+                                  readOnly: true,
+                                  onTap: navigateToSearchDestinationPage,
+                                ),
                               ),
-                    ],
-                  ),
-                )),
-          )
-        ]));
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

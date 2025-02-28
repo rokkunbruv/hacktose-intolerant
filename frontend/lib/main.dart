@@ -3,8 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:provider/provider.dart';
 
-// import 'package:tultul/pages/home_page.dart';
+import 'package:tultul/pages/home_page.dart';
 import 'package:tultul/pages/route/route_steps_page.dart';
+import 'package:tultul/pages/route/search_routes_page.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
 import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/utils/location/request_location_services.dart';
@@ -45,7 +46,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      // home: const HomePage(),
+      home: const SearchRoutesPage(),
+      // home: const RouteStepsPage(),
     );
   }
 }
