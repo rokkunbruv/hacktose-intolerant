@@ -14,7 +14,7 @@ import 'package:tultul/utils/route/decode_polyline.dart';
 
 class RouteDetailsPage extends StatefulWidget {
   final CommuteRoute route;
-  
+
   const RouteDetailsPage({
     super.key,
     required this.route,
@@ -28,31 +28,30 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
   void navigateBack() {
     Navigator.of(context).pop();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final routeProvider = Provider.of<RouteFinderProvider>(context);
-    Set<Polyline> polylines = decodePolyline(widget.route.path.overviewPolyline);
-    
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          // MAP VIEW
-          MapView(
-            markers: routeProvider.getMarkers(),
-            polylines: polylines,
-          ),
+    Set<Polyline> polylines =
+        decodePolyline(widget.route.path.overviewPolyline);
 
-          // ROUTE DETAILS PANEL
-          DraggableContainer(
+    return Scaffold(
+      body: Stack(children: <Widget>[
+        // MAP VIEW
+        MapView(
+          markers: routeProvider.getMarkers(),
+          polylines: polylines,
+        ),
+
+        // ROUTE DETAILS PANEL
+        DraggableContainer(
             child: Container(
-              padding: const EdgeInsets.fromLTRB(0, 4, 0, 16),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              child: Column(
-                children: <Widget>[
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 16),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                child: Column(children: <Widget>[
                   // SUGGESTED ROUTES HEADER
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -75,7 +74,7 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
                       ],
                     ),
                   ),
-                  
+
                   Column(
                     children: widget.route.rides.asMap().entries.map((entry) {
                       JeepneyRide ride = entry.value;
@@ -90,12 +89,8 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
                       );
                     }).toList(),
                   )
-                ]
-              )
-            )
-          )
-        ]
-      ),
+                ])))
+      ]),
     );
   }
 }
