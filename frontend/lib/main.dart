@@ -4,6 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:tultul/pages/jeepCodes/jeep01b.dart';
+
 import 'package:tultul/pages/home_page.dart';
 import 'package:tultul/pages/route/search_routes_page.dart';
 import 'package:tultul/pages/route/route_details_page.dart';
@@ -39,8 +41,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const SearchRoutesPage(),
-      home: const HomePage(),
+      // home: const HomePage(),
       // home: const SearchLocationPage(),
+      home: const jeep01b(),
     );
   }
 }
