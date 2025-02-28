@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from decouple import config
 
-def get_jeepney_routes(request):
+def get_routes(request):
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
 
