@@ -3,13 +3,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:tultul/pages/jeepCodes/jeep01b.dart';
-
+import 'package:tultul/pages/map_screen.dart';
 import 'package:tultul/pages/home_page.dart';
 import 'package:tultul/pages/route/search_routes_page.dart';
 import 'package:tultul/pages/route/route_details_page.dart';
 import 'package:tultul/pages/route/search_location_page.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/provider/jeepney_provider.dart'; // 🚨 Import JeepneyProvider
 
 Future<void> main() async {
   try {
@@ -22,6 +22,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => RouteFinderProvider()),
+        ChangeNotifierProvider(create: (_) => JeepneyProvider()), // ✅ Add this!
       ],
       child: const MyApp(),
     ),
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
       // home: const SearchRoutesPage(),
       // home: const HomePage(),
       // home: const SearchLocationPage(),
-      home: const jeep01b(),
+      home: MapScreen(),
     );
   }
 }
