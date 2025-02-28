@@ -1,21 +1,18 @@
 import 'dart:convert';
-import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart'; // ✅ Import this for debugPrint
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:tultul/classes/route_model.dart';
 
 class RouteService {
-  static Future<List<RouteModel>> loadRoutes() async {
+  /// Loads multiple routes from a JSON file and returns a list of `RouteModel`
+  static Future<List<RouteModel>> loadRoutes(String filePath) async {
     try {
-      // Load JSON file
-      String jsonString = await rootBundle.loadString('assets/coordinates/coords01b.json');
-      Map<String, dynamic> jsonData = jsonDecode(jsonString); // Decode as a Map
+      String jsonString = await rootBundle.loadString(filePath);
+      Map<String, dynamic> jsonData = json.decode(jsonString);
+      List<dynamic> routesList = jsonData["routes"] ?? []; // Extract the "routes" list
 
-      // Extract 'routes' array
-      List<dynamic> routesJson = jsonData['routes'] ?? [];
-
-      return routesJson.map((route) => RouteModel.fromJson(route)).toList();
+      return routesList.map((route) => RouteModel.fromJson(route)).toList();
     } catch (e) {
-      if (kDebugMode) print("❌ Error loading routes: $e"); // ✅ Fix debug print
+      print("❌ Error loading route file: $e");
       return [];
     }
   }

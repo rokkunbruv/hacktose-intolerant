@@ -71,8 +71,8 @@ flutter:
     - .env
     - assets/fonts/
     - assets/img/
-    - assets/coordinates/coords01b.json
     - assets/icons/
+    - assets/coordinates/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

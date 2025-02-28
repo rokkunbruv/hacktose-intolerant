@@ -6,62 +6,65 @@ import 'package:tultul/api/google_maps_api/route_service.dart';
 import 'package:tultul/classes/route_model.dart';
 
 class JeepneyProvider with ChangeNotifier {
-  List<RouteModel> routes = [];
-  int currentRouteIndex = 0;
+  List<LatLng> firstRoute = [];
+  List<LatLng> secondRoute = [];
+  List<LatLng> fullRoute = [];
+
   int currentIndex = 0;
   LatLng? currentPosition;
   Timer? _timer;
-  final Duration moveDelay = Duration(seconds: 1); // Adjust speed here
 
-  /// Load all routes and start simulation
-  Future<void> startSimulation() async {
-    routes = await RouteService.loadRoutes();
+  /// Load a specific route based on the given file name
+  Future<void> loadRoute(String fileName) async {
+    String filePath = "assets/coordinates/$fileName.json"; 
+    debugPrint("📂 Loading file: $filePath");
+
+    List<RouteModel> routes = await RouteService.loadRoutes(filePath);
     if (routes.isEmpty) {
-      debugPrint("🚨 No routes found!");
+      debugPrint("🚨 No routes found in $fileName!");
       return;
     }
 
-    currentRouteIndex = 0; // Start from first route
+    // Ensure the RouteModel class has a "coordinates" field
+    if (routes.length > 0) {
+      firstRoute = routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList();
+    }
+    if (routes.length > 1) {
+      secondRoute = routes[1].coordinates.map((c) => LatLng(c[0], c[1])).toList();
+    }
+
+    // Combine both routes for seamless movement
+    fullRoute = [...firstRoute, ...secondRoute];
+
+    debugPrint("✅ Loaded Route: ${routes.map((r) => r.name).join(', ')}");
+
     _setRandomStartingPoint();
     notifyListeners();
     _startMoving();
   }
 
-  /// Selects a random starting point within the current route
+  /// Select a random starting point along the entire route
   void _setRandomStartingPoint() {
-    if (routes.isEmpty || routes[currentRouteIndex].coordinates.isEmpty) return;
+    if (fullRoute.isEmpty) return;
 
     final random = Random();
-    currentIndex = random.nextInt(routes[currentRouteIndex].coordinates.length);
-    currentPosition = LatLng(
-      routes[currentRouteIndex].coordinates[currentIndex][0],
-      routes[currentRouteIndex].coordinates[currentIndex][1],
-    );
+    currentIndex = random.nextInt(fullRoute.length);
+    currentPosition = fullRoute[currentIndex];
 
-    debugPrint("📍 Starting at: $currentPosition (Route: ${routes[currentRouteIndex].name})");
+    debugPrint("📍 Random Start Position: $currentPosition");
   }
 
-  /// Moves the jeepney along the route and switches to the next route when finished
+  /// Moves the jeepney along the full route, looping back at the end
   void _startMoving() {
     _timer?.cancel();
-    _timer = Timer.periodic(moveDelay, (timer) {
-      if (routes.isEmpty || routes[currentRouteIndex].coordinates.isEmpty) return;
+    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+      if (fullRoute.isEmpty) return;
 
-      currentIndex++;
+      // Move to the next point, looping back when reaching the end
+      currentIndex = (currentIndex + 1) % fullRoute.length;
+      currentPosition = fullRoute[currentIndex];
 
-      // If reached the end of the route, switch to the next one
-      if (currentIndex >= routes[currentRouteIndex].coordinates.length) {
-        currentRouteIndex = (currentRouteIndex + 1) % routes.length;
-        currentIndex = 0;
-        debugPrint("🔄 Switching to next route: ${routes[currentRouteIndex].name}");
-      }
-
-      currentPosition = LatLng(
-        routes[currentRouteIndex].coordinates[currentIndex][0],
-        routes[currentRouteIndex].coordinates[currentIndex][1],
-      );
-
-      debugPrint("🚖 Moving to: $currentPosition (Route: ${routes[currentRouteIndex].name})");
+      debugPrint("🚖 Moving to: $currentPosition");
       notifyListeners();
     });
   }

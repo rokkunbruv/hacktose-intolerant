@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/theme/colors.dart';
-import 'package:tultul/theme/text_styles.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
