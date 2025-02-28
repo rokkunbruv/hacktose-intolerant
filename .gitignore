@@ -1,5 +1,6 @@
 .env
 .vscode/
+**/venv/
 
 ### FRONTEND
 
@@ -68,3 +69,4 @@ key.properties
 ### BACKEND
 
 backend/cebu_jeepney_routes.json
+

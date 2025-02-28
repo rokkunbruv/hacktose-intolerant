@@ -39,11 +39,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // home: const JeepneyRouteFinderPage(),
-      // home: const SearchRoutesPage(),
-      // home: const SearchLocationPage(),
-      // home: const HomePage(),
-      home: const RouteStepsPage(),
+      home: const HomePage(),
     );
   }
 }
