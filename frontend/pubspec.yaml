@@ -43,6 +43,8 @@ dependencies:
   flutter_native_splash: ^2.4.4
   timelines: ^0.1.0
   flutter_launcher_icons: ^0.14.3
+  geolocator: ^13.0.2
+  permission_handler: ^11.4.0
 
 
 dev_dependencies:

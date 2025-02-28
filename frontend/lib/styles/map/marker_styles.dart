@@ -25,3 +25,16 @@ Marker createDestinationMarker(LatLng location) {
     icon: BitmapDescriptor.defaultMarkerWithHue(color),
   );
 }
+
+Marker createCurrentPositionMarker(LatLng location) {
+  const markerId = MarkerId('currentPosition');
+  const infoWindow = InfoWindow(title: 'Your Position');
+  const color = BitmapDescriptor.hueBlue;
+
+  return Marker(
+    markerId: markerId,
+    position: location,
+    infoWindow: infoWindow,
+    icon: BitmapDescriptor.defaultMarkerWithHue(color),
+  );
+}
