@@ -8,6 +8,14 @@ def get_routes(request):
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
 
+    origin_coords = origin.split(',')
+    origin_lat = float(origin_coords[0])
+    origin_lng = float(origin_coords[1])
+
+    destination_coords = destination.split(',')
+    destination_lat = float(destination_coords[0])
+    destination_lng = float(destination_coords[1])
+
     if not origin or not destination:
         return JsonResponse({'error': 'Origin and destination are required'}, status=400)
 
@@ -15,16 +23,29 @@ def get_routes(request):
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": config('GOOGLE_MAPS_API_KEY'),
-        "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline,routes.legs,routes.transitDetails"
+        "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline,routes.legs"
     }
     data = {
-        "origin": {"address": origin},
-        "destination": {"address": destination},
-        "travelMode": "TRANSIT",
-        "transitPreferences": {
-            "routingPreference": "LESS_WALKING"
+        "origin": {
+            "location": {
+                "latLng": {
+                    "latitude": origin_lat,
+                    "longitude": origin_lng,
+                }
+            }
         },
+        "destination": {
+            "location": {
+                "latLng": {
+                    "latitude": destination_lat,
+                    "longitude": destination_lng,
+                }
+            }
+        },
+        "travelMode": "TRANSIT",
     }
+
+    print(origin_coords, destination_coords)
 
     response = requests.post(url, headers=headers, json=data)
     
