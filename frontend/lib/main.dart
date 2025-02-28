@@ -4,11 +4,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 // import 'package:tultul/pages/home_page.dart';
-import 'package:tultul/pages/route/route_steps_page.dart';
+// import 'package:tultul/pages/route/route_steps_page.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
 // import 'package:tultul/pages/route/search_routes_page.dart';
 // import 'package:tultul/pages/route/route_details_page.dart';
 // import 'package:tultul/pages/route/search_location_page.dart';
+import 'package:tultul/pages/jeeps/search_jeeps_page';
 
 Future<void> main() async {
   try {
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
       // home: const SearchRoutesPage(),
       // home: const SearchLocationPage(),
       // home: const HomePage(),
-      home: const RouteStepsPage(),
+      // home: const RouteStepsPage(),
     );
   }
 }

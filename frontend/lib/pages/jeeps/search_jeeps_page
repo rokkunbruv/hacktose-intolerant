@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+
+import 'package:tultul/theme/colors.dart';
+import 'package:tultul/theme/text_styles.dart';
+
+class SearchJeepsPage extends StatefulWidget{
+  const SearchJeepsPage({
+    super.key,
+  });
+  @override
+  State<SearchJeepsPage> createState() => _SearchJeepsPageState();
+}
+
+class _SearchJeepsPageState extends State<SearchJeepsPage>{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(title: Text('Jeepney Routes', styles: AppTextStyle.title1.copywith(color: AppColors))),
+      body: Text("hehe"),
+    );
+  }
+}
