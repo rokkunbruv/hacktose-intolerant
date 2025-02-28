@@ -4,6 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:tultul/api/google_maps_api/directions.dart';
 import 'package:tultul/classes/route/commute_route.dart';
+import 'package:tultul/constants/jeepney_types.dart';
+import 'package:tultul/constants/passenger_types.dart';
 import 'package:tultul/styles/map/marker_styles.dart';
 import 'package:tultul/utils/route/calculate_route_details.dart';
 import 'package:tultul/utils/route/decode_polyline.dart';
@@ -28,8 +30,8 @@ class RouteFinderProvider extends ChangeNotifier {
   double totalFare = 0.0;
 
   // dropdown selections.
-  String passengerType = 'regular';
-  String jeepneyType = 'traditional';
+  String passengerType = regular;
+  String jeepneyType = traditional;
 
   CommuteRoute? selectedRoute;
   Map<CommuteRoute, Set<Polyline>> routePolylines = {};

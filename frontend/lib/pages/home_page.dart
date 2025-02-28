@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
+import 'package:provider/provider.dart';
+
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
+import 'package:tultul/provider/position_provider.dart';
+import 'package:tultul/utils/location/check_location_services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,12 +21,31 @@ class _HomePageState extends State<HomePage> {
     
   }
 
-  void navigateToRecentTripsPage() {
+  @override
+  void initState() {
+    super.initState();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+      
+      await checkLocationServices(context);
+      
+      if (mounted) {
+        positionProvider.startPositionUpdates();
+      } 
+    });
+  }
+
+  @override
+  void dispose() {
+    Provider.of<PositionProvider>(context, listen: false).stopPositionUpdates();
+    super.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
+    final positionProvider = Provider.of<PositionProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
@@ -47,8 +70,13 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Stack(
         children: <Widget>[
+          // TODO: Check user location tracking
           // MAP VIEW
-          MapView(),
+          MapView(
+            markers: (positionProvider.currentPositionMarker != null) ? {
+              positionProvider.currentPositionMarker!
+            } : {}
+          ),
 
           Positioned(
             left: 0,

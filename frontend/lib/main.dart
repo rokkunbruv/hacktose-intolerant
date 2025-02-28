@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 import 'package:provider/provider.dart';
 
 import 'package:tultul/pages/home_page.dart';
@@ -9,6 +8,9 @@ import 'package:tultul/pages/route/search_routes_page.dart';
 import 'package:tultul/pages/route/route_details_page.dart';
 import 'package:tultul/pages/route/search_location_page.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/provider/position_provider.dart';
+import 'package:tultul/utils/location/request_location_services.dart';
+import 'package:tultul/utils/location/check_location_services.dart';
 
 Future<void> main() async {
   try {
@@ -16,11 +18,14 @@ Future<void> main() async {
   } catch (e) {
     debugPrint(e.toString());
   }
+
+  await requestLocationServices();
   
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => RouteFinderProvider()),
+        ChangeNotifierProvider(create: (_) => PositionProvider()),
       ],
       child: const MyApp(),
     ),
