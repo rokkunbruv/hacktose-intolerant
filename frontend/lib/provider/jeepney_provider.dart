@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tultul/api/google_maps_api/route_service.dart';
@@ -10,89 +11,88 @@ class JeepneyProvider with ChangeNotifier {
   List<LatLng> secondRoute = [];
   List<LatLng> fullRoute = [];
 
-  int currentIndex = 0;
-  LatLng? currentPosition;
+  List<Map<String, dynamic>> jeepneys = [];
   Timer? _timer;
-  GoogleMapController? _mapController; 
+  LatLngBounds? routeBounds;
+  final Random _random = Random();
 
-  /// Attach the Google Map controller
-  void setMapController(GoogleMapController controller) {
-    _mapController = controller;
-  }
-
-  /// Load a specific route based on the given file name
   Future<void> loadRoute(String fileName) async {
-    String filePath = "assets/coordinates/$fileName.json";
-    debugPrint("\ud83d\udcc2 Loading file: $filePath");
+    String filePath = "assets/coordinates/$fileName.json"; // ✅ Fixed double `.json.json`
+    debugPrint("📂 Loading file: $filePath");
 
-    List<RouteModel> routes = await RouteService.loadRoutes(filePath);
-    if (routes.isEmpty) {
-      debugPrint("\ud83d\udea8 No routes found in $fileName!");
-      return;
+    try {
+      List<RouteModel> routes = await RouteService.loadRoutes(filePath);
+      if (routes.isEmpty) {
+        debugPrint("🚨 No routes found in $fileName!");
+        return;
+      }
+
+      firstRoute = routes.isNotEmpty ? routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList() : [];
+      secondRoute = routes.length > 1 ? routes[1].coordinates.map((c) => LatLng(c[0], c[1])).toList() : [];
+      fullRoute = [...firstRoute, ...secondRoute];
+
+      _calculateBounds();
+      _initializeJeepneys(); // ✅ New: Randomized jeepney start positions
+      notifyListeners();
+      _startMoving();
+    } catch (e) {
+      debugPrint("❌ Error loading route file: $e");
     }
-
-    if (routes.isNotEmpty) {
-      firstRoute = routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList();
-    }
-    if (routes.length > 1) {
-      secondRoute = routes[1].coordinates.map((c) => LatLng(c[0], c[1])).toList();
-    }
-
-    fullRoute = [...firstRoute, ...secondRoute];
-    debugPrint("\u2705 Loaded Route: ${routes.map((r) => r.name).join(', ')}");
-
-    _setRandomStartingPoint();
-    notifyListeners();
-    _startMoving();
-    _centerMapOnRoute(); 
   }
 
-  /// Center the map to fit the route
-  void _centerMapOnRoute() {
-    if (_mapController == null || fullRoute.isEmpty) return;
+  /// 🔹 Calculates the bounds for centering the camera
+  void _calculateBounds() {
+    if (fullRoute.isEmpty) return;
+    double minLat = fullRoute.first.latitude, maxLat = fullRoute.first.latitude;
+    double minLng = fullRoute.first.longitude, maxLng = fullRoute.first.longitude;
 
-    LatLngBounds bounds = _getRouteBounds(fullRoute);
-    _mapController!.animateCamera(
-      CameraUpdate.newLatLngBounds(bounds, 50),
-    );
+    for (LatLng point in fullRoute) {
+      if (point.latitude < minLat) minLat = point.latitude;
+      if (point.latitude > maxLat) maxLat = point.latitude;
+      if (point.longitude < minLng) minLng = point.longitude;
+      if (point.longitude > maxLng) maxLng = point.longitude;
+    }
 
-    debugPrint("\ud83d\udccc Centered map on route");
-  }
-
-  /// Get the bounding box of the route
-  LatLngBounds _getRouteBounds(List<LatLng> route) {
-    double minLat = route.map((p) => p.latitude).reduce(min);
-    double maxLat = route.map((p) => p.latitude).reduce(max);
-    double minLng = route.map((p) => p.longitude).reduce(min);
-    double maxLng = route.map((p) => p.longitude).reduce(max);
-
-    return LatLngBounds(
+    routeBounds = LatLngBounds(
       southwest: LatLng(minLat, minLng),
       northeast: LatLng(maxLat, maxLng),
     );
   }
 
-  /// Select a random starting point along the route
-  void _setRandomStartingPoint() {
+  /// 🔹 Initializes multiple jeepneys with unique starting positions
+  void _initializeJeepneys() {
     if (fullRoute.isEmpty) return;
 
-    final random = Random();
-    currentIndex = random.nextInt(fullRoute.length);
-    currentPosition = fullRoute[currentIndex];
+    jeepneys.clear();
+    int jeepneyCount = _random.nextInt(4) + 3; // Randomize between 3 and 6 jeepneys
+    Set<int> usedIndices = {}; // Prevents duplicate start positions
 
-    debugPrint("\ud83d\udccd Random Start Position: $currentPosition");
+    while (jeepneys.length < jeepneyCount) {
+      int randomIndex = _random.nextInt(fullRoute.length);
+
+      if (!usedIndices.contains(randomIndex)) {
+        usedIndices.add(randomIndex);
+        jeepneys.add({
+          'index': randomIndex,
+          'position': fullRoute[randomIndex],
+        });
+      }
+    }
+
+    debugPrint("🚍 Spawned $jeepneyCount jeepneys at unique positions");
   }
 
-  /// Moves the jeepney along the full route, looping back at the end
+  /// 🔹 Moves jeepneys along the route and loops them back
   void _startMoving() {
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 10), (timer) {
       if (fullRoute.isEmpty) return;
 
-      currentIndex = (currentIndex + 1) % fullRoute.length;
-      currentPosition = fullRoute[currentIndex];
+      for (var jeepney in jeepneys) {
+        jeepney['index'] = (jeepney['index'] + 1) % fullRoute.length;
+        jeepney['position'] = fullRoute[jeepney['index']];
+      }
 
-      debugPrint("\ud83d\ude96 Moving to: $currentPosition");
       notifyListeners();
     });
   }

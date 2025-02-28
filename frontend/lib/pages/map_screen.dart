@@ -11,6 +11,13 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   String selectedRouteFile = "04L"; // Default to 04L.json
+  GoogleMapController? _mapController;
+
+  void _centerCamera(LatLngBounds bounds) {
+    if (_mapController != null) {
+      _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +32,7 @@ class _MapScreenState extends State<MapScreen> {
                 setState(() {
                   selectedRouteFile = newValue;
                   Provider.of<JeepneyProvider>(context, listen: false)
-                      .loadRoute("$newValue.json");
+                      .loadRoute("$newValue");
                 });
               }
             },
@@ -40,18 +47,21 @@ class _MapScreenState extends State<MapScreen> {
       ),
       body: Consumer<JeepneyProvider>(
         builder: (context, provider, child) {
+          if (provider.routeBounds != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _centerCamera(provider.routeBounds!);
+            });
+          }
+
           return MapView(
-            onMapCreated: (GoogleMapController controller) {
-              provider.setMapController(controller); // Attach map controller
-            },
-            markers: provider.currentPosition != null
-                ? {
-                    Marker(
-                      markerId: MarkerId("jeepney"),
-                      position: provider.currentPosition!,
+            markers: provider.jeepneys.isNotEmpty
+                ? provider.jeepneys.map((jeepney) {
+                    return Marker(
+                      markerId: MarkerId("jeepney_${jeepney['index']}"),
+                      position: jeepney['position'],
                       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-                    ),
-                  }
+                    );
+                  }).toSet()
                 : {},
             polylines: {
               if (provider.firstRoute.isNotEmpty) 
@@ -68,6 +78,12 @@ class _MapScreenState extends State<MapScreen> {
                   color: Colors.blue,
                   width: 5,
                 ),
+            },
+            onMapCreated: (controller) {
+              _mapController = controller;
+              if (provider.routeBounds != null) {
+                _centerCamera(provider.routeBounds!);
+              }
             },
           );
         },
