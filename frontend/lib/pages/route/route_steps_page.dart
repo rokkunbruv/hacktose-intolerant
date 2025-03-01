@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:tultul/constants/step_types.dart';
 import 'package:tultul/widgets/generic/draggable_container.dart';
 
-import 'package:tultul/widgets/steps/step_details.dart';
+import 'package:tultul/widgets/route/route_steps.dart';
 
 class RouteStepsPage extends StatefulWidget {
   const RouteStepsPage({super.key});
