@@ -1,0 +1,2 @@
+/Users/jeonellumbab/Desktop/Projects/hacktose-intolerant/frontend/android/app/.cxx/Debug/1a2x6f53/x86_64/CMakeFiles/edit_cache.dir
+/Users/jeonellumbab/Desktop/Projects/hacktose-intolerant/frontend/android/app/.cxx/Debug/1a2x6f53/x86_64/CMakeFiles/rebuild_cache.dir
