@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:tultul/api/google_maps_api/directions.dart';
+import 'package:tultul/api/google_maps_api/directions_api.dart';
 import 'package:tultul/classes/route/commute_route.dart';
 import 'package:tultul/constants/jeepney_types.dart';
 import 'package:tultul/constants/passenger_types.dart';
 import 'package:tultul/styles/map/marker_styles.dart';
 import 'package:tultul/utils/route/calculate_route_details.dart';
 import 'package:tultul/utils/route/decode_polyline.dart';
+import 'package:tultul/classes/location/location.dart';
+import 'package:tultul/api/google_maps_api/places_api.dart';
 
 class RouteFinderProvider extends ChangeNotifier {
   // controllers for text fields.
@@ -50,25 +52,38 @@ class RouteFinderProvider extends ChangeNotifier {
 
   /// called when the map is tapped.
   void setMarker(LatLng location) async {
-    if (isSettingOrigin) {
-      origin = location;
-      originController.text = '${location.latitude}, ${location.longitude}';
-      isSettingOrigin = false;
+    try {
+      // Show loading state if you have one
+      final nearestPlace = await PlacesApi.getNearestPlace(location);
+      
+      if (nearestPlace != null) {
+        print('Setting marker at: ${nearestPlace.address}');
+        
+        if (isSettingOrigin) {
+          origin = nearestPlace.coordinates; // Use the snapped coordinates
+          originController.text = nearestPlace.address;
+          isSettingOrigin = false;
+          originMarker = createOriginMarker(
+            nearestPlace.coordinates
+          );
+        } else {
+          destination = nearestPlace.coordinates; // Use the snapped coordinates
+          destinationController.text = nearestPlace.address;
+          isSettingOrigin = true;
+          destinationMarker = createDestinationMarker(
+            nearestPlace.coordinates
+          );
+        }
 
-      originMarker = createOriginMarker(location);
-    } else {
-      destination = location;
-      destinationController.text = '${location.latitude}, ${location.longitude}';
-      isSettingOrigin = true;
+        if (originController.text.isNotEmpty && destinationController.text.isNotEmpty) {
+          await findRoutes();
+        }
 
-      destinationMarker = createDestinationMarker(location);
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error setting marker: $e');
     }
-
-    if (originController.text.isNotEmpty && destinationController.text.isNotEmpty) {
-      await findRoutes();
-    }
-
-    notifyListeners();
   }
 
   /// returns the set of markers to display on the map.
@@ -137,6 +152,44 @@ class RouteFinderProvider extends ChangeNotifier {
     isSettingOrigin = true;
     routePolylines.clear();
     
+    notifyListeners();
+  }
+
+  void setOrigin(Location location) {
+    origin = location.coordinates;
+    originController.text = location.address;
+    originMarker = createOriginMarker(location.coordinates);
+    
+    if (destination != null) {
+      findRoutes();
+    }
+    
+    notifyListeners();
+  }
+
+  void setDestination(Location location) {
+    destination = location.coordinates;
+    destinationController.text = location.address;
+    destinationMarker = createDestinationMarker(location.coordinates);
+    
+    if (origin != null) {
+      findRoutes();
+    }
+    
+    notifyListeners();
+  }
+
+  void clearOrigin() {
+    origin = null;
+    originController.clear();
+    originMarker = null;
+    notifyListeners();
+  }
+
+  void clearDestination() {
+    destination = null;
+    destinationController.clear();
+    destinationMarker = null;
     notifyListeners();
   }
 }

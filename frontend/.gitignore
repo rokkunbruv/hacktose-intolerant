@@ -1,0 +1,5 @@
+# Environment files
+.env
+.env.*
+
+# Existing Flutter/Dart ignores should be here too, but we're just adding the env-specific ones 
