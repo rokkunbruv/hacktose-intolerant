@@ -1,0 +1,2 @@
+C:/2nd Year/2nd Sem/Hackathon/Autocomplete/hacktose-intolerant/frontend/android/app/.cxx/Debug/1bc506q3/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/2nd Year/2nd Sem/Hackathon/Autocomplete/hacktose-intolerant/frontend/android/app/.cxx/Debug/1bc506q3/armeabi-v7a/CMakeFiles/rebuild_cache.dir

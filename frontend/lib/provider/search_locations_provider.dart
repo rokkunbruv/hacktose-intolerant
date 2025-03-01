@@ -14,20 +14,35 @@ class SearchLocationsProvider extends ChangeNotifier {
 
   Location? selectedLocation;
 
+  bool isLoading = false;
+
   /// fetch routes using the directions api.
   Future<void> searchLocations() async {
     if (locationController.text.isEmpty) {
-      throw('Location is not set.');
+      locations = [];
+      notifyListeners();
+      return;
     }
 
     try {
+      isLoading = true;
+      notifyListeners();
+
+      print('Searching for: ${locationController.text}');
+
       locations = await PlacesApi.getLocations(
         locationController.text
       );
 
+      print('Found ${locations.length} locations');
+
+      isLoading = false;
       notifyListeners();
     } catch (e) {
-      debugPrint(e.toString());
+      print('Error in searchLocations: $e');
+      isLoading = false;
+      locations = [];
+      notifyListeners();
     }
   }
 
@@ -46,4 +61,13 @@ class SearchLocationsProvider extends ChangeNotifier {
     
     notifyListeners();
   }
+
+  void resetSearch() {
+    locations = [];
+    locationController.clear();
+    selectedLocation = null;
+    isLoading = false;
+    notifyListeners();
+  }
+
 }
