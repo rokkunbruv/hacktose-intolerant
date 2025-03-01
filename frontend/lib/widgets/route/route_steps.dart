@@ -151,9 +151,15 @@ class RouteSteps extends StatelessWidget {
               ),
               const SizedBox(width: 7.0),
 
-              Text('From $location',
+              Expanded(
+                child: Text(
+                  'From $location',
                   style: AppTextStyles.label5.copyWith(
-                      color: AppColors.black, fontWeight: FontWeight.bold)),
+                    color: AppColors.black, fontWeight: FontWeight.bold
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 15.0),

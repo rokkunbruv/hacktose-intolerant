@@ -5,7 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:tultul/classes/direction/direction_step.dart';
 import 'package:tultul/classes/route/commute_route.dart';
-import 'package:tultul/classes/route/jeepney_ride.dart';
 import 'package:tultul/constants/step_types.dart';
 import 'package:tultul/constants/travel_modes.dart';
 import 'package:tultul/widgets/map/map_view.dart';

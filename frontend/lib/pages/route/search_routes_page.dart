@@ -25,7 +25,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
   
   @override
   Widget build(BuildContext context) {
-    final routeProvider = Provider.of<RouteFinderProvider>(context);
+    final routeProvider = Provider.of<RouteFinderProvider>(context, listen: true);
 
     return Scaffold(
       body: Column(
@@ -159,12 +159,16 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                             SizedBox(
                               child: DropdownSelectButton(
                                 items: _passengerTypes,
+                                onChanged: (type) =>
+                                  routeProvider.setPassengerType(type)
                               ),
                             ),
                             SizedBox(width: 8),
                             SizedBox(
                               child: DropdownSelectButton(
                                 items: _jeepneyTypes,
+                                onChanged: (type) =>
+                                  routeProvider.setJeepneyType(type)
                               ),
                             ),
                           ],

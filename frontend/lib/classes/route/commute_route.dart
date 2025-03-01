@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:tultul/classes/direction/direction_path.dart';
 import 'package:tultul/constants/travel_modes.dart';
 
@@ -6,6 +7,8 @@ class CommuteRoute {
   final DirectionPath path;
   late double totalDistance;
   late int totalDuration;
+  late TimeOfDay departureTime;
+  late TimeOfDay arrivalTime;
   late double totalFare;
   late List<String> rides;
 
@@ -26,6 +29,22 @@ class CommuteRoute {
         }
       }
     }
+
+    DateTime now = DateTime.now();
+
+    DateTime departureDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      now.hour,
+      now.minute,
+    );
+    departureDateTime = departureDateTime.add(Duration(seconds: totalDuration));
+
+    departureTime = TimeOfDay(hour: now.hour, minute: now.minute);
+    arrivalTime = TimeOfDay(hour: departureDateTime.hour, minute: departureDateTime.minute);
+
+    debugPrint(departureTime.toString() + arrivalTime.toString());
   }
 
   // getters
