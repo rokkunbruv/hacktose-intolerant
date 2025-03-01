@@ -13,7 +13,7 @@ class FollowRoutePage extends StatefulWidget {
 }
 
 class _FollowRoutePageState extends State<FollowRoutePage> {
-  final List<Widget> containerList = ;
+  // final List<Widget> containerList = ;
 
   // int currentIndex = 0;
   // int next = 1;

@@ -62,15 +62,16 @@ class _StepItemState extends State<StepItem> {
   }
 
   Widget generateContainer() {
-    return Container(
-      switch (type) {
+    switch (widget.type1) {
       case StepType.walk:
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 25),
           child: Row(
             children: [
               const Icon(Icons.directions_walk, color: AppColors.red, size: 25),
-              Text('Walk $duration ($distance)',
+              Text('Walk to $widget.location',
+                  style: AppTextStyles.label3.copyWith(color: AppColors.black)),
+              Text('$widget.duration',
                   style: AppTextStyles.label5
                       .copyWith(color: AppColors.lightNavy)),
             ],
@@ -79,6 +80,36 @@ class _StepItemState extends State<StepItem> {
       case StepType.transport:
         return _createTransportContainer();
     }
+  }
+
+  Widget _createTransportContainer() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          createBoxShadow(),
+        ],
+      ),
+      child: Row(
+        children: [
+          Image.asset(
+            'assets/icons/jeepney icon-small.png',
+            width: 20,
+            height: 20,
+          ),
+          Row(
+            children: [
+              Text(
+                'Ride',
+                style: AppTextStyles.label,
+              )
+            ],
+          )
+        ],
+      ),
     );
   }
 
