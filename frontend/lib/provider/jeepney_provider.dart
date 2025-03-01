@@ -85,7 +85,7 @@ class JeepneyProvider with ChangeNotifier {
   /// 🔹 Moves jeepneys along the route and loops them back
   void _startMoving() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (fullRoute.isEmpty) return;
 
       for (var jeepney in jeepneys) {
