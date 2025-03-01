@@ -102,7 +102,8 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                 routeProvider.setMarker(latLng);
                 },
                 markers: routeProvider.getMarkers(),
-                polylines: routeProvider.getSelectedRoutePolylines(),
+                polylines: (routeProvider.selectedRoute != null) ?
+                  {routeProvider.selectedRoute!.path.polyline} : null,
               ),
 
               // SUGGESTED ROUTES

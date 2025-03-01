@@ -45,6 +45,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   geolocator: ^13.0.2
   permission_handler: ^11.4.0
+  google_polyline_algorithm: ^3.1.0
 
 
 dev_dependencies:

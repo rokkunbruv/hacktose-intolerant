@@ -141,7 +141,7 @@ class StepDetails extends StatelessWidget {
                 Text('Take $jeepCode Jeepney',
                     style: AppTextStyles.label5.copyWith(
                         color: AppColors.black, fontWeight: FontWeight.bold)),
-                Text(fare!,
+                Text('₱${fare!}',
                     style: AppTextStyles.label5.copyWith(
                         color: AppColors.black, fontWeight: FontWeight.bold)),
               ],

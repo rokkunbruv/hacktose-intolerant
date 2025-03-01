@@ -1,28 +1,36 @@
 import 'package:tultul/classes/direction/direction_path.dart';
-import 'package:tultul/classes/route/jeepney_ride.dart';
+import 'package:tultul/constants/travel_modes.dart';
 
 // contains information about a route
 class CommuteRoute {
   final DirectionPath path;
-  late double totalFare;
   late double totalDistance;
-  late List<JeepneyRide> rides;
+  late int totalDuration;
+  late double totalFare;
+  late List<String> rides;
 
-  CommuteRoute({
-    required this.path,
-  });
+  CommuteRoute({required this.path}) {
+    totalDistance = 0;
+    totalDuration = 0;
+    rides = [];
+    
+    for (var leg in path.legs) {
+      // compute total distance and duration of a route
+      totalDistance += leg.totalDistance;
+      totalDuration += leg.totalDuration;
+
+      // add list of jeepneys to ride
+      for (var step in leg.steps) {
+        if (step.travelMode == transit && step.jeepneyCode != null) {
+          rides.add(step.jeepneyCode!);
+        }
+      }
+    }
+  }
 
   // getters
   DirectionPath get getDirectionPath => path;
-  double get getTotalFare => totalFare;
   double get getTotalDistance => totalDistance;
-
-  // setters
-  void setTotalFare(double fare) {
-    totalFare = fare;
-  }
-
-  void setTotalDistance(double distance) {
-    totalDistance = distance;
-  }
+  int get getTotalDuration => totalDuration;
+  double get getTotalFare => totalFare;
 }
