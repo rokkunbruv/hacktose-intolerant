@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-
+import 'package:provider/provider.dart';
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
+import 'package:tultul/provider/position_provider.dart';
+import 'package:tultul/utils/location/check_location_services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,16 +14,35 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  void navigateToSearchDestinationPage() {
-    
+  void navigateToSearchDestinationPage() {}
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+      
+      await checkLocationServices(context);
+      
+      if (mounted) {
+        positionProvider.startPositionUpdates();
+      }
+    });
   }
 
-  void navigateToRecentTripsPage() {
-
+  @override
+  void dispose() {
+    Provider.of<PositionProvider>(context, listen: false).stopPositionUpdates();
+    super.dispose();
   }
-  
+
+  void navigateToRecentTripsPage() {}
+
   @override
   Widget build(BuildContext context) {
+    final positionProvider = Provider.of<PositionProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
@@ -42,14 +62,16 @@ class _HomePageState extends State<HomePage> {
                 offset: Offset(0, 2),
               ),
             ],
-          )
+          ),
         ),
       ),
       body: Stack(
         children: <Widget>[
-          // MAP VIEW
-          MapView(),
-
+          MapView(
+            markers: (positionProvider.currentPositionMarker != null)
+                ? {positionProvider.currentPositionMarker!}
+                : {},
+          ),
           Positioned(
             left: 0,
             right: 0,
@@ -72,7 +94,6 @@ class _HomePageState extends State<HomePage> {
                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       child: Column(
                         children: <Widget>[
-                          // WHERE TO
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,7 +111,9 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8,
+                                    ),
                                   ),
                                   readOnly: true,
                                   onTap: navigateToSearchDestinationPage,
@@ -98,167 +121,16 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          // SizedBox(height: 8),
-                    
-                          // HOME, WORK, MORE
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          //   crossAxisAlignment: CrossAxisAlignment.center,
-                          //   children: <Widget>[
-                          //     // HOME BUTTON
-                          //     TextButton(
-                          //       onPressed: () {},
-                          //       child: Row(
-                          //         children: <Widget>[
-                          //           CircleAvatar(
-                          //             backgroundColor: AppColors.navy,
-                          //             radius: 10,
-                          //             child: Icon(
-                          //               Icons.home,
-                          //               color: AppColors.white,
-                          //               size: 10,
-                          //             ),
-                          //           ),
-                          //           SizedBox(width: 8),
-                          //           Column(
-                          //               mainAxisAlignment: MainAxisAlignment.center,
-                          //               crossAxisAlignment: CrossAxisAlignment.start,
-                          //               children: <Widget>[
-                          //                 Text(
-                          //                   'Home',
-                          //                   style: AppTextStyles.label5
-                          //                 ),
-                          //                 Text(
-                          //                   'Cebu',
-                          //                   style: AppTextStyles.label6.copyWith(
-                          //                     color: AppColors.gray
-                          //                   )
-                          //                 ),
-                          //               ]
-                          //             )
-                          //         ]
-                          //       )
-                          //     ),
-                          //     Container(
-                          //       decoration: BoxDecoration(
-                          //         color: AppColors.lightGray
-                          //       ),
-                          //       child: SizedBox(height: 32, width: 2)
-                          //     ),
-                                
-                          //     // WORK BUTTON
-                          //     TextButton(
-                          //       onPressed: () {},
-                          //       child: Row(
-                          //         children: <Widget>[
-                          //           CircleAvatar(
-                          //             backgroundColor: AppColors.navy,
-                          //             radius: 10,
-                          //             child: Icon(
-                          //               Icons.work,
-                          //               color: AppColors.white,
-                          //               size: 10,
-                          //             ),
-                          //           ),
-                          //           SizedBox(width: 8),
-                          //           Column(
-                          //               mainAxisAlignment: MainAxisAlignment.center,
-                          //               crossAxisAlignment: CrossAxisAlignment.start,
-                          //               children: <Widget>[
-                          //                 Text(
-                          //                   'Work',
-                          //                   style: AppTextStyles.label5
-                          //                 ),
-                          //                 Text(
-                          //                   'Set Location',
-                          //                   style: AppTextStyles.label6.copyWith(
-                          //                     color: AppColors.gray
-                          //                   )
-                          //                 ),
-                          //               ]
-                          //             )
-                          //         ]
-                          //       )
-                          //     ),
-                          //     Container(
-                          //       decoration: BoxDecoration(
-                          //         color: AppColors.lightGray
-                          //       ),
-                          //       child: SizedBox(height: 32, width: 2)
-                          //     ),
-                                
-                          //     // MORE BUTTON
-                          //     TextButton(
-                          //       onPressed: () {},
-                          //       child: Row(
-                          //         mainAxisAlignment: MainAxisAlignment.center,
-                          //         crossAxisAlignment: CrossAxisAlignment.center,
-                          //         children: <Widget>[
-                          //           Container(
-                          //             decoration: BoxDecoration(
-                          //               borderRadius: BorderRadius.circular(10),
-                          //               boxShadow: [
-                          //                 BoxShadow(
-                          //                   color: AppColors.black.withAlpha(64),
-                          //                   blurRadius: 2,
-                          //                   offset: Offset(0, 2),
-                          //                 ),
-                          //               ],
-                          //             ),
-                          //             child: CircleAvatar(
-                          //               backgroundColor: AppColors.white,
-                          //               radius: 10,
-                          //               child: Icon(
-                          //                 Icons.more_horiz,
-                          //                 color: AppColors.black,
-                          //                 size: 10,
-                          //               ),
-                          //             ),
-                          //           ),
-                          //           SizedBox(width: 8),
-                          //           Text(
-                          //             'More',
-                          //             style: AppTextStyles.label5
-                          //           )
-                          //         ]
-                          //       )
-                          //     ),
-                          //   ]
-                          // )                        
-                        ]
-                      )
+                        ],
+                      ),
                     ),
-                    // SizedBox(height: 16),
-              
-                    // // RECENT TRIPS
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   children: <Widget>[
-                    //     Text(
-                    //       'Recent trips',
-                    //       style: AppTextStyles.label4.copyWith(
-                    //         color: AppColors.vanilla,
-                    //       ),
-                    //     ),
-                    //     GestureDetector(
-                    //       onTap: navigateToRecentTripsPage,
-                    //       child: Text(
-                    //         'More',
-                    //         style: AppTextStyles.label4.copyWith(
-                    //           color: AppColors.saffron,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ]
-                    // )                                
                   ],
                 ),
-              )
+              ),
             ),
-          )
-        ]
-      )
+          ),
+        ],
+      ),
     );
   }
 }

@@ -6,6 +6,8 @@ import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/widgets/generic/dropdown_select_button.dart';
 import 'package:tultul/widgets/generic/draggable_container.dart';
 import 'package:tultul/widgets/route/route_list.dart';
+import 'package:tultul/constants/jeepney_types.dart';
+import 'package:tultul/constants/passenger_types.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
@@ -18,11 +20,8 @@ class SearchRoutesPage extends StatefulWidget {
 }
 
 class _SearchRoutesPageState extends State<SearchRoutesPage> {
-  final List<String> _passengerTypes = ['Regular', 'Student', 'Senior Citizen', 'PWD'];
-  final List<String> _jeepneyTypes = ['Traditional', 'Modern'];
-
-  String? _selectedPassengerType;
-  String? _selectedJeepneyType;
+  final List<String> _passengerTypes = [regular, student, seniorCitizen, pwd];
+  final List<String> _jeepneyTypes = [traditional, modern];
   
   @override
   Widget build(BuildContext context) {
@@ -103,7 +102,8 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                 routeProvider.setMarker(latLng);
                 },
                 markers: routeProvider.getMarkers(),
-                polylines: routeProvider.getSelectedRoutePolylines(),
+                polylines: (routeProvider.selectedRoute != null) ?
+                  {routeProvider.selectedRoute!.path.polyline} : null,
               ),
 
               // SUGGESTED ROUTES
