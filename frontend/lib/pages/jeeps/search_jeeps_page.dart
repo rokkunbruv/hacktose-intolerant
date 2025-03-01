@@ -39,10 +39,27 @@ class _SearchJeepsPageState extends State<SearchJeepsPage> {
             fit: BoxFit.cover,
           ),
         ),
-        child: DraggableContainer(
-          child: Padding(
-              padding: EdgeInsets.all(20),
-              child: JeepCodeList(jeepRoutes: jeepRoutes)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 150,
+            ),
+            Center(
+              child: Image.asset(
+                'assets/img/jeep_big_logo.png',
+                width: 300,
+                height: 300,
+              ),
+            ),
+            Expanded(
+              child: DraggableContainer(
+                child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: JeepCodeList(jeepRoutes: jeepRoutes)),
+              ),
+            ),
+          ],
         ),
       ),
     );
