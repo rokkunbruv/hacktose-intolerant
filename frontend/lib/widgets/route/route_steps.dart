@@ -144,7 +144,7 @@ class StepDetails extends StatelessWidget {
 
   Widget _createTransportContainer() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 0),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       padding: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
         color: AppColors.bg,
@@ -179,7 +179,11 @@ class StepDetails extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.saffron,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(3),
+                  bottomLeft: Radius.circular(3),
+                  bottomRight: Radius.circular(3)),
               boxShadow: [
                 createBoxShadow(),
               ],
@@ -203,7 +207,11 @@ class StepDetails extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.navy,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(3),
+                  bottomLeft: Radius.circular(3),
+                  bottomRight: Radius.circular(3)),
               boxShadow: [
                 createBoxShadow(),
               ],
