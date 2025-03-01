@@ -10,7 +10,7 @@ class DirectionStep {
   final int duration; // in sec
   final String? jeepneyName;
   final String? jeepneyCode;
-  late double jeepneyFare;
+  late double? jeepneyFare;
   final String? origin;
   final String? destination;
   final Polyline polyline;

@@ -7,6 +7,7 @@ import 'package:tultul/classes/route/commute_route.dart';
 import 'package:tultul/classes/direction/direction_step.dart';
 import 'package:tultul/constants/jeepney_types.dart';
 import 'package:tultul/constants/passenger_types.dart';
+import 'package:tultul/constants/travel_modes.dart';
 import 'package:tultul/styles/map/marker_styles.dart';
 import 'package:tultul/utils/route/calculate_fare.dart';
 
@@ -85,8 +86,12 @@ class RouteFinderProvider extends ChangeNotifier {
       double totalFare = 0;
       
       for (DirectionStep step in route.path.legs[0].steps) {
-        step.jeepneyFare = calculateFare(step.distance, selectedJeepneyType, selectedPassengerType);
-        totalFare += step.jeepneyFare;
+        if (step.travelMode == transit) {
+          step.jeepneyFare = calculateFare(step.distance, selectedJeepneyType, selectedPassengerType);
+          totalFare += step.jeepneyFare!;
+        } else {
+          step.jeepneyFare = null;
+        }
       }
 
       route.totalFare = totalFare;

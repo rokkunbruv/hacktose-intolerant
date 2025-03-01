@@ -8,7 +8,7 @@ import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/constants/step_types.dart';
 
 // Custom widget for each step with connecting lines
-class StepDetails extends StatelessWidget {
+class RouteSteps extends StatelessWidget {
   final StepType type;
   final StepType? type2;
   final String? location;
@@ -19,7 +19,7 @@ class StepDetails extends StatelessWidget {
   final String? distance;
   final IconData? icon;
 
-  const StepDetails({
+  const RouteSteps({
     super.key,
     required this.type,
     this.type2,
@@ -85,24 +85,9 @@ class StepDetails extends StatelessWidget {
           Expanded(
             child: _createStepContent(),
           ),
-
-          // if (type2 == StepType.end)
-          //   Container(width: 2, height: 50, color: AppColors.lightNavy),
-          // if (type2 == StepType.end)
-          //   const Icon(Icons.location_pin, color: AppColors.red, size: 20),
-          // if (type != StepType.end && type2 != StepType.end)
-          //   const Icon(Icons.circle, color: AppColors.lightNavy, size: 20),
-          // if (type != StepType.end && type2 != StepType.end)
-          //   Container(width: 2, height: 50, color: AppColors.lightNavy),
         ],
       ),
     );
-    // const SizedBox(width: 10),
-
-    // // STEP CONTENT
-    // Expanded(
-    //   child: _createStepContent(),
-    // ),
   }
 
   Widget _createStepContent() {
@@ -115,7 +100,7 @@ class StepDetails extends StatelessWidget {
           child: Row(
             children: [
               const Icon(Icons.directions_walk, color: AppColors.red, size: 25),
-              Text('Walk $duration ($distance)',
+              Text('Walk $duration min (${distance}m)',
                   style: AppTextStyles.label5
                       .copyWith(color: AppColors.lightNavy)),
             ],
@@ -159,7 +144,6 @@ class StepDetails extends StatelessWidget {
           // LOCATION OF THE BUS/JEEPNEY STOP
           Row(
             children: [
-              // const Icon(Icons.directions_bus, color: AppColors.red, size: 25),
               Image.asset(
                 'assets/icons/jeepney icon-small.png',
                 width: 20,
@@ -194,7 +178,7 @@ class StepDetails extends StatelessWidget {
                 Text('Take $jeepCode Jeepney',
                     style: AppTextStyles.label5.copyWith(
                         color: AppColors.black, fontWeight: FontWeight.bold)),
-                Text(fare!,
+                Text('₱${fare!}',
                     style: AppTextStyles.label5.copyWith(
                         color: AppColors.black, fontWeight: FontWeight.bold)),
               ],
