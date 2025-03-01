@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 import 'package:provider/provider.dart';
 
 import 'package:tultul/pages/home_page.dart';
@@ -16,7 +15,7 @@ Future<void> main() async {
   } catch (e) {
     debugPrint(e.toString());
   }
-  
+
   runApp(
     MultiProvider(
       providers: [
