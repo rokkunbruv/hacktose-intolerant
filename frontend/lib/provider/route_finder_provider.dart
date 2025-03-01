@@ -10,6 +10,8 @@ import 'package:tultul/constants/passenger_types.dart';
 import 'package:tultul/constants/travel_modes.dart';
 import 'package:tultul/styles/map/marker_styles.dart';
 import 'package:tultul/utils/route/calculate_fare.dart';
+import 'package:tultul/utils/route/filter_duplicate_routes.dart';
+import 'package:tultul/utils/route/sort_routes_by_total_fare.dart';
 
 class RouteFinderProvider extends ChangeNotifier {
   // controllers for text fields.
@@ -109,8 +111,12 @@ class RouteFinderProvider extends ChangeNotifier {
         originController.text, 
         destinationController.text
       );
+      routes = filterDuplicateRoutes(routes);
 
       updateFares();
+
+      // sort routes once fares have been initialized
+      sortRoutesByTotalFare(routes);
 
       notifyListeners();
     } catch (e) {
