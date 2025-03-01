@@ -43,8 +43,6 @@ class CommuteRoute {
 
     departureTime = TimeOfDay(hour: now.hour, minute: now.minute);
     arrivalTime = TimeOfDay(hour: departureDateTime.hour, minute: departureDateTime.minute);
-
-    debugPrint(departureTime.toString() + arrivalTime.toString());
   }
 
   // getters
