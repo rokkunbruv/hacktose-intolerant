@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/gestures.dart';
+import 'package:tultul/pages/route/search_location_page.dart';
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
@@ -14,7 +16,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  void navigateToSearchDestinationPage() {}
+  void navigateToSearchDestinationPage() {
+    Navigator.of(context).push(MaterialPageRoute(builder: 
+    (context) => SearchLocationPage()));
+  }
 
   @override
   void initState() {
@@ -106,14 +111,13 @@ class _HomePageState extends State<HomePage> {
                               Expanded(
                                 child: TextField(
                                   decoration: InputDecoration(
-                                    labelText: 'Where to?',
+                                    hintText: 'Where to?',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 8,
-                                    ),
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    floatingLabelBehavior: FloatingLabelBehavior.never,
                                   ),
                                   readOnly: true,
                                   onTap: navigateToSearchDestinationPage,
