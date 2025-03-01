@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,6 +10,7 @@ import 'package:tultul/classes/route/jeepney_ride.dart';
 import 'package:tultul/constants/step_types.dart';
 import 'package:tultul/constants/travel_modes.dart';
 import 'package:tultul/main.dart';
+import 'package:tultul/provider/step_provider.dart';
 import 'package:tultul/styles/widget/box_shadow_style.dart';
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/widgets/generic/draggable_container.dart';
@@ -20,66 +22,71 @@ import 'package:tultul/pages/route/follow_route_page.dart';
 import 'package:tultul/widgets/route/route_steps.dart';
 import 'package:tultul/constants/step_types.dart';
 
-class StepItem extends StatefulWidget {
-  final StepType type1;
-  final StepType? type2;
+class StepItem extends StatelessWidget {
+  final StepType type;
   final String? location;
   final String? jeepCode;
   final String? fare;
   final String? dropOff;
   final String? duration;
   final String? distance;
-  final IconData? icon;
 
   const StepItem({
     super.key,
-    required this.type1,
-    this.type2,
+    required this.type,
     this.location,
     this.jeepCode,
     this.fare,
     this.dropOff,
     this.duration,
     this.distance,
-    this.icon,
   });
 
   @override
-  State<StepItem> createState() => _StepItemState();
-}
-
-class _StepItemState extends State<StepItem> {
-  List<Widget> stepContainers = [];
-
-  @override
-  void initState() {
-    super.initState();
-    createStepContainer();
+  Widget build(BuildContext context) {
+    return Expanded(child: _generateContainer());
   }
 
-  void createStepContainer() {
-    stepContainers = [generateContainer()];
-  }
-
-  Widget generateContainer() {
-    switch (widget.type1) {
+  Widget _generateContainer() {
+    switch (type) {
       case StepType.walk:
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 25),
-          child: Row(
-            children: [
-              const Icon(Icons.directions_walk, color: AppColors.red, size: 25),
-              Text('Walk to $widget.location',
-                  style: AppTextStyles.label3.copyWith(color: AppColors.black)),
-              Text('$widget.duration',
-                  style: AppTextStyles.label5
-                      .copyWith(color: AppColors.lightNavy)),
-            ],
-          ),
-        );
+        return _createWalkContainer();
       case StepType.transport:
         return _createTransportContainer();
+      // case FollowType.dropOff:
+      //   return _createDropOffContainer();
+      default:
+        return SizedBox();
     }
+  }
+
+  Widget _createWalkContainer() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          createBoxShadow(),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Icon(Icons.directions_walk, color: AppColors.red, size: 20),
+              Text('Walk to $location',
+                  style: AppTextStyles.label3.copyWith(color: AppColors.black)),
+            ],
+          ),
+          Text('$duration',
+              style: AppTextStyles.label5.copyWith(color: AppColors.lightNavy)),
+        ],
+      ),
+    );
   }
 
   Widget _createTransportContainer() {
@@ -99,22 +106,119 @@ class _StepItemState extends State<StepItem> {
             'assets/icons/jeepney icon-small.png',
             width: 20,
             height: 20,
+            color: AppColors.gray,
           ),
-          Row(
+          const SizedBox(
+            width: 10,
+          ),
+          Wrap(
             children: [
-              Text(
-                'Ride',
-                style: AppTextStyles.label,
-              )
+              Row(
+                children: [
+                  Text(
+                    'Ride',
+                    style:
+                        AppTextStyles.label3.copyWith(color: AppColors.black),
+                  ),
+                  const SizedBox(
+                    width: 5.5,
+                  ),
+                  Text(
+                    '$jeepCode',
+                    style:
+                        AppTextStyles.label3.copyWith(color: AppColors.saffron),
+                  )
+                ],
+              ),
             ],
+          ),
+          const SizedBox(
+            width: 110,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text('₱$fare',
+                    style:
+                        AppTextStyles.label5.copyWith(color: AppColors.black)),
+                Text('From $location',
+                    style:
+                        AppTextStyles.label5.copyWith(color: AppColors.black)),
+              ],
+            ),
           )
         ],
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
+  Widget _createDropOffContainer() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          createBoxShadow(),
+        ],
+      ),
+      child: Row(
+        children: [
+          Image.asset(
+            'assets/icons/jeepney icon-small.png',
+            width: 20,
+            height: 20,
+            color: AppColors.gray,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Column(
+            children: [
+              Row(
+                children: [
+                  Text('Get off in',
+                      style: AppTextStyles.label3
+                          .copyWith(color: AppColors.black)),
+                  Text('$duration',
+                      style:
+                          AppTextStyles.label3.copyWith(color: AppColors.red)),
+                ],
+              ),
+              Text('Get off at $location'),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
+
+// class _StepItemState extends State<StepItem> {
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   Future.microtask(() {
+  //     Provider.of<StepProvider>(context, listen: false).addStepContainer(
+  //       generateContainer(),
+  //     );
+  //   });
+  // }
+
+  
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Expanded(
+//       child: generateContainer(),
+//     );
+//   }
+// }

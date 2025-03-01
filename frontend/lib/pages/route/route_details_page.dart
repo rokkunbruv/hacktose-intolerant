@@ -18,6 +18,7 @@ import 'package:tultul/provider/route_finder_provider.dart';
 import 'package:tultul/utils/route/decode_polyline.dart';
 import 'package:tultul/pages/route/follow_route_page.dart';
 import 'package:tultul/widgets/route/route_steps.dart';
+import 'package:tultul/widgets/steps/step_item.dart';
 
 class RouteDetailsPage extends StatefulWidget {
   final CommuteRoute route;
@@ -37,8 +38,23 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
   }
 
   void navigateFollowRoutePage() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => FollowRoutePage()));
+    List<Widget> stepItems =
+        widget.route.path.legs[0].steps.asMap().entries.map((entry) {
+      DirectionStep step = entry.value;
+      StepType type =
+          (step.travelMode == transit) ? StepType.transport : StepType.walk;
+
+      return StepItem(
+        type: type,
+        location: step.origin,
+        jeepCode: step.jeepneyCode,
+        fare: step.jeepneyFare.toStringAsFixed(2),
+        dropOff: step.destination,
+        distance: step.distance.toStringAsFixed(2),
+      );
+    }).toList();
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => FollowRoutePage(stepItems: stepItems)));
   }
 
   @override
