@@ -241,17 +241,21 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                   ),
                 ),
               ),
-              Expanded(
-                child: Stack(
-                  children: <Widget>[
-                    // MAP VIEW
-                    MapView(
-                      onMapTap: (latLng) {
-                        routeProvider.setMarker(latLng);
-                      },
-                      markers: routeProvider.getMarkers(),
-                      polylines: routeProvider.getSelectedRoutePolylines(),
-                    ),
+            ),
+          ),
+            Expanded(
+            child: Stack(
+              children: <Widget>[
+
+              // MAP VIEW
+              MapView(
+                onMapTap: (latLng) {
+                routeProvider.setMarker(latLng);
+                },
+                markers: routeProvider.getMarkers(),
+                polylines: (routeProvider.selectedRoute != null) ?
+                  {routeProvider.selectedRoute!.path.polyline} : null,
+              ),
 
                     // SUGGESTED ROUTES
                     DraggableContainer(
@@ -297,34 +301,26 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                               ),
                             ),
 
-                            // ROUTES OPTIONS
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 32),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  SizedBox(
-                                    child: DropdownSelectButton(
-                                      items: _passengerTypes,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  SizedBox(
-                                    child: DropdownSelectButton(
-                                      items: _jeepneyTypes,
-                                    ),
-                                  ),
-                                ],
+                      // ROUTES OPTIONS
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(
+                              child: DropdownSelectButton(
+                                items: _passengerTypes,
+                                onChanged: (type) =>
+                                  routeProvider.setPassengerType(type)
                               ),
                             ),
-                            SizedBox(height: 32),
-
-                            // ROUTE ITEMS
-                            RouteList(
-                              routes: routeProvider.routes,
-                              onRouteSelected: (route) {
-                                routeProvider.selectRoute(route);
-                              },
+                            SizedBox(width: 8),
+                            SizedBox(
+                              child: DropdownSelectButton(
+                                items: _jeepneyTypes,
+                                onChanged: (type) =>
+                                  routeProvider.setJeepneyType(type)
+                              ),
                             ),
                           ],
                         )

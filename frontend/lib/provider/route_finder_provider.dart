@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:tultul/api/google_maps_api/directions_api.dart';
+import 'package:tultul/api/google_maps_api/routes.dart';
+import 'package:tultul/api/google_maps_api/places_api.dart';
 import 'package:tultul/classes/route/commute_route.dart';
+import 'package:tultul/classes/direction/direction_step.dart';
+import 'package:tultul/classes/location/location.dart';
 import 'package:tultul/constants/jeepney_types.dart';
 import 'package:tultul/constants/passenger_types.dart';
+import 'package:tultul/constants/travel_modes.dart';
 import 'package:tultul/styles/map/marker_styles.dart';
-import 'package:tultul/utils/route/calculate_route_details.dart';
+import 'package:tultul/utils/route/calculate_fare.dart';
+import 'package:tultul/utils/route/filter_duplicate_routes.dart';
+import 'package:tultul/utils/route/sort_routes_by_total_fare.dart';
 import 'package:tultul/utils/route/decode_polyline.dart';
-import 'package:tultul/classes/location/location.dart';
-import 'package:tultul/api/google_maps_api/places_api.dart';
 
 class RouteFinderProvider extends ChangeNotifier {
   // controllers for text fields.
@@ -27,26 +31,23 @@ class RouteFinderProvider extends ChangeNotifier {
   // directions routes and selected route.
   List<CommuteRoute> routes = [];
 
-  // fare calculation results.
-  String fareBreakdown = '';
-  double totalFare = 0.0;
-
   // dropdown selections.
-  String passengerType = regular;
-  String jeepneyType = traditional;
+  String selectedPassengerType = regular;
+  String selectedJeepneyType = traditional;
 
   CommuteRoute? selectedRoute;
-  Map<CommuteRoute, Set<Polyline>> routePolylines = {};
 
   void setPassengerType(String type) {
-    passengerType = type;
+    selectedPassengerType = type;
 
+    updateFares();
     notifyListeners();
   }
 
   void setJeepneyType(String type) {
-    jeepneyType = type;
+    selectedJeepneyType = type;
 
+    updateFares();
     notifyListeners();
   }
 
@@ -97,6 +98,24 @@ class RouteFinderProvider extends ChangeNotifier {
     return markers;
   }
 
+  // update fare calculations
+  void updateFares() {
+    for (CommuteRoute route in routes) {
+      double totalFare = 0;
+      
+      for (DirectionStep step in route.path.legs[0].steps) {
+        if (step.travelMode == transit) {
+          step.jeepneyFare = calculateFare(step.distance, selectedJeepneyType, selectedPassengerType);
+          totalFare += step.jeepneyFare!;
+        } else {
+          step.jeepneyFare = null;
+        }
+      }
+
+      route.totalFare = totalFare;
+    }
+  }
+
   /// fetch routes using the directions api.
   Future<void> findRoutes() async {
     if (originController.text.isEmpty || destinationController.text.isEmpty) {
@@ -104,20 +123,16 @@ class RouteFinderProvider extends ChangeNotifier {
     }
 
     try {
-      routes = await DirectionsApi.getDirections(
+      routes = await RoutesApi.getDirections(
         originController.text, 
         destinationController.text
       );
+      routes = filterDuplicateRoutes(routes);
 
-      for (CommuteRoute route in routes) {
-        routePolylines[route] = decodePolyline(route.path.overviewPolyline);
-        
-        RouteDetails details = calculateRouteDetails(route, passengerType, jeepneyType);
+      updateFares();
 
-        route.setTotalFare(details.totalFare);
-        route.setTotalDistance(details.totalDistance);
-        route.rides = details.rides;
-      }
+      // sort routes once fares have been initialized
+      sortRoutesByTotalFare(routes);
 
       notifyListeners();
     } catch (e) {
@@ -132,11 +147,6 @@ class RouteFinderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// get polylines for the selected route
-  Set<Polyline> getSelectedRoutePolylines() {
-    return routePolylines[selectedRoute] ?? {};
-  }
-
   /// clears all markers, routes, and UI fields.
   void clearAll() {
     origin = null;
@@ -147,10 +157,7 @@ class RouteFinderProvider extends ChangeNotifier {
     destinationController.clear();
     routes = [];
     selectedRoute = null;
-    fareBreakdown = '';
-    totalFare = 0;
     isSettingOrigin = true;
-    routePolylines.clear();
     
     notifyListeners();
   }

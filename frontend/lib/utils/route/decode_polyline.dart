@@ -4,7 +4,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:tultul/styles/map/polyline_styles.dart';
 
 /// decode polyline for a specific route
-Set<Polyline> decodePolyline(String encodedPolyline) {
+Polyline decodePolyline(String encodedPolyline) {
   PolylinePoints polylinePoints = PolylinePoints();
   List<PointLatLng> decodedPoints =
       polylinePoints.decodePolyline(encodedPolyline);
@@ -13,12 +13,12 @@ Set<Polyline> decodePolyline(String encodedPolyline) {
       .map((point) => LatLng(point.latitude, point.longitude))
       .toList();
 
-  if (polylineCoordinates.isEmpty) return {};
+  if (polylineCoordinates.isEmpty) {
+    throw('Polyline cannot be decoded.');
+  }
 
-  return {
-    createPolyline(
-      'route',
-      polylineCoordinates,
-    ),
-  };
+  return createPolyline(
+    'route',
+    polylineCoordinates,
+  );
 }
