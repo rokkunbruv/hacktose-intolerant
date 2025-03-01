@@ -43,6 +43,7 @@ def get_routes(request):
             }
         },
         "travelMode": "TRANSIT",
+        "computeAlternativeRoutes": True,
     }
 
     print(origin_coords, destination_coords)
