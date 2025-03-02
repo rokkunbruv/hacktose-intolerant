@@ -102,27 +102,27 @@ Hackathon Event managed by UPCSG.
 ### Built With
 
 <div align="center">
-	<table>
-		<tr>
-      <td>
+	<table style="border: none; border-collapse: collapse;">
+		<tr style="border: none;">
+      <td style="border: none;">
         <div align="center">
           <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter"/>
           <div>Flutter</div>
         <div>
       </td>
-			<td>
+			<td style="border: none;">
         <div align="center">
           <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django"/>
         </div>
         <div>Django</div>
       </td>
-      <td>
+      <td style="border: none;">
         <div align="center">
           <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS"/>
         </div>
         <div>AWS (RDS & EC2)</div>
       </td>
-			<td>
+			<td style="border: none;">
         <div align="center">
           <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL" />
           <div>PostgreSQL</div>
