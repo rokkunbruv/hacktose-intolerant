@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 
 import 'package:tultul/widgets/generic/draggable_container.dart';
-// import 'package:tultul/styles/widget/box_shadow_style.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 
 class JeepneyRouteMap extends StatefulWidget {
-  final String jsonFile; // Pass JSON file name
+  final String jsonFile;
 
   const JeepneyRouteMap({super.key, required this.jsonFile});
 
@@ -29,48 +28,83 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
   }
 
   Future<void> loadRoutes() async {
-    String jsonString =
-        await rootBundle.loadString('assets/coordinates/${widget.jsonFile}');
-    final jsonData = jsonDecode(jsonString);
+    final String apiUrl =
+        "http://3.106.113.161:8080/jeepney_routes/${widget.jsonFile}"; 
 
-    Set<Polyline> polylines = {};
-    List<String> routeNames = [];
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
 
-    // Define colors and styles for overlapping effect
-    List<Color> colors = [
-      AppColors.saffron.withOpacity(0.7),
-      Colors.blue.withOpacity(0.7)
-    ];
-    List<int> zIndices = [1, 2]; // Blue route drawn on top
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
 
-    for (int i = 0; i < jsonData['routes'].length; i++) {
-      var route = jsonData['routes'][i];
+        Set<Polyline> polylines = {};
+        List<String> routeNames = [];
+        List<LatLng> allPoints = [];
 
-      List<LatLng> path = (route['path'] as List)
-          .map((point) => LatLng(point[0], point[1]))
-          .toList();
+        List<Color> colors = [
+          AppColors.saffron.withOpacity(0.7),
+          Colors.blue.withOpacity(0.7)
+        ];
 
-      print(
-          "Loading Route: ${route['name']} - ${path.length} points"); // Debugging
+        for (int i = 0; i < jsonData['routes'].length; i++) {
+          var route = jsonData['routes'][i];
 
-      polylines.add(
-        Polyline(
-          polylineId: PolylineId(
-              '${route['name']}-${route['label']}'), // Ensures uniqueness
-          points: path,
-          color: colors[i % colors.length],
-          width: 8, // Set a uniform thickness
-          zIndex: i, // Ensures routes are drawn in order
-        ),
-      );
+          List<LatLng> path = (route['path'] as List)
+              .map((point) => LatLng(point[0], point[1]))
+              .toList();
 
-      routeNames.add(route['name']);
+          allPoints.addAll(path);
+
+          polylines.add(
+            Polyline(
+              polylineId: PolylineId('${route['name']}-${route['label']}'),
+              points: path,
+              color: colors[i % colors.length],
+              width: 8,
+              zIndex: i,
+            ),
+          );
+
+          routeNames.add(route['name']);
+        }
+
+        setState(() {
+          _polylines = polylines;
+          _routeNames = routeNames;
+        });
+
+        if (allPoints.isNotEmpty) {
+          _calculateBounds(allPoints);
+        }
+      } else {
+        print("❌ Error fetching route: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("❌ Error loading route from API: $e");
+    }
+  }
+
+  void _calculateBounds(List<LatLng> routePoints) {
+    double minLat = routePoints.first.latitude, maxLat = routePoints.first.latitude;
+    double minLng = routePoints.first.longitude, maxLng = routePoints.first.longitude;
+
+    for (LatLng point in routePoints) {
+      if (point.latitude < minLat) minLat = point.latitude;
+      if (point.latitude > maxLat) maxLat = point.latitude;
+      if (point.longitude < minLng) minLng = point.longitude;
+      if (point.longitude > maxLng) maxLng = point.longitude;
     }
 
-    setState(() {
-      _polylines = polylines;
-      _routeNames = routeNames;
-    });
+    LatLngBounds bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
+    );
+
+    moveCameraToBounds(bounds);
+  }
+
+  void moveCameraToBounds(LatLngBounds bounds) {
+    _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
   }
 
   @override
@@ -111,7 +145,7 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
                         Icon(Icons.arrow_back_ios),
                         const SizedBox(width: 120),
                         Text(
-                          '01B',
+                          widget.jsonFile, 
                           style: AppTextStyles.label1
                               .copyWith(color: AppColors.red),
                         ),
