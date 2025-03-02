@@ -11,6 +11,7 @@ import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/provider/search_locations_provider.dart';
 import 'package:tultul/utils/location/request_location_services.dart';
 import 'package:tultul/utils/location/check_location_services.dart';
+import 'package:tultul/utils/navigation/navigator_key.dart';
 
 Future<void> main() async {
   try {
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Hacktose Intolerant App',
       theme: ThemeData(

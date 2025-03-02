@@ -16,10 +16,12 @@ import 'package:tultul/pages/route/search_routes_page.dart';
 
 class SearchLocationPage extends StatefulWidget {
   final bool? fromHome; // true if pushed by home page
+  final bool? isOrigin; // true if selecting origin location, false if selecting destination
   
   const SearchLocationPage({
     super.key,
     this.fromHome,
+    this.isOrigin,
   });
 
   @override
@@ -59,18 +61,24 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
       }
 
       if (locationProvider.selectedLocation != null) {
-      routeFinderProvider.setDestination(locationProvider.selectedLocation!);
-    }
+        routeFinderProvider.setDestination(locationProvider.selectedLocation!);
+      }
     } else {
-      // enter logic here when this page is pushed from search routes page
+      // if page is pushed from search routes page
+      if (locationProvider.selectedLocation != null) {
+        if (widget.isOrigin == true) {
+          routeFinderProvider.setOrigin(locationProvider.selectedLocation!);
+        } else {
+          routeFinderProvider.setDestination(locationProvider.selectedLocation!);
+        }
+      }
     }
 
     locationProvider.resetSearch();
     
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) =>
-          SearchRoutesPage(),
+        builder: (context) => SearchRoutesPage(),
       )
     );
   }
@@ -117,7 +125,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                                 });
                               },
                               decoration: InputDecoration(
-                                labelText: 'Where to?',
+                                labelText: widget.isOrigin == true ? 'Start at?' : 'Where to?',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -139,29 +147,113 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
               ),
             ),
           ),
-          body: Container(
-            color: AppColors.white,
-            child: provider.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : provider.locations.isEmpty && provider.locationController.text.isNotEmpty
-                ? Center(
-                    child: Text(
-                      'No locations found',
-                      style: TextStyle(
-                        color: AppColors.black,
-                        fontSize: 16,
+          body: Column(
+            children: [
+              // Use current location button
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: Colors.white,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () {
+                      if (positionProvider.currentLocation != null) {
+                        provider.selectLocation(positionProvider.currentLocation!);
+                        navigateToSearchRoutesPage();
+                      }
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.my_location_outlined,
+                            color: Colors.blue[700],
+                            size: 24,
+                          ),
+                          SizedBox(width: 16),
+                          Text(
+                            'Use Current Location',
+                            style: TextStyle(
+                              color: Colors.blue[700],
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  )
-                : LocationsList(
-                    locations: provider.locations,
-                    onLocationSelected: (location) {
-                      provider.selectLocation(location);
-                      navigateToSearchRoutesPage();
-                    },
                   ),
+                ),
+              ),
+              Divider(height: 1, color: Colors.grey[300]),
+              // Search results
+              Expanded(
+                child: Container(
+                  color: Colors.grey[50],
+                  child: provider.isLoading
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[700]!),
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Searching for locations...',
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : provider.locations.isEmpty && provider.locationController.text.isNotEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: Colors.grey[400],
+                                size: 48,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'Connection timed out',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Please try again',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : LocationsList(
+                          locations: provider.locations,
+                          onLocationSelected: (location) {
+                            provider.selectLocation(location);
+                            navigateToSearchRoutesPage();
+                          },
+                        ),
+                ),
+              ),
+            ],
           ),
         );
       },
