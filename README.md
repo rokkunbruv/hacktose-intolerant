@@ -74,7 +74,7 @@
 
 <img src="assets/tultul-app-name.svg" alt="Tultul" />
 
-Tultul is a public transportation app that assists users in commuting via jeepneys in Cebu. Tultul is designed for resients who regularly commute or are new to commuting through jeepneys in Cebu.
+Tultul is a public transportation app that assists users in commuting via jeepneys in Cebu. Tultul is designed for residents who regularly commute or are new to commuting through jeepneys in Cebu.
 
 
 
@@ -85,59 +85,83 @@ Hackathon Event managed by UPCSG.
 
 ### Key Features
 
-* **Search Available Routes**: 
-  * Tultul suggests available routes given an origin location and destination location with their estimated arrival times, total distances covered, total fares, and the jeepneys covered.
-  * Users can select a route item to view a step-by-step description in commuting from their origin location to their destination location
-* **Route Follower**:
-  * Tultul guides users through the flow of travel step-by-step once they have selected a route.
-* **Jeepney Tracker**:
-  * Users can track the current locations of a specific jeepney code.
-* **View Jeepney Routes**:
-  * Users can view the path coverage of each jeepney.
-* **Voice Assistant**:
-  * Tultul offers a voice assistant that suggests travel instructions to persons with disabilities (PWD).
+* ***Search Available Routes***:
+  * **Suggested Routes**: Tultul suggests available routes given an origin and destination locations.
+  * **Route Details**: Users can view the total distance covered, total fare, and estimated time of arrival for each suggested route.
+  * **Filter by Fare**: Suggested routes are filtered by the lowest fare, ensuring that users can easily see the cheapest route option.
+  * **View Fare Changes**: Fares are automatically calculated based on the jeepney type *(traditional or modern)* and the passenger type *(regular, student, senior citizen, PWD)*.
+  * **Real-Time Position Tracking**: Users can set their current position as their origin/destination location.
+* ***Jeepney Tracker***
+  * **Real-Time Tracking**: Tultul tracks the current positions of the jeepneys in real-time.
+  * **Map Tracking**: Users can view the current positions of the jeepneys on the map view.
+  * **Tracking for each Jeepney Code**: Jeepneys of a given jeepney code are displayed to the user.
+* ***Route Follower***
+  * **Step-by-Step Details**: Users can view the step-by-step instructions on navigating along a given route.
+  * **Progress Tracking**: Users can track their progress in following through the route.
+  * **Map Visualization**: Users can view which path they should take on the map view.
+* ***View Jeepney Routes***
+  * **Display Route Coverage**: Users can view the whole route coverage of a given jeepney code on the map view.
+  * **Select Jeepney Code**: Tultul provides a set of jeepney codes whose route coverage can be displayed to the users.
+* ***Voice Assistant***
+  * **AI-Powered Route Recommendations**: Tultul's voice assistant can suggest a route given specified landmarks.
+  * **Accessibility**: Tultul's voice assistant can assist persons with disabilities in suggesting a route.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
 
-<div align="center">
-	<table style="border: none; border-collapse: collapse;">
-		<tr style="border: none;">
-      <td style="border: none;">
-        <div align="center">
-          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter"/>
-          <div>Flutter</div>
-        <div>
-      </td>
-			<td style="border: none;">
-        <div align="center">
-          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django"/>
-        </div>
-        <div>Django</div>
-      </td>
-      <td style="border: none;">
-        <div align="center">
-          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS"/>
-        </div>
-        <div>AWS (RDS & EC2)</div>
-      </td>
-			<td style="border: none;">
-        <div align="center">
-          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL" />
-          <div>PostgreSQL</div>
-        </div>
-      </td>
-		</tr>
-	</table>
+<div align="center" style="display:grid; grid; grid-template-columns: repeat(3, 1fr); row-gap: 20px; padding: 0 64px; align-items: center;">
+  <a href="https://flutter.dev" style="text-decoration: none;">
+    <div align="center">
+      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter" />
+      <div>Flutter</div>
+    </div>
+  </a>
+  <a href="https://www.djangoproject.com/" style="text-decoration: none;">
+    <div align="center">
+      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django" />
+      <div>Django</div>
+    </div>
+  </a>
+  <a href="https://aws.amazon.com/" style="text-decoration: none;">
+    <div align="center">
+      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS" />
+      <div>AWS</div>
+    </div>
+  </a>
+  <a href="https://www.postgresql.org/" style="text-decoration: none;">
+    <div align="center">
+      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL" />
+      <div>PostgreSQL</div>
+    </div>
+  </a>
+  <a href="https://developers.google.com/maps" style="text-decoration: none;">
+    <div align="center">
+      <img width="39" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps Platform" title="Google Maps Platform" />
+      <div>Google Maps Platform</div>
+    </div>
+  </a>
+  <a href="https://fastapi.tiangolo.com/" style="text-decoration: none;">
+    <div align="center">
+      <img width="50" src="https://icon.icepanel.io/Technology/svg/FastAPI.svg" alt="FastAPI" title="FastAPI" />
+      <div>FastAPI</div>
+    </div>
+  </a>
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- GETTING STARTED -->
-## Getting Started
+<!-- DOWNLOADS -->
+## Installation
 
-The following steps below walk you through the process of running the app locally:
+You can download the versions of the app [here]().
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- INSTALLATION GUIDE -->
+## Set Up for Development
+
+The following steps below walk you through the process of running the app locally on your computer:
 
 ### Prerequisites
 
