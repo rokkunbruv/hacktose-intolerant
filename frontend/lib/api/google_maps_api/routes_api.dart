@@ -11,7 +11,7 @@ class RoutesApi {
 
   static final Dio _dio = Dio();
 
-  static Future<List<CommuteRoute>> getDirections(String origin, String destination) async {
+  static Future<List<CommuteRoute>> getDirections(String origin, String destination) async {    
     final response = await _dio.get(
       _baseUrl,
       queryParameters: {

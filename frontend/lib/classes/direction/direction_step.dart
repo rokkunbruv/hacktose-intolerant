@@ -1,5 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart' as google_polyline;
+import 'package:geolocator/geolocator.dart';
 
 import 'package:tultul/utils/route/decode_polyline.dart';
 
@@ -27,8 +28,17 @@ class DirectionStep {
   });
 
   factory DirectionStep.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> originJson = json['startLocation']['latLng'];
+    Map<String, dynamic> destinationJson = json['endLocation']['latLng'];
+    
     String travelMode = json['travelMode'];
-    double distance = json['distanceMeters'].toDouble();
+    double distance = (json['distanceMeters'] != null) 
+    ? json['distanceMeters'].toDouble() : Geolocator.distanceBetween(
+      originJson['latitude'].toDouble(),
+      originJson['longitude'].toDouble(),
+      destinationJson['latitude'].toDouble(),
+      destinationJson['longitude'].toDouble(),
+    );
     int duration = int.parse(json['staticDuration'].replaceAll(RegExp(r'[^0-9]'), ''));
     Polyline polyline = decodePolyline(json['polyline']['encodedPolyline']);
     String? jeepneyName;
@@ -40,9 +50,7 @@ class DirectionStep {
       jeepneyName = json['transitDetails']['transitLine']['name'];
       jeepneyCode = json['transitDetails']['transitLine']['nameShort'];
 
-      Map<String, dynamic> originJson = json['startLocation']['latLng'];
       LatLng originCoords = LatLng(originJson['latitude'].toDouble(), originJson['longitude'].toDouble());
-      Map<String, dynamic> destinationJson = json['endLocation']['latLng'];
       LatLng destinationCoords = LatLng(destinationJson['latitude'].toDouble(), destinationJson['longitude'].toDouble());
       
       // convert coordinates to locations using places api

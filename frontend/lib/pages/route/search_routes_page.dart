@@ -166,7 +166,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
+                                        color: Colors.black.withAlpha(16),
                                         blurRadius: 4,
                                         offset: Offset(0, 2),
                                       ),
@@ -208,8 +208,6 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                                       if (routeProvider.origin != null && routeProvider.destination != null) {
                                         routeProvider.findRoutes();
                                       }
-                                      
-                                      routeProvider.notifyListeners();
                                     },
                                   ),
                                 ),
@@ -305,6 +303,15 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                                 ],
                               ),
                             ),
+                            SizedBox(height: 32),
+
+                            // ROUTES
+                            RouteList(
+                              routes: routeProvider.routes,
+                              onRouteSelected: (route) {
+                                routeProvider.selectRoute(route);
+                              },
+                            )
                           ],
                         ),
                       ),

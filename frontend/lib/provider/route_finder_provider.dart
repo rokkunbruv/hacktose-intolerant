@@ -140,8 +140,8 @@ class RouteFinderProvider extends ChangeNotifier {
 
     try {
       routes = await RoutesApi.getDirections(
-        originController.text, 
-        destinationController.text
+        '${origin!.latitude},${origin!.longitude}', 
+        '${destination!.latitude},${destination!.longitude}', 
       );
       routes = filterDuplicateRoutes(routes);
 
