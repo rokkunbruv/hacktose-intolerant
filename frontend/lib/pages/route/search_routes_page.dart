@@ -18,6 +18,7 @@ import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/widgets/generic/dropdown_select_button.dart';
 import 'package:tultul/widgets/generic/draggable_container.dart';
 import 'package:tultul/widgets/route/route_list.dart';
+import 'package:tultul/pages/route/search_location_page.dart';
 
 class SearchRoutesPage extends StatefulWidget {
   const SearchRoutesPage({
@@ -32,65 +33,23 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
   final List<String> _passengerTypes = [regular, student, seniorCitizen, pwd];
   final List<String> _jeepneyTypes = [traditional, modern];
 
-  Timer? _originDebounce;
-  Timer? _destinationDebounce;
-  List<Location> originSuggestions = [];
-  List<Location> destinationSuggestions = [];
-  bool isLoadingOrigin = false;
-  bool isLoadingDestination = false;
-
   @override
   void initState() {
     super.initState();
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final routeFinderProvider = Provider.of<RouteFinderProvider>(context, listen: false);
+      final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+
+      // Set default origin to current location if available
+      if (routeFinderProvider.origin == null && positionProvider.currentLocation != null) {
+        routeFinderProvider.setOrigin(positionProvider.currentLocation!);
+      }
       
       if (routeFinderProvider.origin != null && routeFinderProvider.destination != null) {
         routeFinderProvider.findRoutes();
       }
     });
-  }
-
-  Future<void> searchOriginLocations(String query) async {
-    if (_originDebounce?.isActive ?? false) _originDebounce?.cancel();
-    _originDebounce = Timer(const Duration(milliseconds: 500), () async {
-      setState(() {
-        isLoadingOrigin = true;
-      });
-      try {
-        originSuggestions = await PlacesApi.getLocations(query);
-      } catch (e) {
-        print('Error searching origin: $e');
-      }
-      setState(() {
-        isLoadingOrigin = false;
-      });
-    });
-  }
-
-  Future<void> searchDestinationLocations(String query) async {
-    if (_destinationDebounce?.isActive ?? false) _destinationDebounce?.cancel();
-    _destinationDebounce = Timer(const Duration(milliseconds: 500), () async {
-      setState(() {
-        isLoadingDestination = true;
-      });
-      try {
-        destinationSuggestions = await PlacesApi.getLocations(query);
-      } catch (e) {
-        debugPrint('Error searching destination: $e');
-      }
-      setState(() {
-        isLoadingDestination = false;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _originDebounce?.cancel();
-    _destinationDebounce?.cancel();
-    super.dispose();
   }
 
   @override
@@ -106,17 +65,20 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
             children: <Widget>[
               SizedBox(
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                   decoration: BoxDecoration(
                     color: AppColors.red,
                   ),
                   child: SafeArea(
+                    bottom: false,
                     child: Column(
                       children: <Widget>[
                         // BACK BUTTON
                         Align(
                           alignment: Alignment.centerLeft,
                           child: IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: BoxConstraints(),
                             icon: Icon(
                               Icons.chevron_left,
                               color: AppColors.white,
@@ -124,115 +86,134 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                             onPressed: () => Navigator.pop(context),
                           ),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: 0),
 
                         // SET ORIGIN AND DESTINATION FIELDS
                         Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: AppColors.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Column(
+                          child: Stack(
                             children: <Widget>[
-                              // Origin TextField
-                              TextField(
-                                controller: routeProvider.originController,
-                                onChanged: (value) {
-                                  searchOriginLocations(value);
-                                },
-                                decoration: InputDecoration(
-                                  labelText: 'Current Location',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  suffixIcon: routeProvider.originController.text.isNotEmpty
-                                    ? IconButton(
-                                        icon: Icon(Icons.close),
-                                        onPressed: () {
-                                          routeProvider.clearOrigin();
-                                          setState(() {
-                                            originSuggestions = [];
-                                          });
-                                        },
-                                      )
-                                    : null,
-                                ),
-                              ),
-                              if (isLoadingOrigin)
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              if (originSuggestions.isNotEmpty)
-                                Container(
-                                  constraints: BoxConstraints(maxHeight: 200),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: originSuggestions.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        title: Text(originSuggestions[index].address),
-                                        onTap: () {
-                                          routeProvider.setOrigin(originSuggestions[index]);
-                                          setState(() {
-                                            originSuggestions = [];
-                                          });
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
-                              SizedBox(height: 6),
+                              Padding(
+                                padding: EdgeInsets.only(right: 32), // Add padding to move fields left
+                                child: Column(
+                                  children: <Widget>[
+                                    // Origin TextField
+                                    TextField(
+                                      controller: routeProvider.originController,
+                                      readOnly: true,
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => SearchLocationPage(isOrigin: true),
+                                          ),
+                                        );
+                                      },
+                                      decoration: InputDecoration(
+                                        labelText: 'Current Location',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        prefixIcon: Icon(
+                                          Icons.location_on,
+                                          color: const Color.fromARGB(255, 219, 138, 15),
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 6),
 
-                              // Destination TextField
-                              TextField(
-                                controller: routeProvider.destinationController,
-                                onChanged: (value) {
-                                  searchDestinationLocations(value);
-                                },
-                                decoration: InputDecoration(
-                                  labelText: 'Where to?',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  suffixIcon: routeProvider.destinationController.text.isNotEmpty
-                                    ? IconButton(
-                                        icon: Icon(Icons.close),
-                                        onPressed: () {
-                                          routeProvider.clearDestination();
-                                          setState(() {
-                                            destinationSuggestions = [];
-                                          });
-                                        },
-                                      )
-                                    : null,
+                                    // Destination TextField
+                                    TextField(
+                                      controller: routeProvider.destinationController,
+                                      readOnly: true,
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => SearchLocationPage(isOrigin: false),
+                                          ),
+                                        );
+                                      },
+                                      decoration: InputDecoration(
+                                        labelText: 'Where to?',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        prefixIcon: Icon(
+                                          Icons.location_on,
+                                          color: AppColors.red,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              if (isLoadingDestination)
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              if (destinationSuggestions.isNotEmpty)
-                                Container(
-                                  constraints: BoxConstraints(maxHeight: 200),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: destinationSuggestions.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        title: Text(destinationSuggestions[index].address),
-                                        onTap: () {
-                                          routeProvider.setDestination(destinationSuggestions[index]);
-                                          setState(() {
-                                            destinationSuggestions = [];
-                                          });
-                                        },
-                                      );
+                              // Swap button positioned between fields
+                              Positioned(
+                                right: 0,
+                                top: 38, // Adjust this value to center between fields
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 0.8,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: IconButton(
+                                    icon: Transform.rotate(
+                                      angle: 4.71239, // 270 degrees in radians (3π/2)
+                                      child: Icon(
+                                        Icons.compare_arrows,
+                                        color: Colors.blue[700],
+                                        size: 24,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      // Swap origin and destination
+                                      final tempLocation = routeProvider.origin;
+                                      final tempAddress = routeProvider.originController.text;
+
+                                      routeProvider.origin = routeProvider.destination;
+                                      routeProvider.originController.text = routeProvider.destinationController.text;
+
+                                      routeProvider.destination = tempLocation;
+                                      routeProvider.destinationController.text = tempAddress;
+
+                                      // Update markers
+                                      if (routeProvider.origin != null) {
+                                        routeProvider.originMarker = createOriginMarker(routeProvider.origin!);
+                                      } else {
+                                        routeProvider.originMarker = null;
+                                      }
+
+                                      if (routeProvider.destination != null) {
+                                        routeProvider.destinationMarker = createDestinationMarker(routeProvider.destination!);
+                                      } else {
+                                        routeProvider.destinationMarker = null;
+                                      }
+
+                                      if (routeProvider.origin != null && routeProvider.destination != null) {
+                                        routeProvider.findRoutes();
+                                      }
+                                      
+                                      routeProvider.notifyListeners();
                                     },
                                   ),
                                 ),
+                              ),
                             ],
                           ),
                         ),

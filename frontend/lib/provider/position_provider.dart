@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 import 'package:tultul/api/google_maps_api/places_api.dart';
 import 'package:tultul/classes/location/location.dart';
 import 'package:tultul/utils/location/get_position.dart';
 import 'package:tultul/styles/map/marker_styles.dart';
+import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/utils/navigation/navigator_key.dart';
 
 class PositionProvider extends ChangeNotifier {
   LatLng? currentPosition;
@@ -32,6 +35,15 @@ class PositionProvider extends ChangeNotifier {
         currentPosition = LatLng(position.latitude, position.longitude);
         await _updateCurrentLocation();
         currentPositionMarker = createCurrentPositionMarker(currentPosition ?? LatLng(0, 0));
+
+        // Update the route finder provider with the current location
+        if (currentLocation != null && navigatorKey.currentContext != null) {
+          final routeFinderProvider = Provider.of<RouteFinderProvider>(
+            navigatorKey.currentContext!,
+            listen: false
+          );
+          routeFinderProvider.updateCurrentLocation(currentLocation!);
+        }
 
         notifyListeners();
       },

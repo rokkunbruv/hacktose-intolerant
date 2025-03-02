@@ -27,6 +27,7 @@ class RouteFinderProvider extends ChangeNotifier {
   Marker? originMarker;
   Marker? destinationMarker;
   bool isSettingOrigin = true;
+  bool _isOriginManuallySet = false;
 
   // directions routes and selected route.
   List<CommuteRoute> routes = [];
@@ -91,6 +92,7 @@ class RouteFinderProvider extends ChangeNotifier {
     origin = location.coordinates;
     originController.text = location.address;
     originMarker = createOriginMarker(location.coordinates);
+    _isOriginManuallySet = true;
     notifyListeners(); 
   }
 
@@ -165,6 +167,7 @@ class RouteFinderProvider extends ChangeNotifier {
     origin = null;
     originController.clear();
     originMarker = null;
+    _isOriginManuallySet = false;
     notifyListeners();
   }
 
@@ -186,7 +189,18 @@ class RouteFinderProvider extends ChangeNotifier {
     routes = [];
     selectedRoute = null;
     isSettingOrigin = true;
+    _isOriginManuallySet = false;
     
     notifyListeners();
+  }
+
+  // Update origin with current location if not manually set
+  void updateCurrentLocation(Location currentLocation) {
+    if (!_isOriginManuallySet && origin == null) {
+      origin = currentLocation.coordinates;
+      originController.text = currentLocation.address;
+      originMarker = createOriginMarker(currentLocation.coordinates);
+      notifyListeners();
+    }
   }
 }
