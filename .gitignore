@@ -6,6 +6,9 @@ backend/commuteProj/venv/
 
 ### FRONTEND
 
+# Assets
+frontend/Assets/coordinates
+
 # Miscellaneous
 *.class
 *.log

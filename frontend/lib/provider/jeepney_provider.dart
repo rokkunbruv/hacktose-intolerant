@@ -14,7 +14,12 @@ class JeepneyProvider with ChangeNotifier {
   Timer? _timer;
   LatLngBounds? routeBounds;
   final Random _random = Random();
+  bool _isCameraMovedByUser = false; // ✅ New flag to track user movement
+  bool _isRouteLoaded = false; // ✅ Prevents resetting after initial load
 
+  GoogleMapController? _mapController;
+
+  /// 🚀 Load route from API and process it
   Future<void> loadRoute(String routeName) async {
     debugPrint("🌍 Fetching route: $routeName from API");
 
@@ -25,7 +30,6 @@ class JeepneyProvider with ChangeNotifier {
         return;
       }
 
-      // ✅ Extract coordinates from fetched API data
       firstRoute = routes.isNotEmpty
           ? routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList()
           : [];
@@ -34,13 +38,38 @@ class JeepneyProvider with ChangeNotifier {
           : [];
       fullRoute = [...firstRoute, ...secondRoute];
 
-      _calculateBounds();
-      _initializeJeepneys(); // ✅ Initialize jeepneys in API-based routes
+      _calculateBounds(); 
+      _initializeJeepneys();
       notifyListeners();
+
+      // ✅ Move camera only once when the route is first loaded
+      if (!_isRouteLoaded && !_isCameraMovedByUser && routeBounds != null && _mapController != null) {
+        Future.delayed(Duration(milliseconds: 500), () {
+          _mapController!.animateCamera(CameraUpdate.newLatLngBounds(routeBounds!, 50));
+        });
+        _isRouteLoaded = true; // 🔹 Prevents future resets
+      }
+
       _startMoving();
     } catch (e) {
       debugPrint("❌ Error fetching route from API: $e");
     }
+  }
+
+  /// 🚀 Assign GoogleMapController instance
+  void setMapController(GoogleMapController controller) {
+    _mapController = controller;
+    if (routeBounds != null && !_isRouteLoaded && !_isCameraMovedByUser) {
+      Future.delayed(Duration(milliseconds: 500), () {
+        _mapController!.animateCamera(CameraUpdate.newLatLngBounds(routeBounds!, 50));
+      });
+      _isRouteLoaded = true;
+    }
+  }
+
+  /// 🚀 Track user interaction with the map
+  void onCameraMove() {
+    _isCameraMovedByUser = true; // ✅ Stops auto-resets after user moves the map
   }
 
   /// 🔹 Calculates the bounds for centering the camera
@@ -67,12 +96,11 @@ class JeepneyProvider with ChangeNotifier {
     if (fullRoute.isEmpty) return;
 
     jeepneys.clear();
-    int jeepneyCount = _random.nextInt(4) + 3; // Randomize between 3 and 6 jeepneys
-    Set<int> usedIndices = {}; // Prevents duplicate start positions
+    int jeepneyCount = _random.nextInt(4) + 3;
+    Set<int> usedIndices = {};
 
     while (jeepneys.length < jeepneyCount) {
       int randomIndex = _random.nextInt(fullRoute.length);
-
       if (!usedIndices.contains(randomIndex)) {
         usedIndices.add(randomIndex);
         jeepneys.add({

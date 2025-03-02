@@ -20,6 +20,8 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
   GoogleMapController? _mapController;
   Set<Polyline> _polylines = {};
   List<String> _routeNames = [];
+  List<LatLng> _allPoints = []; // Store all route points
+  bool _isCameraMovedByUser = false; // ✅ Track if user has moved the camera
 
   @override
   void initState() {
@@ -29,7 +31,7 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
 
   Future<void> loadRoutes() async {
     final String apiUrl =
-        "http://3.106.113.161:8080/jeepney_routes/${widget.jsonFile}"; 
+        "http://3.106.113.161:8080/jeepney_routes/${widget.jsonFile}";
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -42,7 +44,7 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
         List<LatLng> allPoints = [];
 
         List<Color> colors = [
-          AppColors.saffron.withOpacity(0.7),
+          const Color.fromARGB(255, 94, 255, 116).withOpacity(0.7),
           Colors.blue.withOpacity(0.7)
         ];
 
@@ -71,10 +73,12 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
         setState(() {
           _polylines = polylines;
           _routeNames = routeNames;
+          _allPoints = allPoints;
         });
 
-        if (allPoints.isNotEmpty) {
-          _calculateBounds(allPoints);
+        // ✅ Only move camera if the user hasn't manually moved it
+        if (_mapController != null && _allPoints.isNotEmpty && !_isCameraMovedByUser) {
+          _calculateBounds(_allPoints);
         }
       } else {
         print("❌ Error fetching route: ${response.statusCode}");
@@ -84,7 +88,20 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
     }
   }
 
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+
+    // ✅ Only move camera initially, but never reset user movement
+    Future.delayed(Duration.zero, () {
+      if (_allPoints.isNotEmpty && !_isCameraMovedByUser) {
+        _calculateBounds(_allPoints);
+      }
+    });
+  }
+
   void _calculateBounds(List<LatLng> routePoints) {
+    if (routePoints.isEmpty || _mapController == null) return;
+
     double minLat = routePoints.first.latitude, maxLat = routePoints.first.latitude;
     double minLng = routePoints.first.longitude, maxLng = routePoints.first.longitude;
 
@@ -100,11 +117,18 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
       northeast: LatLng(maxLat, maxLng),
     );
 
-    moveCameraToBounds(bounds);
+    // ✅ Move camera only if user hasn't moved it manually
+    if (!_isCameraMovedByUser) {
+      _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+    }
   }
 
-  void moveCameraToBounds(LatLngBounds bounds) {
-    _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+  /// ✅ Track when user moves the camera
+  void _onCameraMove(CameraPosition position) {
+    if (!_isCameraMovedByUser) {
+      print("📍 User moved the camera. Stopping auto-reset.");
+    }
+    _isCameraMovedByUser = true;
   }
 
   @override
@@ -124,9 +148,8 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
               zoom: 14.5,
             ),
             polylines: _polylines,
-            onMapCreated: (GoogleMapController controller) {
-              _mapController = controller;
-            },
+            onMapCreated: _onMapCreated,
+            onCameraMove: _onCameraMove, // ✅ Detects user zoom/pan
           ),
           DraggableContainer(
             child: Padding(
@@ -145,7 +168,7 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
                         Icon(Icons.arrow_back_ios),
                         const SizedBox(width: 120),
                         Text(
-                          widget.jsonFile, 
+                          widget.jsonFile,
                           style: AppTextStyles.label1
                               .copyWith(color: AppColors.red),
                         ),
