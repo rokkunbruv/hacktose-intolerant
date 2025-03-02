@@ -28,7 +28,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://github.com/rokkunbruv/hacktose-intolerant">
     <img src="frontend/assets/img/logo.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -50,7 +50,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#about-the-project">About The Project</a>
+      <a href="#about-tultul">About Tultul</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
       </ul>
@@ -59,19 +59,15 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#app-installation">App Installation</a></li>
+        <li><a href="#server-setup">Server Setup</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#about-the-team">About the Team</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
-
-
 
 <!-- ABOUT THE PROJECT -->
 ## About Tultul
@@ -88,8 +84,6 @@ Hackathon Event managed by UPCSG.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 ### Built With
 
 * [![Flutter][Flutter-icon]][Flutter-url]
@@ -100,115 +94,128 @@ Hackathon Event managed by UPCSG.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+The following steps below walk you through the process of running the app locally:
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+This assumes that you already have installed in your system **Flutter** for the front-end
+and **Python** for the back-end (it is preferable that you have the latest versions of both). This also assumes that you already have configured your
+access to **Google Developer Console** since this setup requires you to use your own Google Maps API key.
 
-### Installation
+If you want to run the server locally, this assumes that you already have configured your own PostgresSQL database.
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
-5. Change git remote url to avoid accidental pushes to base project
-   ```sh
-   git remote set-url origin github_username/repo_name
-   git remote -v # confirm the changes
-   ```
+### App Installation
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/rokkunbruv/hacktose-intolerant.git
+```
+
+2. Set current working directory to the `frontend` directory
+
+```bash
+cd frontend
+```
+
+3. Install necessary Flutter packages 
+
+```bash
+flutter pub get
+```
+
+4. Configure app's custom splash screen *(optional; you may want to do this if you want to display the custom splash screen on your end)*
+
+```bash
+dart run flutter_native_splash:create
+```
+
+5. Configure app's custom launcher icon *(optional; you may want to do this if you want to display the custom splash screen on your end)*
+
+```bash
+dart run flutter_launcher_icons:generate
+```
+
+6. Create a `.env` file in the `frontend` directory and store your Google Maps API key there. You might want to refer to `env.example` to see how you can add your API key there.
+
+7. Run the app through the terminal
+
+```bash
+flutter run
+```
+
+## Server Setup
+
+If you choose to run the server-side locally, you might want to follow these steps:
+
+1. Ensure that the repository has been cloned to your system. If not, run
+
+```bash
+git clone https://github.com/rokkunbruv/hacktose-intolerant.git
+```
+
+2. Set current working directory to the `commuteProj` directory in `backend`
+
+```bash
+cd backend/commuteProj
+```
+
+3. Install necessary dependencies
+
+```bash
+pip install -r ../requirements.txt
+```
+
+4. Migrate database changes
+
+```bash
+python manage.py migrate
+```
+
+5. Create a `.env` file in the `commuteProj` directory and store your Google Maps API key and your PostgresSQL database credentials there. You might want to refer to `env.example` to see how you can add your API key there.
+
+6. Run the server
+
+```bash
+python manage.py runserver
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
-
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTRIBUTING -->
-## Contributing
+## About the Team
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+<a href="https://github.com/rokkunbruv/hacktose-intolerant/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=rokkunbruv/hacktose-intolerant" alt="contrib.rocks image" />
+</a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Top contributors:
-
-<a href="https://github.com/github_username/repo_name/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=github_username/repo_name" alt="contrib.rocks image" />
-</a>
-
-
-
 <!-- LICENSE -->
-## License
+<!-- ## License
 
 Distributed under the project_license. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p> -->
 
 <!-- CONTACT -->
-## Contact
+<!-- ## Contact
 
 Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
 
 Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p> -->
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
@@ -238,11 +245,11 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [product-screenshot]: images/screenshot.png
 [Flutter-icon]:
 [Flutter-url]: https://www.flutter.dev
-[Django-icon]:
+[Django-icon]: https://static.djangoproject.com/img/logos/django-logo-negative.png
 [Django-url]: https://www.djangoproject.com/
 [AWS-RDS-icon]:
 [AWS-RDS-url]: https://aws.amazon.com/rds/
 [ECS-icon]:
-[EC2-url]:
+[EC2-url]: https://aws.amazon.com/ec2/
 [Postgres-icon]:
-[Postgres-url]:
+[Postgres-url]: https://www.postgresql.org/
