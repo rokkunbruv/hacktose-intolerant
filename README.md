@@ -29,7 +29,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/rokkunbruv/hacktose-intolerant">
-    <img src="frontend/assets/img/logo.png" alt="Logo" width="80" height="80">
+    <img src="assets/tultul-logo.svg" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">Tultul</h3>
@@ -52,6 +52,7 @@
     <li>
       <a href="#about-tultul">About Tultul</a>
       <ul>
+        <li><a href="#key-features">Key Features</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -63,7 +64,6 @@
         <li><a href="#server-setup">Server Setup</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
     <li><a href="#about-the-team">About the Team</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -72,33 +72,64 @@
 <!-- ABOUT THE PROJECT -->
 ## About Tultul
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<img src="assets/tultul-app-name.svg" alt="Tultul" />
 
-Tultul is a mobility-as-aservice (MaaS) app that assists users in commuting
+Tultul is a public transportation app that assists users in commuting via jeepneys in Cebu. Tultul is designed for resients who regularly commute or are new to commuting through jeepneys in Cebu.
 
 
-Specify here the short description of the project.
 
 Tultul is Team Hacktose Intolerant's submission to the UP Komsai Week 2025
 Hackathon Event managed by UPCSG.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Key Features
+
+* **Search Available Routes**: 
+  * Tultul suggests available routes given an origin location and destination location with their estimated arrival times, total distances covered, total fares, and the jeepneys covered.
+  * Users can select a route item to view a step-by-step description in commuting from their origin location to their destination location
+* **Route Follower**:
+  * Tultul guides users through the flow of travel step-by-step once they have selected a route.
+* **Jeepney Tracker**:
+  * Users can track the current locations of a specific jeepney code.
+* **View Jeepney Routes**:
+  * Users can view the path coverage of each jeepney.
+* **Voice Assistant**:
+  * Tultul offers a voice assistant that suggests travel instructions to persons with disabilities (PWD).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Built With
 
 <div align="center">
-  <a href="https://flutter.dev">
-    <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter" />
-  </a>
-  <a href="https://www.djangoproject.com/">
-    <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django"/>
-  </a>
-  <a href="https://aws.amazon.com/">
-    <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS"/>
-  </a>
-  <a href="https://www.postgresql.org/">
-    <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL"/>
-  </a>
+	<table>
+		<tr>
+      <td>
+        <div align="center">
+          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter"/>
+          <div>Flutter</div>
+        <div>
+      </td>
+			<td>
+        <div align="center">
+          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django"/>
+        </div>
+        <div>Django</div>
+      </td>
+      <td>
+        <div align="center">
+          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS"/>
+        </div>
+        <div>AWS (RDS & EC2)</div>
+      </td>
+			<td>
+        <div align="center">
+          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL" />
+          <div>PostgreSQL</div>
+        </div>
+      </td>
+		</tr>
+	</table>
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -110,7 +141,7 @@ The following steps below walk you through the process of running the app locall
 
 ### Prerequisites
 
-This assumes that you already have installed in your system **Flutter** for the front-end
+This assumes that you already have installed and configured in your system **Flutter** for the front-end
 and **Python** for the back-end (it is preferable that you have the latest versions of both). This also assumes that you already have configured your
 access to **Google Developer Console** since this setup requires you to use your own Google Maps API key.
 
@@ -195,13 +226,6 @@ python manage.py migrate
 ```bash
 python manage.py runserver
 ```
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
