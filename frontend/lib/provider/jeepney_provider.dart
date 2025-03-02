@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tultul/api/google_maps_api/route_service.dart';
@@ -16,27 +15,31 @@ class JeepneyProvider with ChangeNotifier {
   LatLngBounds? routeBounds;
   final Random _random = Random();
 
-  Future<void> loadRoute(String fileName) async {
-    String filePath = "assets/coordinates/$fileName.json"; // ✅ Fixed double `.json.json`
-    debugPrint("📂 Loading file: $filePath");
+  Future<void> loadRoute(String routeName) async {
+    debugPrint("🌍 Fetching route: $routeName from API");
 
     try {
-      List<RouteModel> routes = await RouteService.loadRoutes(filePath);
+      List<RouteModel> routes = await RouteService.loadRoutes(routeName);
       if (routes.isEmpty) {
-        debugPrint("🚨 No routes found in $fileName!");
+        debugPrint("🚨 No routes found for $routeName!");
         return;
       }
 
-      firstRoute = routes.isNotEmpty ? routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList() : [];
-      secondRoute = routes.length > 1 ? routes[1].coordinates.map((c) => LatLng(c[0], c[1])).toList() : [];
+      // ✅ Extract coordinates from fetched API data
+      firstRoute = routes.isNotEmpty
+          ? routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList()
+          : [];
+      secondRoute = routes.length > 1
+          ? routes[1].coordinates.map((c) => LatLng(c[0], c[1])).toList()
+          : [];
       fullRoute = [...firstRoute, ...secondRoute];
 
       _calculateBounds();
-      _initializeJeepneys(); // ✅ New: Randomized jeepney start positions
+      _initializeJeepneys(); // ✅ Initialize jeepneys in API-based routes
       notifyListeners();
       _startMoving();
     } catch (e) {
-      debugPrint("❌ Error loading route file: $e");
+      debugPrint("❌ Error fetching route from API: $e");
     }
   }
 

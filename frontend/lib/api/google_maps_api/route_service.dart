@@ -1,18 +1,25 @@
 import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 import 'package:tultul/classes/route_model.dart';
 
 class RouteService {
-  /// Loads multiple routes from a JSON file and returns a list of `RouteModel`
-  static Future<List<RouteModel>> loadRoutes(String filePath) async {
-    try {
-      String jsonString = await rootBundle.loadString(filePath);
-      Map<String, dynamic> jsonData = json.decode(jsonString);
-      List<dynamic> routesList = jsonData["routes"] ?? []; // Extract the "routes" list
+  /// Loads routes from the FastAPI backend
+  static Future<List<RouteModel>> loadRoutes(String routeName) async {
+    final String apiUrl = "http://3.106.113.161:8080/jeepney_routes/$routeName";
 
-      return routesList.map((route) => RouteModel.fromJson(route)).toList();
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonData = json.decode(response.body);
+        List<dynamic> routesList = jsonData["routes"] ?? [];
+
+        return routesList.map((route) => RouteModel.fromJson(route)).toList();
+      } else {
+        throw Exception("Failed to load routes: ${response.statusCode}");
+      }
     } catch (e) {
-      print("❌ Error loading route file: $e");
+      print("❌ Error fetching route from API: $e");
       return [];
     }
   }
