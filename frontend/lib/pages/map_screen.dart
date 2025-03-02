@@ -36,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
                 });
               }
             },
-            items: ['04L', '01B', '17C'].map<DropdownMenuItem<String>>((String value) {
+            items: ['04L', '01B', '17C', '17B', '03L', '04C', '04I', '04H', '24', '62B', '62C', '25' ].map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),
