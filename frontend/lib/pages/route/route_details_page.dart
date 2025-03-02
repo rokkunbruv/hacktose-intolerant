@@ -38,21 +38,33 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
   }
 
   void navigateFollowRoutePage() {
-    List<Widget> stepItems =
-        widget.route.path.legs[0].steps.asMap().entries.map((entry) {
-      DirectionStep step = entry.value;
+    List<Widget> stepItems = [];
+
+    for (int i = 0; i < widget.route.path.legs[0].steps.length; i++) {
+      DirectionStep step = widget.route.path.legs[0].steps[i];
       StepType type =
           (step.travelMode == transit) ? StepType.transport : StepType.walk;
 
-      return StepItem(
+      stepItems.add(StepItem(
         type: type,
         location: step.origin,
         jeepCode: step.jeepneyCode,
         fare: step.jeepneyFare.toStringAsFixed(2),
         dropOff: step.destination,
         distance: step.distance.toStringAsFixed(2),
-      );
-    }).toList();
+      ));
+
+      if (type == StepType.transport) {
+        stepItems.add(StepItem(
+          type: StepType.end,
+          location: step.origin,
+          jeepCode: step.jeepneyCode,
+          fare: step.jeepneyFare.toStringAsFixed(2),
+          dropOff: step.destination,
+          distance: step.distance.toStringAsFixed(2),
+        ));
+      }
+    }
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => FollowRoutePage(stepItems: stepItems)));
   }

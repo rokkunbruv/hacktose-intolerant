@@ -21,7 +21,7 @@ import 'package:tultul/pages/route/follow_route_page.dart';
 import 'package:tultul/widgets/route/route_steps.dart';
 import 'package:tultul/constants/step_types.dart';
 
-class StepItem extends StatelessWidget {
+class ActiveStepItem extends StatelessWidget {
   final StepType type;
   final String? location;
   final String? jeepCode;
@@ -30,7 +30,7 @@ class StepItem extends StatelessWidget {
   final String? duration;
   final String? distance;
 
-  const StepItem({
+  const ActiveStepItem({
     super.key,
     required this.type,
     this.location,
@@ -69,9 +69,8 @@ class StepItem extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Icon(Icons.directions_walk,
-                  color: AppColors.gray, size: 20),
-              Text('Walk to $location',
+              const Icon(Icons.directions_walk, color: AppColors.red, size: 20),
+              Text('Walking to $location',
                   style: AppTextStyles.label3.copyWith(color: AppColors.black)),
             ],
           ),
@@ -92,7 +91,7 @@ class StepItem extends StatelessWidget {
             'assets/icons/jeepney icon-small.png',
             width: 20,
             height: 20,
-            color: AppColors.gray,
+            color: AppColors.red,
           ),
           const SizedBox(
             width: 5,
@@ -102,7 +101,7 @@ class StepItem extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Ride',
+                    'Riding',
                     style:
                         AppTextStyles.label3.copyWith(color: AppColors.black),
                   ),
@@ -152,13 +151,6 @@ class StepItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      // decoration: BoxDecoration(
-      //   color: AppColors.bg,
-      //   borderRadius: BorderRadius.circular(10),
-      //   boxShadow: [
-      //     createBoxShadow(),
-      //   ],
-      // ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,21 +162,21 @@ class StepItem extends StatelessWidget {
                 'assets/icons/jeepney icon-small.png',
                 width: 20,
                 height: 20,
-                color: AppColors.gray,
+                color: AppColors.red,
               ),
               const SizedBox(
                 width: 10,
               ),
-              Text('Get off in',
-                  style: AppTextStyles.label3.copyWith(color: AppColors.black)),
-              const SizedBox(
-                width: 5,
+              Expanded(
+                child: Text(
+                  'Getting off at $dropOff',
+                  style: AppTextStyles.label4.copyWith(
+                    color: AppColors.black,
+                  ),
+                ),
               ),
-              Text('$duration',
-                  style: AppTextStyles.label3.copyWith(color: AppColors.red)),
             ],
           ),
-          Expanded(child: Text('Get off at $dropOff')),
         ],
       ),
     );

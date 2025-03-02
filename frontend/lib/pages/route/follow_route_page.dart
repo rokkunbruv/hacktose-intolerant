@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:tultul/constants/step_types.dart';
 import 'package:tultul/constants/travel_modes.dart';
 import 'package:tultul/pages/route/finished_route_page.dart';
 
@@ -9,8 +11,7 @@ import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/styles/widget/box_shadow_style.dart';
 
 import 'package:tultul/widgets/steps/step_item.dart';
-import 'package:tultul/constants/follow_types.dart';
-import 'package:tultul/provider/step_provider.dart';
+import 'package:tultul/widgets/steps/active_step_item.dart';
 
 class FollowRoutePage extends StatefulWidget {
   final List<Widget> stepItems;
@@ -29,10 +30,12 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
   void swapContent() {
     setState(() {
       // Move to the next index or loop back to 0
-      currentIndex = (currentIndex + 1) % widget.stepItems.length;
-      next = (currentIndex + 1) % widget.stepItems.length;
-      print(currentIndex);
-      print(next);
+      if (currentIndex < widget.stepItems.length - 1) {
+        currentIndex++;
+        next = (currentIndex + 1) % widget.stepItems.length;
+        print(currentIndex);
+        print(next);
+      }
     });
   }
 
@@ -45,51 +48,102 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
         .push(MaterialPageRoute(builder: (context) => FinishedRoutePage()));
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   final stepProvider = Provider.of<StepProvider>(context, listen: false);
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     if (stepProvider.stepContainers.isEmpty) {
-  //       addNewStep(context);
-  //     }
-  //   });
-  // }
-
-  // void addNewStep(BuildContext context) {
-  //   print("addNewStep() called");
-  //   final stepProvider = Provider.of<StepProvider>(context, listen: false);
-
-  //   stepProvider.addStepContainer(StepItem(
-  //     type1: FollowType.walk,
-  //     location: 'insular',
-  //     duration: '3 mins',
-  //   ));
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DraggableContainer(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              child: widget.stepItems[currentIndex],
-            ),
-            if (next != 0)
-              Container(
-                padding: EdgeInsets.all(20),
-                child: widget.stepItems[next],
-              ),
-            ElevatedButton(
+      body: Stack(
+        children: [
+          Center(
+            child: ElevatedButton(
               onPressed: (currentIndex == widget.stepItems.length - 1)
                   ? navigateToFinishedRoutePage
                   : swapContent,
               child: Text("Next"),
             ),
-          ],
-        ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 250,
+              width: double.infinity,
+              color: AppColors.bg,
+              child: Expanded(
+                child: Column(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 80,
+                          width: 385,
+                          child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                color: (widget.stepItems.isNotEmpty &&
+                                        (widget.stepItems[currentIndex]
+                                                    as StepItem)
+                                                .type ==
+                                            StepType.walk)
+                                    ? AppColors.skyBlue
+                                    : AppColors.lightVanilla,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  createBoxShadow(),
+                                ],
+                              ),
+                              child: ActiveStepItem(
+                                type:
+                                    (widget.stepItems[currentIndex] as StepItem)
+                                        .type,
+                                location:
+                                    (widget.stepItems[currentIndex] as StepItem)
+                                        .location,
+                                jeepCode:
+                                    (widget.stepItems[currentIndex] as StepItem)
+                                        .jeepCode,
+                                fare:
+                                    (widget.stepItems[currentIndex] as StepItem)
+                                        .fare,
+                                dropOff:
+                                    (widget.stepItems[currentIndex] as StepItem)
+                                        .dropOff,
+                                duration:
+                                    (widget.stepItems[currentIndex] as StepItem)
+                                        .duration,
+                                distance:
+                                    (widget.stepItems[currentIndex] as StepItem)
+                                        .distance,
+                              )),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (next != 0 && next < widget.stepItems.length)
+                      SizedBox(
+                        height: 100,
+                        width: double.infinity,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.bg,
+                            boxShadow: [
+                              createBoxShadow(),
+                            ],
+                          ),
+                          child: widget.stepItems[next],
+                        ),
+                      ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(

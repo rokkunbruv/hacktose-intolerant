@@ -167,9 +167,11 @@ class StepDetails extends StatelessWidget {
               ),
               const SizedBox(width: 7.0),
 
-              Text('From $location',
-                  style: AppTextStyles.label5.copyWith(
-                      color: AppColors.black, fontWeight: FontWeight.bold)),
+              Expanded(
+                child: Text('From $location',
+                    style: AppTextStyles.label5.copyWith(
+                        color: AppColors.black, fontWeight: FontWeight.bold)),
+              ),
             ],
           ),
           const SizedBox(height: 15.0),

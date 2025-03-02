@@ -8,7 +8,6 @@ import 'package:tultul/pages/route/route_steps_page.dart';
 import 'package:tultul/pages/route/search_routes_page.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
 import 'package:tultul/provider/position_provider.dart';
-import 'package:tultul/provider/step_provider.dart';
 import 'package:tultul/utils/location/request_location_services.dart';
 import 'package:tultul/utils/location/check_location_services.dart';
 // import 'package:tultul/pages/route/search_routes_page.dart';
