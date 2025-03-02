@@ -1,8 +1,11 @@
+import 'dart:io';
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'dart:io';
-import 'dart:async';
 
 import 'package:tultul/classes/location/location.dart';
 
@@ -12,11 +15,11 @@ class PlacesApi {
   static final String _apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
   
   // Cebu City bounds
-  static const LatLng _southWest = LatLng(10.225, 123.775);
-  static const LatLng _northEast = LatLng(10.425, 123.975);
+  // static const LatLng _southWest = LatLng(10.225, 123.775);
+  // static const LatLng _northEast = LatLng(10.425, 123.975);
 
   static final Dio _dio = Dio(BaseOptions(
-    connectTimeout: Duration(seconds: 5),
+    connectTimeout: Duration(seconds: 20),
     receiveTimeout: Duration(seconds: 3),
     sendTimeout: Duration(seconds: 3),
   ));
@@ -34,7 +37,6 @@ class PlacesApi {
   }
 
   static Future<List<Location>> getLocations(String query) async {
-    print('PlacesApi - Searching for: $query'); // Debug print
     if (query.isEmpty) return [];
 
     if (!await _checkInternetConnection()) {
@@ -42,13 +44,14 @@ class PlacesApi {
     }
 
     try {
-      final response = await _dio.get(
+      // fetch predictions using place autocomplete api
+      final autocompleteResponse = await _dio.get(
         _baseUrl,
         queryParameters: {
           'input': query,
           'key': _apiKey,
           'components': 'country:ph',
-          'location': '10.3157,123.8854', // Cebu City center
+          'location': '10.3157,123.8854', // set Cebu City as center
           'radius': '15000',
           'strictbounds': 'true',
         },
@@ -59,29 +62,48 @@ class PlacesApi {
         },
       );
 
-      print('PlacesApi - Response: ${response.data}'); // Debug print
-
-      if (response.data['status'] == 'REQUEST_DENIED') {
-        print('PlacesApi - Error: ${response.data['error_message']}'); // Debug print
+      if (autocompleteResponse.data['status'] == 'REQUEST_DENIED') {
+        debugPrint('PlacesApi - Error: ${autocompleteResponse.data['error_message']}'); 
         throw Exception('Google Maps API key is invalid.');
       }
 
-      if (response.data['predictions'] != null) {
-        List<Location> locations = [];
-        for (var prediction in response.data['predictions']) {
+      if (autocompleteResponse.data['predictions'] == null) {
+        return [];
+      }
+
+      List<Location> locations = [];
+
+      // Step 2: Fetch coordinates for each prediction using Place Details API
+      for (var prediction in autocompleteResponse.data['predictions']) {
+        final placeId = prediction['place_id'];
+        if (placeId == null) continue;
+
+        // Fetch place details
+        final placeDetailsResponse = await _dio.get(
+          _placeDetailsUrl,
+          queryParameters: {
+            'place_id': placeId,
+            'key': _apiKey,
+          },
+        );
+
+        if (placeDetailsResponse.data['status'] == 'OK') {
+          final result = placeDetailsResponse.data['result'];
+          final lat = result['geometry']['location']['lat'];
+          final lng = result['geometry']['location']['lng'];
+
           locations.add(
             Location(
               address: prediction['description'],
-              coordinates: LatLng(10.3157, 123.8854), // Default to Cebu City center for now
+              coordinates: LatLng(lat, lng),
             ),
           );
         }
-        return locations;
       }
-      
-      return [];
+
+      return locations;
     } on DioException catch (e) {
-      print('PlacesApi - DioError: ${e.message}'); // Debug print
+      debugPrint('PlacesApi - DioError: ${e.message}'); // Debug print
       if (e.type == DioExceptionType.connectionError) {
         throw Exception('Unable to connect to Google Maps. Please check your internet connection.');
       } else if (e.type == DioExceptionType.connectionTimeout) {
@@ -89,7 +111,7 @@ class PlacesApi {
       }
       throw Exception('Failed to fetch locations: ${e.message}');
     } catch (e) {
-      print('PlacesApi - Error: $e'); // Debug print
+      debugPrint('PlacesApi - Error: $e'); // Debug print
       throw Exception('Failed to fetch locations: $e');
     }
   }

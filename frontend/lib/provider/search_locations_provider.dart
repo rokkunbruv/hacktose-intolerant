@@ -39,7 +39,7 @@ class SearchLocationsProvider extends ChangeNotifier {
       
       isLoading = false;
       locations = [];
-      notifyListeners();
+      notifyListeners(); 
     }
   }
 
