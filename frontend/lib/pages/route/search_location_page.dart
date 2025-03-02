@@ -3,14 +3,24 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'package:tultul/api/google_maps_api/places_api.dart';
+import 'package:tultul/classes/location/location.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/provider/search_locations_provider.dart';
+import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/widgets/location/locations_list.dart';
 import 'package:tultul/pages/route/search_routes_page.dart';
 
 class SearchLocationPage extends StatefulWidget {
-  const SearchLocationPage({super.key});
+  final bool? fromHome; // true if pushed by home page
+  
+  const SearchLocationPage({
+    super.key,
+    this.fromHome,
+  });
 
   @override
   State<SearchLocationPage> createState() => _SearchLocationPageState();
@@ -18,32 +28,51 @@ class SearchLocationPage extends StatefulWidget {
 
 class _SearchLocationPageState extends State<SearchLocationPage> {
   late SearchLocationsProvider locationProvider;
+  late PositionProvider positionProvider;
   Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+
     locationProvider = Provider.of<SearchLocationsProvider>(context, listen: false);
-    locationProvider.resetSearch();
+    positionProvider = Provider.of<PositionProvider>(context, listen: false);
   }
 
   void navigateBack() {
-    if (locationProvider.selectedLocation != null) {
-      final selected = locationProvider.selectedLocation;
-      print('Selected location: ${selected?.address}');
-      
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SearchRoutesPage(
-            selectedLocation: selected!,
-          ),
-        ),
-      );
-    } else {
-      locationProvider.resetSearch();
-      Navigator.pop(context);
+    locationProvider = Provider.of<SearchLocationsProvider>(context, listen: false);
+    locationProvider.resetSearch();
+
+    Navigator.of(context).pop();
+  }
+
+  void navigateToSearchRoutesPage() {
+    final routeFinderProvider = Provider.of<RouteFinderProvider>(context, listen: false);
+    final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+    
+    if (widget.fromHome != null && widget.fromHome! == true) {
+      // if page is pushed from home page, then
+      // set origin to be user's current location
+      // and destination to be selected location
+      if (positionProvider.currentLocation != null) {
+        routeFinderProvider.setOrigin(positionProvider.currentLocation!);
+      }
+
+      if (locationProvider.selectedLocation != null) {
+      routeFinderProvider.setDestination(locationProvider.selectedLocation!);
     }
+    } else {
+      // enter logic here when this page is pushed from search routes page
+    }
+
+    locationProvider.resetSearch();
+    
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) =>
+          SearchRoutesPage(),
+      )
+    );
   }
 
   @override
@@ -84,7 +113,6 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                               onChanged: (_) {
                                 if (_debounce?.isActive ?? false) _debounce?.cancel();
                                 _debounce = Timer(const Duration(milliseconds: 500), () {
-                                  print('Searching...');
                                   provider.searchLocations();
                                 });
                               },
@@ -131,7 +159,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                     locations: provider.locations,
                     onLocationSelected: (location) {
                       provider.selectLocation(location);
-                      navigateBack();
+                      navigateToSearchRoutesPage();
                     },
                   ),
           ),

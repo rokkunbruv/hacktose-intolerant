@@ -28,18 +28,15 @@ class SearchLocationsProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      print('Searching for: ${locationController.text}');
-
       locations = await PlacesApi.getLocations(
         locationController.text
       );
 
-      print('Found ${locations.length} locations');
-
       isLoading = false;
       notifyListeners();
     } catch (e) {
-      print('Error in searchLocations: $e');
+      debugPrint('Error in searchLocations: $e');
+      
       isLoading = false;
       locations = [];
       notifyListeners();

@@ -1,27 +1,28 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:tultul/api/google_maps_api/places_api.dart';
 import 'package:tultul/classes/location/location.dart';
+import 'package:tultul/constants/jeepney_types.dart';
+import 'package:tultul/constants/passenger_types.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/widgets/map/map_view.dart';
+import 'package:tultul/styles/map/marker_styles.dart';
 import 'package:tultul/theme/colors.dart';
+import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/widgets/generic/dropdown_select_button.dart';
 import 'package:tultul/widgets/generic/draggable_container.dart';
 import 'package:tultul/widgets/route/route_list.dart';
-import 'package:tultul/constants/jeepney_types.dart';
-import 'package:tultul/constants/passenger_types.dart';
-import 'package:tultul/theme/text_styles.dart';
-import 'package:tultul/styles/map/marker_styles.dart';
 
 class SearchRoutesPage extends StatefulWidget {
-  final Location? selectedLocation;
-  
   const SearchRoutesPage({
     super.key,
-    this.selectedLocation,
-    });
+  });
 
   @override
   State<SearchRoutesPage> createState() => _SearchRoutesPageState();
@@ -30,7 +31,7 @@ class SearchRoutesPage extends StatefulWidget {
 class _SearchRoutesPageState extends State<SearchRoutesPage> {
   final List<String> _passengerTypes = [regular, student, seniorCitizen, pwd];
   final List<String> _jeepneyTypes = [traditional, modern];
-  
+
   Timer? _originDebounce;
   Timer? _destinationDebounce;
   List<Location> originSuggestions = [];
@@ -41,15 +42,12 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
   @override
   void initState() {
     super.initState();
-    // Set the destination when the page loads
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.selectedLocation != null) {
-        print('Setting destination: ${widget.selectedLocation?.address}'); // Debug print
-        final routeProvider = Provider.of<RouteFinderProvider>(context, listen: false);
-        routeProvider.destinationController.text = widget.selectedLocation!.address;
-        routeProvider.destination = widget.selectedLocation!.coordinates;
-        routeProvider.destinationMarker = createDestinationMarker(widget.selectedLocation!.coordinates);
-        routeProvider.notifyListeners();
+      final routeFinderProvider = Provider.of<RouteFinderProvider>(context, listen: false);
+      
+      if (routeFinderProvider.origin != null && routeFinderProvider.destination != null) {
+        routeFinderProvider.findRoutes();
       }
     });
   }
@@ -80,7 +78,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
       try {
         destinationSuggestions = await PlacesApi.getLocations(query);
       } catch (e) {
-        print('Error searching destination: $e');
+        debugPrint('Error searching destination: $e');
       }
       setState(() {
         isLoadingDestination = false;
@@ -97,6 +95,8 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+    
     return Consumer<RouteFinderProvider>(
       builder: (context, routeProvider, child) {
         return Scaffold(
@@ -122,7 +122,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                               color: AppColors.white,
                             ),
                             onPressed: () => Navigator.pop(context),
-                          )
+                          ),
                         ),
                         SizedBox(height: 8),
 
@@ -241,21 +241,20 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                   ),
                 ),
               ),
-            ),
-          ),
-            Expanded(
-            child: Stack(
-              children: <Widget>[
-
-              // MAP VIEW
-              MapView(
-                onMapTap: (latLng) {
-                routeProvider.setMarker(latLng);
-                },
-                markers: routeProvider.getMarkers(),
-                polylines: (routeProvider.selectedRoute != null) ?
-                  {routeProvider.selectedRoute!.path.polyline} : null,
-              ),
+              Expanded(
+                child: Stack(
+                  children: <Widget>[
+                    // MAP VIEW
+                    MapView(
+                      onMapTap: (latLng) {
+                        routeProvider.setMarker(latLng);
+                      },
+                      markers: routeProvider.getMarkers().union(
+                        {positionProvider.currentPositionMarker!}),
+                      polylines: (routeProvider.selectedRoute != null)
+                          ? {routeProvider.selectedRoute!.path.polyline}
+                          : null,
+                    ),
 
                     // SUGGESTED ROUTES
                     DraggableContainer(
@@ -301,30 +300,33 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                               ),
                             ),
 
-                      // ROUTES OPTIONS
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              child: DropdownSelectButton(
-                                items: _passengerTypes,
-                                onChanged: (type) =>
-                                  routeProvider.setPassengerType(type)
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            SizedBox(
-                              child: DropdownSelectButton(
-                                items: _jeepneyTypes,
-                                onChanged: (type) =>
-                                  routeProvider.setJeepneyType(type)
+                            // ROUTES OPTIONS
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 32),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  SizedBox(
+                                    child: DropdownSelectButton(
+                                      items: _passengerTypes,
+                                      onChanged: (type) =>
+                                          routeProvider.setPassengerType(type),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  SizedBox(
+                                    child: DropdownSelectButton(
+                                      items: _jeepneyTypes,
+                                      onChanged: (type) =>
+                                          routeProvider.setJeepneyType(type),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
-                        )
-                      )
+                        ),
+                      ),
                     ),
                   ],
                 ),

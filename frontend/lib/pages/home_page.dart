@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
-import 'package:flutter/gestures.dart';
+
 import 'package:tultul/pages/route/search_location_page.dart';
+import 'package:tultul/pages/route/search_location_page.dart';
+import 'package:tultul/pages/route/search_routes_page.dart';
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
@@ -16,9 +19,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late PositionProvider positionProvider;
+  
   void navigateToSearchDestinationPage() {
-    Navigator.of(context).push(MaterialPageRoute(builder: 
-    (context) => SearchLocationPage()));
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => SearchLocationPage(fromHome: true),
+    ));
   }
 
   @override
@@ -26,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+      positionProvider = Provider.of<PositionProvider>(context, listen: false);
       
       await checkLocationServices(context);
       
@@ -38,11 +44,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    Provider.of<PositionProvider>(context, listen: false).stopPositionUpdates();
+    positionProvider.stopPositionUpdates();
     super.dispose();
   }
-
-  void navigateToRecentTripsPage() {}
 
   @override
   Widget build(BuildContext context) {
