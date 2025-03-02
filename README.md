@@ -38,7 +38,7 @@
     project_description
     <br />
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    <a href="#usage">View Demo</a>
     <br />
     <br />
     <p><i>Note: README template borrowed <a href="https://github.com/othneildrew/Best-README-Template">here.</a></i></p>
@@ -86,11 +86,20 @@ Hackathon Event managed by UPCSG.
 
 ### Built With
 
-* [![Flutter][Flutter-icon]][Flutter-url]
-* [![Django][Django-icon]][Django-url]
-* [![AWS RDS][AWS_RDS-icon]][AWS-RDS-url]
-* [![EC2][EC2-icon]][EC2-url]
-* [![PostresSQL][Postgres-icon]][Postgres-url]
+<div align="center">
+  <a href="https://flutter.dev">
+    <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter" />
+  </a>
+  <a href="https://www.djangoproject.com/">
+    <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django"/>
+  </a>
+  <a href="https://aws.amazon.com/">
+    <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS"/>
+  </a>
+  <a href="https://www.postgresql.org/">
+    <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL"/>
+  </a>
+</div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -106,6 +115,8 @@ and **Python** for the back-end (it is preferable that you have the latest versi
 access to **Google Developer Console** since this setup requires you to use your own Google Maps API key.
 
 If you want to run the server locally, this assumes that you already have configured your own PostgresSQL database.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### App Installation
 
@@ -146,6 +157,8 @@ dart run flutter_launcher_icons:generate
 ```bash
 flutter run
 ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Server Setup
 
@@ -220,9 +233,10 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
+* This README template is borrowed from the [Best-README-Template](https://github.com/othneildrew/Best-README-Template/blob/main/README.md) Github repository
+* The tech stack icons were generated using [Profile Technology Icons](https://marwin1991.github.io/profile-technology-icons/)
+* The jeepney route polylines were obtained from [Cebu Jeepneys Route Map](https://cebujeepneys.weebly.com/jeepney-routes.html)
+* The custom map style is obtained from []().
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -243,13 +257,3 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: images/screenshot.png
-[Flutter-icon]:
-[Flutter-url]: https://www.flutter.dev
-[Django-icon]: https://static.djangoproject.com/img/logos/django-logo-negative.png
-[Django-url]: https://www.djangoproject.com/
-[AWS-RDS-icon]:
-[AWS-RDS-url]: https://aws.amazon.com/rds/
-[ECS-icon]:
-[EC2-url]: https://aws.amazon.com/ec2/
-[Postgres-icon]:
-[Postgres-url]: https://www.postgresql.org/
