@@ -12,8 +12,10 @@ class FinishedRoutePage extends StatefulWidget {
 
 class _FinishedRoutePageState extends State<FinishedRoutePage> {
   void navigateToHome() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => HomePage()));
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
 
   @override
