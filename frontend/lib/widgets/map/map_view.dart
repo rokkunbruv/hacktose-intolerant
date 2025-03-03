@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:tultul/styles/map/map_styles.dart';
+import 'package:tultul/utils/map/calculate_bounds.dart';
+import 'package:tultul/utils/map/calculate_marker_bounds.dart';
 
 class MapView extends StatefulWidget {
   final Function(LatLng)? onMapTap;
@@ -8,6 +12,7 @@ class MapView extends StatefulWidget {
   final Set<Marker>? markers;
   final Set<Polyline>? polylines;
   final bool? snapToCurrentPosition;
+  final bool? snapToMarkers;
   final bool? snapToPolyline;
 
   const MapView({
@@ -17,6 +22,7 @@ class MapView extends StatefulWidget {
     this.markers,
     this.polylines,
     this.snapToCurrentPosition,
+    this.snapToMarkers,
     this.snapToPolyline,
   });
 
@@ -45,32 +51,20 @@ class _MapViewState extends State<MapView> {
       );
     }
 
-    if (widget.snapToPolyline == true && widget.polylines != null && widget.polylines!.isNotEmpty) {
-      final polyline = widget.polylines!.first;
-      final bounds = _calculateBounds(polyline.points);
+    if (widget.snapToMarkers == true && widget.markers != null && widget.markers!.isNotEmpty) {
+      final bounds = calculateMarkerBounds(widget.markers!);
       _mapController?.animateCamera(
         CameraUpdate.newLatLngBounds(bounds, 50),
       );
     }
-  }
 
-  LatLngBounds _calculateBounds(List<LatLng> points) {
-    double minLat = points.first.latitude;
-    double maxLat = points.first.latitude;
-    double minLng = points.first.longitude;
-    double maxLng = points.first.longitude;
-
-    for (final point in points) {
-      if (point.latitude < minLat) minLat = point.latitude;
-      if (point.latitude > maxLat) maxLat = point.latitude;
-      if (point.longitude < minLng) minLng = point.longitude;
-      if (point.longitude > maxLng) maxLng = point.longitude;
+    if (widget.snapToPolyline == true && widget.polylines != null && widget.polylines!.isNotEmpty) {
+      final polyline = widget.polylines!.first;
+      final bounds = calculateBounds(polyline.points);
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngBounds(bounds, 50),
+      );
     }
-
-    return LatLngBounds(
-      northeast: LatLng(maxLat, maxLng),
-      southwest: LatLng(minLat, minLng),
-    );
   }
 
   @override

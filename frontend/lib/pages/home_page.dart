@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 
 import 'package:tultul/pages/route/search_location_page.dart';
@@ -17,7 +16,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late PositionProvider positionProvider;
-  
+  bool _isLocationReady = false;
+
   void navigateToSearchDestinationPage() {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => SearchLocationPage(fromHome: true),
@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
       
       if (mounted) {
         positionProvider.startPositionUpdates();
+        setState(() => _isLocationReady = true);
       }
     });
   }
@@ -73,11 +74,12 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Stack(
         children: <Widget>[
-          MapView(
-            markers: (positionProvider.currentPositionMarker != null)
-                ? {positionProvider.currentPositionMarker!}
-                : {},
-          ),
+          _isLocationReady && positionProvider.currentPositionMarker != null
+              ? MapView(
+                  markers: {positionProvider.currentPositionMarker!},
+                  snapToCurrentPosition: true,
+                )
+              : Center(child: CircularProgressIndicator()),
           Positioned(
             left: 0,
             right: 0,

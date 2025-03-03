@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +11,8 @@ import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/styles/widget/box_shadow_style.dart';
 import 'package:tultul/utils/time/format_time.dart';
+import 'package:tultul/utils/map/calculate_bounds.dart';
+import 'package:tultul/utils/map/calculate_marker_bounds.dart';
 import 'package:tultul/widgets/steps/step_item.dart';
 import 'package:tultul/widgets/steps/active_step_item.dart';
 import 'package:tultul/widgets/map/map_view.dart';
@@ -35,6 +36,9 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
   int next = 1;
 
   Polyline? polyline;
+  GoogleMapController? _mapController;
+
+  final double _defaultZoomLevel = 18.0;
 
   void nextStep() {
     setState(() {
@@ -45,19 +49,20 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
     });
 
     setPolyline();
+    _updateCamera();
   }
 
   void previousStep() {
     setState(() {
-      if (currentIndex > 0) { // Prevent going below 0
+      if (currentIndex > 0) { // prevent going below 0
         currentIndex--;
-        next = (currentIndex - 1 >= 1) ? currentIndex - 1 : 1; // Prevent 0
+        next = (currentIndex - 1 >= 1) ? currentIndex - 1 : 1; // prevent 0
       }
     });
 
     setPolyline();
+    _updateCamera();
   }
-
 
   void navigateExitPage() {
     Navigator.of(context).pop();
@@ -85,6 +90,29 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
     }
 
     setState(() => polyline = currentStepItem?.polyline);
+  }
+
+  void _updateCamera() {
+    final currentStepItem = getCurrentStepItem();
+    if (_mapController != null) {
+      if (currentStepItem?.polyline != null) {
+        final bounds = calculateBounds(currentStepItem!.polyline!.points);
+        _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+      } else if (currentStepItem?.type == StepType.start) {
+        final jeepneyProvider = Provider.of<JeepneyProvider>(context, listen: false);
+        if (jeepneyProvider.jeepneyMarkers.isNotEmpty) {
+          final bounds = calculateMarkerBounds(jeepneyProvider.jeepneyMarkers);
+          _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+        }
+      } else {
+        final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+        if (positionProvider.currentPositionMarker != null) {
+          _mapController!.animateCamera(
+            CameraUpdate.newLatLngZoom(positionProvider.currentPositionMarker!.position, _defaultZoomLevel),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -143,6 +171,12 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
             polylines: (polyline != null)
                 ? {polyline!}
                 : null,
+            snapToPolyline: polyline != null,
+            snapToCurrentPosition: polyline == null,
+            onMapCreated: (controller) {
+              _mapController = controller;
+              _updateCamera(); // Initialize camera position
+            },
           ),
 
           // STEP WIDGETS ABOVE THE BOTTOM NAVIGATION BAR

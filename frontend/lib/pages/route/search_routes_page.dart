@@ -228,6 +228,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                       polylines: (routeProvider.selectedRoute != null)
                           ? {routeProvider.selectedRoute!.path.polyline}
                           : null,
+                      snapToMarkers: true,
                     ),
 
                     // SUGGESTED ROUTES

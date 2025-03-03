@@ -110,6 +110,7 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
             {positionProvider.currentPositionMarker!}
           ),
           polylines: {widget.route.path.polyline},
+          snapToPolyline: true,
         ),
 
         DraggableContainer(
