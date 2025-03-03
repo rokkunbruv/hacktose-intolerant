@@ -7,6 +7,7 @@ import 'package:tultul/classes/route/commute_route.dart';
 import 'package:tultul/constants/step_types.dart';
 import 'package:tultul/pages/route/finished_route_page.dart';
 import 'package:tultul/provider/position_provider.dart';
+import 'package:tultul/provider/jeepney_provider.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/styles/widget/box_shadow_style.dart';
@@ -76,21 +77,36 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
   }
 
   void setPolyline() {
-    setState(() => 
-      polyline = getCurrentStepItem()?.polyline
-    );
+    final jeepneyProvider = Provider.of<JeepneyProvider>(context, listen: false);
+    final currentStepItem = getCurrentStepItem();
+
+    if (currentStepItem?.type == StepType.start) {
+      jeepneyProvider.loadRoute(currentStepItem?.jeepCode ?? '');
+    }
+
+    setState(() => polyline = currentStepItem?.polyline);
   }
 
   @override
   void initState() {
     super.initState();
 
-    setPolyline();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final jeepneyProvider = Provider.of<JeepneyProvider>(context, listen: false);
+      jeepneyProvider.initializeJeepneyMarker();
+
+      if (getCurrentStepItem()?.type == StepType.start && !jeepneyProvider.isRouteLoaded) {
+        jeepneyProvider.loadRoute(getCurrentStepItem()?.jeepCode ?? '');
+      }
+
+      setPolyline();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final positionProvider = Provider.of<PositionProvider>(context);
+    final PositionProvider positionProvider = Provider.of<PositionProvider>(context);
+    final JeepneyProvider jeepneyProvider = Provider.of<JeepneyProvider>(context);
     
     if (widget.stepItems.isEmpty) {
       return Scaffold(
@@ -111,12 +127,19 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
 
     final currentStepItem = getCurrentStepItem();
 
+    Set<Marker> markers = {positionProvider.currentPositionMarker!};
+
+    // display jeepney locations when current step is to wait for a jeepney
+    if (currentStepItem?.type == StepType.start) {
+      markers = markers.union(jeepneyProvider.jeepneyMarkers);
+    }
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
           // MAP VIEW
           MapView(
-            markers: {positionProvider.currentPositionMarker!},
+            markers: markers,
             polylines: (polyline != null)
                 ? {polyline!}
                 : null,
@@ -163,7 +186,7 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
 
                 // CURRENT STEP
                 Container(
-                  height: 80,
+                  height: 90,
                   width: 385,
                   padding: EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(

@@ -1,11 +1,20 @@
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+
 import 'package:http/http.dart' as http;
+
 import 'package:tultul/classes/route_model.dart';
 
 class RouteService {
-  /// Loads routes from the FastAPI backend
+  /// loads routes from the FastAPI backend
   static Future<List<RouteModel>> loadRoutes(String routeName) async {
     final String apiUrl = "http://3.106.113.161:8080/jeepney_routes/$routeName";
+
+    if (routeName.isEmpty) {
+      debugPrint("Route name is empty");
+      return [];
+    }
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -19,7 +28,7 @@ class RouteService {
         throw Exception("Failed to load routes: ${response.statusCode}");
       }
     } catch (e) {
-      print("❌ Error fetching route from API: $e");
+      debugPrint("Error fetching route from API: $e");
       return [];
     }
   }

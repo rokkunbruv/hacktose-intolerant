@@ -109,7 +109,7 @@ class ActiveStepItem extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 10),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(

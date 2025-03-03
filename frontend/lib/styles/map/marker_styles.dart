@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 Marker createOriginMarker(LatLng location) {
@@ -36,5 +38,17 @@ Marker createCurrentPositionMarker(LatLng location) {
     position: location,
     infoWindow: infoWindow,
     icon: BitmapDescriptor.defaultMarkerWithHue(color),
+  );
+}
+
+Marker createJeepneyyMarker(String markerId, BitmapDescriptor icon, position, double rotation) {
+  return Marker(
+    markerId: MarkerId(markerId),
+    position: position,
+    rotation: rotation,
+    icon: icon,
+    flat: true,
+    visible: true,
+    anchor: const Offset(0.5, 0.5),
   );
 }

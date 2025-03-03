@@ -4,6 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tultul/pages/home_page.dart';
+import 'package:tultul/pages/jeeps/search_jeeps_page.dart';
+import 'package:tultul/pages/map_screen.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
 import 'package:tultul/provider/jeepney_provider.dart'; 
 import 'package:tultul/provider/position_provider.dart';
@@ -47,6 +49,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const HomePage(),
+      // home: SearchJeepsPage(),
+      // home: MapScreen(),
     );
   }
 }
