@@ -1,11 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import 'package:tultul/api/jeepney_api/jeepney_api.dart';
+import 'package:tultul/provider/jeepney_provider.dart';
 import 'package:tultul/widgets/generic/draggable_container.dart';
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/theme/colors.dart';
@@ -23,8 +21,6 @@ class JeepRoutePage extends StatefulWidget {
 class _JeepRoutePageState extends State<JeepRoutePage> {
   Set<Polyline> _polylines = {};
   List<String> _routeNames = [];
-  // List<LatLng> _allPoints = [];
-
   bool _isMapLoaded = false;
 
   void navigateBack() {
@@ -36,48 +32,32 @@ class _JeepRoutePageState extends State<JeepRoutePage> {
 
     _polylines = jsonRouteData['polylines'];
     _routeNames = jsonRouteData['routeNames'];
-    // _allPoints = jsonRouteData['allPoints'];
 
     if (jsonRouteData != {}) {
       setState(() => _isMapLoaded = true);
     }
   }
-  // void _calculateBounds(List<LatLng> routePoints) {
-  //   if (routePoints.isEmpty || _mapController == null) return;
-
-  //   double minLat = routePoints.first.latitude, maxLat = routePoints.first.latitude;
-  //   double minLng = routePoints.first.longitude, maxLng = routePoints.first.longitude;
-
-  //   for (LatLng point in routePoints) {
-  //     if (point.latitude < minLat) minLat = point.latitude;
-  //     if (point.latitude > maxLat) maxLat = point.latitude;
-  //     if (point.longitude < minLng) minLng = point.longitude;
-  //     if (point.longitude > maxLng) maxLng = point.longitude;
-  //   }
-
-  //   LatLngBounds bounds = LatLngBounds(
-  //     southwest: LatLng(minLat, minLng),
-  //     northeast: LatLng(maxLat, maxLng),
-  //   );
-
-  //   if (!_isCameraMovedByUser) {
-  //     _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
-  //   }
-  // }
-
-  // void _onCameraMove(CameraPosition position) {
-  //   _isCameraMovedByUser = true;
-  // }
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final jeepneyProvider = Provider.of<JeepneyProvider>(context, listen: false);
+
+      jeepneyProvider.initializeJeepneyMarker();
+      jeepneyProvider.loadRoute(widget.jsonFile);
+    });
 
     loadRoute();
   }
 
   @override
   Widget build(BuildContext context) {
+    final jeepneyProvider = Provider.of<JeepneyProvider>(context);
+
+    Set<Marker> markers = jeepneyProvider.jeepneyMarkers;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Jeepney Routes',
@@ -91,7 +71,9 @@ class _JeepRoutePageState extends State<JeepRoutePage> {
           // MAP VIEW
           _isMapLoaded
               ? MapView(
+                markers: markers,
                 polylines: _polylines,
+                snapToPolyline: true,
               )
               : Center(child: CircularProgressIndicator()),
 

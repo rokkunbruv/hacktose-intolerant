@@ -56,6 +56,7 @@ class _SearchJeepsPageState extends State<SearchJeepsPage> {
         ),
         backgroundColor: AppColors.red,
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: Container(
         decoration: BoxDecoration(

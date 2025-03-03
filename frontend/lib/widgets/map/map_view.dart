@@ -4,16 +4,20 @@ import 'package:tultul/styles/map/map_styles.dart';
 
 class MapView extends StatefulWidget {
   final Function(LatLng)? onMapTap;
-  final Function(GoogleMapController)? onMapCreated; // Accepts a controller callback
+  final Function(GoogleMapController)? onMapCreated;
   final Set<Marker>? markers;
   final Set<Polyline>? polylines;
+  final bool? snapToCurrentPosition;
+  final bool? snapToPolyline;
 
   const MapView({
     super.key,
     this.onMapTap, 
-    this.onMapCreated, // Added
+    this.onMapCreated,
     this.markers,
     this.polylines,
+    this.snapToCurrentPosition,
+    this.snapToPolyline,
   });
 
   @override
@@ -29,7 +33,44 @@ class _MapViewState extends State<MapView> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    widget.onMapCreated?.call(controller); // Pass controller to external handler
+    widget.onMapCreated?.call(controller);
+
+    if (widget.snapToCurrentPosition == true && widget.markers != null) {
+      final currentPositionMarker = widget.markers!.firstWhere(
+        (marker) => marker.markerId.value == 'currentPosition',
+        orElse: () => throw Exception('Current position marker not found'),
+      );
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(currentPositionMarker.position, _defaultZoomLevel),
+      );
+    }
+
+    if (widget.snapToPolyline == true && widget.polylines != null && widget.polylines!.isNotEmpty) {
+      final polyline = widget.polylines!.first;
+      final bounds = _calculateBounds(polyline.points);
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngBounds(bounds, 50),
+      );
+    }
+  }
+
+  LatLngBounds _calculateBounds(List<LatLng> points) {
+    double minLat = points.first.latitude;
+    double maxLat = points.first.latitude;
+    double minLng = points.first.longitude;
+    double maxLng = points.first.longitude;
+
+    for (final point in points) {
+      if (point.latitude < minLat) minLat = point.latitude;
+      if (point.latitude > maxLat) maxLat = point.latitude;
+      if (point.longitude < minLng) minLng = point.longitude;
+      if (point.longitude > maxLng) maxLng = point.longitude;
+    }
+
+    return LatLngBounds(
+      northeast: LatLng(maxLat, maxLng),
+      southwest: LatLng(minLat, minLng),
+    );
   }
 
   @override

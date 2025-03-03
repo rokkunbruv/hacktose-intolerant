@@ -50,7 +50,6 @@ class JeepneyProvider with ChangeNotifier {
           : [];
       fullRoute = [...firstRoute, ...secondRoute];
 
-      // _calculateBounds(); 
       _initializeJeepneys();
       
       if (!isRouteLoaded && routeBounds != null) {
@@ -64,34 +63,7 @@ class JeepneyProvider with ChangeNotifier {
     }
   }
 
-  // void centerCamera() {
-  //   if (_mapController != null && routeBounds != null) {
-  //     _mapController!.animateCamera(
-  //       CameraUpdate.newLatLngBounds(routeBounds!, 50)
-  //     );
-  //   }
-  // }
-
-  // calculates the bounds for centering the camera
-  // void _calculateBounds() {
-  //   if (fullRoute.isEmpty) return;
-  //   double minLat = fullRoute.first.latitude, maxLat = fullRoute.first.latitude;
-  //   double minLng = fullRoute.first.longitude, maxLng = fullRoute.first.longitude;
-
-  //   for (LatLng point in fullRoute) {
-  //     if (point.latitude < minLat) minLat = point.latitude;
-  //     if (point.latitude > maxLat) maxLat = point.latitude;
-  //     if (point.longitude < minLng) minLng = point.longitude;
-  //     if (point.longitude > maxLng) maxLng = point.longitude;
-  //   }
-
-  //   routeBounds = LatLngBounds(
-  //     southwest: LatLng(minLat, minLng),
-  //     northeast: LatLng(maxLat, maxLng),
-  //   );
-  // }
-
-  /// 🔹 Initializes multiple jeepneys with unique starting positions
+  // initializes multiple jeepneys with unique starting positions
   void _initializeJeepneys() {
     if (fullRoute.isEmpty) return;
 
