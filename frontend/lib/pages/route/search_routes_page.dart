@@ -148,21 +148,20 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                                   ],
                                 ),
                               ),
-                              // Swap button positioned between fields
                               Positioned(
                                 right: 0,
-                                top: 38, // Adjust this value to center between fields
+                                top: 38, 
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: AppColors.bg,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Colors.black,
+                                      color: AppColors.black,
                                       width: 0.8,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withAlpha(16),
+                                        color: AppColors.black.withAlpha(16),
                                         blurRadius: 4,
                                         offset: Offset(0, 2),
                                       ),

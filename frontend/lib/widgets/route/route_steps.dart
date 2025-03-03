@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'package:tultul/main.dart';
-
 import 'package:tultul/styles/widget/box_shadow_style.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
-
 import 'package:tultul/constants/step_types.dart';
 
-// Custom widget for each step with connecting lines
 class RouteSteps extends StatelessWidget {
   final StepType type;
   final StepType? type2;
@@ -45,14 +41,10 @@ class RouteSteps extends StatelessWidget {
                 type == StepType.start
                     ? Expanded(child: Container())
                     : Expanded(
-                        child: IntrinsicHeight(
-                          child: const Expanded(
-                            child: VerticalDivider(
-                              color: AppColors.lightNavy,
-                              thickness: 2,
-                              width: 2,
-                            ),
-                          ),
+                        child: VerticalDivider(
+                          color: AppColors.lightNavy,
+                          thickness: 2,
+                          width: 2,
                         ),
                       ),
                 if (type2 == StepType.end)
@@ -69,7 +61,7 @@ class RouteSteps extends StatelessWidget {
                 else
                   const Icon(Icons.circle, color: AppColors.red, size: 20),
                 if (type2 != StepType.end)
-                  const Expanded(
+                  Expanded(
                     child: VerticalDivider(
                       color: AppColors.lightNavy,
                       thickness: 2,
@@ -81,7 +73,6 @@ class RouteSteps extends StatelessWidget {
               ],
             ),
           ),
-          // STEP CONTENT
           Expanded(
             child: _createStepContent(),
           ),
@@ -141,7 +132,6 @@ class RouteSteps extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // LOCATION OF THE BUS/JEEPNEY STOP
           Row(
             children: [
               Image.asset(
@@ -150,12 +140,12 @@ class RouteSteps extends StatelessWidget {
                 height: 20,
               ),
               const SizedBox(width: 7.0),
-
               Expanded(
                 child: Text(
                   'From $location',
                   style: AppTextStyles.label5.copyWith(
-                    color: AppColors.black, fontWeight: FontWeight.bold
+                    color: AppColors.black,
+                    fontWeight: FontWeight.bold,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -163,17 +153,16 @@ class RouteSteps extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 15.0),
-
-          // JEEPNEY TO RIDE + FARE DETAILS
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.saffron,
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(3),
-                  bottomLeft: Radius.circular(3),
-                  bottomRight: Radius.circular(3)),
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(3),
+                bottomLeft: Radius.circular(3),
+                bottomRight: Radius.circular(3),
+              ),
               boxShadow: [
                 createBoxShadow(),
               ],
@@ -191,24 +180,29 @@ class RouteSteps extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8.0),
-
-          // DROP OFF DETAILS
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.navy,
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(3),
-                  bottomLeft: Radius.circular(3),
-                  bottomRight: Radius.circular(3)),
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(3),
+                bottomLeft: Radius.circular(3),
+                bottomRight: Radius.circular(3),
+              ),
               boxShadow: [
                 createBoxShadow(),
               ],
             ),
-            child: Text('Get off at $dropOff',
-                style: AppTextStyles.label5.copyWith(
-                    color: AppColors.bg, fontWeight: FontWeight.bold)),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text('Get off at $dropOff',
+                      style: AppTextStyles.label5.copyWith(
+                          color: AppColors.bg, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
           ),
         ],
       ),

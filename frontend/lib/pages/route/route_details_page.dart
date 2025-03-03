@@ -10,12 +10,12 @@ import 'package:tultul/styles/widget/box_shadow_style.dart';
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/widgets/generic/draggable_container.dart';
 import 'package:tultul/widgets/route/route_steps.dart';
+import 'package:tultul/widgets/steps/step_item.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
-import 'package:tultul/utils/route/decode_polyline.dart';
 import 'package:tultul/pages/route/follow_route_page.dart';
-import 'package:tultul/widgets/steps/step_item.dart';
+import 'package:tultul/utils/time/format_time.dart';
 
 class RouteDetailsPage extends StatefulWidget {
   final CommuteRoute route;
@@ -72,6 +72,13 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
 
     final steps = widget.route.path.legs[0].steps;
 
+    final totalDuration = Duration(seconds: widget.route.totalDuration);
+    final totalDurationInHours = totalDuration.inHours.toString().padLeft(1, '0');
+    final totalDurationInMinutes = totalDuration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final formattedTotalDuration = '${totalDurationInHours}h ${totalDurationInMinutes}m';
+
+    final arrivalTime = formatTime(widget.route.arrivalTime);
+
     return Scaffold(
       body: Stack(children: <Widget>[
         // MAP VIEW
@@ -83,30 +90,64 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
         Expanded(
           child: DraggableContainer(
             child: Padding(
-              padding: EdgeInsets.all(40),
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 40),
               child: Column(
                   children: <Widget>[
-                        RouteSteps(type: StepType.start),
-                      ] +
-                      steps.asMap().entries.map((entry) {
-                        DirectionStep step = entry.value;
-                        StepType type = (step.travelMode == transit)
-                            ? StepType.transport
-                            : StepType.walk;
-                        StepType? type2 = (entry.key == steps.length - 1)
-                            ? StepType.end
-                            : null;
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.gray,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: SizedBox(height: 4, width: 64),
+                    ),
+                    SizedBox(height: 32),
 
-                        return RouteSteps(
-                          type: type,
-                          type2: type2,
-                          location: step.origin?.address,
-                          jeepCode: step.jeepneyCode,
-                          fare: step.jeepneyFare?.toStringAsFixed(2),
-                          dropOff: step.destination?.address,
-                          distance: step.distance.toStringAsFixed(2),
-                        );
-                      }).toList()),
+                    // SUGGESTED ROUTES HEADER
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            'Route Details',
+                            style: AppTextStyles.label2.copyWith(
+                              color: AppColors.black,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.cancel,
+                              color: AppColors.lightGray,
+                            ),
+                            onPressed: navigateBack,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    RouteSteps(type: StepType.start),
+                  ] +
+                  steps.asMap().entries.map((entry) {
+                    DirectionStep step = entry.value;
+                    StepType type = (step.travelMode == transit)
+                        ? StepType.transport
+                        : StepType.walk;
+                    StepType? type2 = (entry.key == steps.length - 1)
+                        ? StepType.end
+                        : null;
+
+                    return RouteSteps(
+                      type: type,
+                      type2: type2,
+                      location: step.origin?.address,
+                      jeepCode: step.jeepneyCode,
+                      fare: step.jeepneyFare?.toStringAsFixed(2),
+                      dropOff: step.destination?.address,
+                      duration: (step.duration / 60).round().toString(),
+                      distance: step.distance.toStringAsFixed(0),
+                    );
+                  }).toList()),
             ),
           ),
         ),
@@ -138,11 +179,11 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
                         Text('Total Travel Time:',
                             style: AppTextStyles.label5
                                 .copyWith(color: AppColors.black)),
-                        Text('1 h 14 mins',
+                        Text(formattedTotalDuration,
                             style: AppTextStyles.label2.copyWith(
                                 color: AppColors.black,
                                 fontWeight: FontWeight.bold)),
-                        Text('Arrive at 8:00 PM',
+                        Text('Arrive at $arrivalTime',
                             style: AppTextStyles.label5
                                 .copyWith(color: AppColors.gray))
                       ],
