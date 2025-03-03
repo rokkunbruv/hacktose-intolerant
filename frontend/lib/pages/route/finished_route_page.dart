@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tultul/pages/home_page.dart';
+
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 
@@ -15,6 +15,10 @@ class _FinishedRoutePageState extends State<FinishedRoutePage> {
     Navigator.of(context).pop();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
+    Navigator.of(context).pop();
+  }
+
+  void navigateBack() {
     Navigator.of(context).pop();
   }
 
@@ -46,6 +50,24 @@ class _FinishedRoutePageState extends State<FinishedRoutePage> {
                 height: 200,
               ),
               TextButton(
+                  onPressed: navigateBack,
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: AppColors.vanilla,
+                        borderRadius: BorderRadius.circular(50)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.arrow_back_ios, color: AppColors.red),
+                        Text('Back to your Route',
+                            style: AppTextStyles.label3
+                                .copyWith(color: AppColors.red)),
+                      ],
+                    ),
+                  )
+                ),
+              TextButton(
                   onPressed: navigateToHome,
                   child: Container(
                     padding: EdgeInsets.all(10),
@@ -61,7 +83,8 @@ class _FinishedRoutePageState extends State<FinishedRoutePage> {
                                 .copyWith(color: AppColors.vanilla)),
                       ],
                     ),
-                  ))
+                  )
+                ),
             ],
           ),
         ],
