@@ -1,2 +1,0 @@
-C:/2nd Year/2nd Sem/Hackathon/MERGE FINAL/hacktose-intolerant/frontend/android/app/.cxx/Debug/4f5q1061/x86/CMakeFiles/edit_cache.dir
-C:/2nd Year/2nd Sem/Hackathon/MERGE FINAL/hacktose-intolerant/frontend/android/app/.cxx/Debug/4f5q1061/x86/CMakeFiles/rebuild_cache.dir

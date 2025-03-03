@@ -1,2 +1,0 @@
-C:/2nd Year/2nd Sem/Hackathon/location-search/hacktose-intolerant/frontend/android/app/.cxx/Debug/y512i6r2/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/2nd Year/2nd Sem/Hackathon/location-search/hacktose-intolerant/frontend/android/app/.cxx/Debug/y512i6r2/armeabi-v7a/CMakeFiles/rebuild_cache.dir
