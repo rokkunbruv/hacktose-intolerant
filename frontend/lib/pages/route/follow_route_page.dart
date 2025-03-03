@@ -50,6 +50,8 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
 
   @override
   Widget build(BuildContext context) {
+    double progress = (currentIndex + 1) / widget.stepItems.length;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -150,74 +152,96 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
           color: AppColors.bg,
           boxShadow: [createBoxShadow()],
         ),
-        padding: EdgeInsets.only(top: 15, bottom: 50, right: 6),
-        child: BottomAppBar(
-          color: AppColors.bg,
-          notchMargin: 20,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+        padding: EdgeInsets.only(top: 15, bottom: 20, right: 6),
+        child: SizedBox(
+          height: 120,
+          child: Column(
             children: [
-              Wrap(
-                children: [
-                  SizedBox(
-                    width: 110,
-                    height: 80,
-                    child: TextButton(
-                      onPressed: navigateExitPage,
-                      child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: AppColors.red,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Center(
-                            child: Text('Exit',
-                                style: AppTextStyles.label3.copyWith(
-                                  color: AppColors.bg,
+              BottomAppBar(
+                color: AppColors.bg,
+                notchMargin: 20,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Wrap(
+                      children: [
+                        SizedBox(
+                          width: 110,
+                          height: 80,
+                          child: TextButton(
+                            onPressed: navigateExitPage,
+                            child: Container(
+                                padding: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: AppColors.red,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Center(
+                                  child: Text('Exit',
+                                      style: AppTextStyles.label3.copyWith(
+                                        color: AppColors.bg,
+                                      )),
                                 )),
-                          )),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Total Travel Time:',
+                                style: AppTextStyles.label5
+                                    .copyWith(color: AppColors.black)),
+                            Text('1 h 14 mins',
+                                style: AppTextStyles.label2.copyWith(
+                                    color: AppColors.black,
+                                    fontWeight: FontWeight.bold)),
+                            Text('Arrive at 8:00 PM',
+                                style: AppTextStyles.label5
+                                    .copyWith(color: AppColors.gray)),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Total Travel Time:',
-                          style: AppTextStyles.label5
-                              .copyWith(color: AppColors.black)),
-                      Text('1 h 14 mins',
-                          style: AppTextStyles.label2.copyWith(
-                              color: AppColors.black,
-                              fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Wrap(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Total Fare:',
+                                style: AppTextStyles.label5
+                                    .copyWith(color: AppColors.black)),
+                            Text('₱30.00',
+                                style: AppTextStyles.label2.copyWith(
+                                    color: AppColors.black,
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 10),
-              Wrap(
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Total Fare:',
-                          style: AppTextStyles.label5
-                              .copyWith(color: AppColors.black)),
-                      Text('₱30.00',
-                          style: AppTextStyles.label2.copyWith(
-                              color: AppColors.black,
-                              fontWeight: FontWeight.bold)),
-                      Text('Arrive at 8:00 PM',
-                          style: AppTextStyles.label5
-                              .copyWith(color: AppColors.gray)),
-                    ],
-                  ),
-                ],
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: LinearProgressIndicator(
+                  value: progress, // Updates based on step progress
+                  backgroundColor: AppColors.skyBlue, // Background color
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.saffron), // Progress color
+                  minHeight: 8, // Thickness
+                  borderRadius: BorderRadius.circular(5),
+                ),
               ),
             ],
           ),
