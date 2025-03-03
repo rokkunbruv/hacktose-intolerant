@@ -233,7 +233,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                     // SUGGESTED ROUTES
                     DraggableContainer(
                       child: Container(
-                        padding: const EdgeInsets.fromLTRB(0, 4, 0, 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
                         decoration: BoxDecoration(
                           color: AppColors.white,
                           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -242,15 +242,6 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Container(
-                              decoration: BoxDecoration(
-                                color: AppColors.gray,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: SizedBox(height: 4, width: 64),
-                            ),
-                            SizedBox(height: 16),
-
                             // SUGGESTED ROUTES HEADER
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 32),

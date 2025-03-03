@@ -114,18 +114,9 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
 
         DraggableContainer(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 40),
+            padding: EdgeInsets.all(16),
             child: Column(
-                children: <Widget>[
-                  Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.gray,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: SizedBox(height: 4, width: 64),
-                  ),
-                  SizedBox(height: 32),
-        
+                children: <Widget>[     
                   // SUGGESTED ROUTES HEADER
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
