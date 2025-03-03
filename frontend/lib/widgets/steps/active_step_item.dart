@@ -37,8 +37,8 @@ class ActiveStepItem extends StatelessWidget {
         return _createTransportContainer();
       case StepType.end: //use type 'end' for drop off containers
         return _createDropOffContainer();
-      default:
-        return SizedBox();
+      case StepType.start: //use type 'start' for wait for jeep containers
+        return _createWaitingContainer();
     }
   }
 
@@ -160,6 +160,72 @@ class ActiveStepItem extends StatelessWidget {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _createWaitingContainer() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        children: [
+          Image.asset(
+            'assets/icons/jeepney icon-small.png',
+            width: 20,
+            height: 20,
+            color: AppColors.gray,
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          Wrap(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Waiting for',
+                    style:
+                        AppTextStyles.label3.copyWith(color: AppColors.black),
+                  ),
+                  const SizedBox(
+                    width: 5.5,
+                  ),
+                  Text(
+                    '$jeepCode',
+                    style:
+                        AppTextStyles.label3.copyWith(color: AppColors.saffron),
+                  )
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text('₱$fare',
+                      style:
+                          AppTextStyles.label4.copyWith(color: AppColors.red)),
+                  Expanded(
+                    child: Text(
+                      'From $location',
+                      style:
+                          AppTextStyles.label5.copyWith(color: AppColors.black),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );

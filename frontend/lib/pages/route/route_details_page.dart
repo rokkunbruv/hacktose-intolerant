@@ -42,6 +42,18 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
       StepType type =
           (step.travelMode == transit) ? StepType.transport : StepType.walk;
 
+      // ADD STEP FOR WAITING JEEPNEYS
+      if (type == StepType.transport) {
+        stepItems.add(StepItem(
+          type: StepType.start,
+          location: step.origin?.address,
+          jeepCode: step.jeepneyCode,
+          fare: step.jeepneyFare?.toStringAsFixed(2),
+          dropOff: step.destination?.address,
+          distance: step.distance.toStringAsFixed(2),
+        ));
+      }
+      
       stepItems.add(StepItem(
         type: type,
         location: step.origin?.address,
@@ -51,6 +63,8 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
         distance: step.distance.toStringAsFixed(2),
       ));
 
+
+      // ADD STEP FOR DROP OFFS
       if (type == StepType.transport) {
         stepItems.add(StepItem(
           type: StepType.end,
