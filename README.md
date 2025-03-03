@@ -110,43 +110,49 @@ Hackathon Event managed by UPCSG.
 
 ### Built With
 
-<div align="center" style="display:grid; grid; grid-template-columns: repeat(3, 1fr); row-gap: 20px; padding: 0 64px; align-items: center;">
-  <a href="https://flutter.dev" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter" />
-      <div>Flutter</div>
-    </div>
-  </a>
-  <a href="https://www.djangoproject.com/" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django" />
-      <div>Django</div>
-    </div>
-  </a>
-  <a href="https://aws.amazon.com/" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS" />
-      <div>AWS</div>
-    </div>
-  </a>
-  <a href="https://www.postgresql.org/" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL" />
-      <div>PostgreSQL</div>
-    </div>
-  </a>
-  <a href="https://developers.google.com/maps" style="text-decoration: none;">
-    <div align="center">
-      <img width="39" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps Platform" title="Google Maps Platform" />
-      <div>Google Maps Platform</div>
-    </div>
-  </a>
-  <a href="https://fastapi.tiangolo.com/" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://icon.icepanel.io/Technology/svg/FastAPI.svg" alt="FastAPI" title="FastAPI" />
-      <div>FastAPI</div>
-    </div>
-  </a>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <a href="https://flutter.dev" style="text-decoration: none;">
+          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter" />
+          <div>Flutter</div>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://www.djangoproject.com/" style="text-decoration: none;">
+          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django" />
+          <div>Django</div>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://aws.amazon.com/" style="text-decoration: none;">
+          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS" />
+          <div>AWS</div>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <a href="https://www.postgresql.org/" style="text-decoration: none;">
+          <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL" />
+          <div>PostgreSQL</div>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://developers.google.com/maps" style="text-decoration: none;">
+          <img width="39" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps Platform" title="Google Maps Platform" />
+          <div>Google Maps Platform</div>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://fastapi.tiangolo.com/" style="text-decoration: none;">
+          <img width="50" src="https://icon.icepanel.io/Technology/svg/FastAPI.svg" alt="FastAPI" title="FastAPI" />
+          <div>FastAPI</div>
+        </a>
+      </td>
+    </tr>
+  </table>
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
