@@ -15,3 +15,15 @@ Polyline createPolyline(String polylineID, List<LatLng> polylineCoordinates) {
     points: polylineCoordinates,
   );
 }
+
+Polyline createPolyline2(String polylineID, List<LatLng> polylineCoordinates) {
+  Color color = AppColors.saffron;
+  const int width = 5;
+
+  return Polyline(
+    polylineId: PolylineId(polylineID),
+    color: color,
+    width: width,
+    points: polylineCoordinates,
+  );
+}

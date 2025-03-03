@@ -10,3 +10,18 @@ String get jeep24 => '24';
 String get jeep62B => '62B';
 String get jeep62C => '62C';
 String get jeep25 => '25';
+
+List<String> get jeepCodesList => [
+  jeep04L,
+  jeep01B,
+  jeep17B,
+  jeep17C,
+  jeep03L,
+  jeep04C,
+  jeep04I,
+  jeep04H,
+  jeep24,
+  jeep62B,
+  jeep62C,
+  jeep25
+];

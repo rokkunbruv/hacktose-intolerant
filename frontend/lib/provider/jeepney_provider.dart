@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:tultul/api/jeepney_api/route_service.dart';
+import 'package:tultul/api/jeepney_api/jeepney_api.dart';
 import 'package:tultul/classes/route_model.dart';
 import 'package:tultul/styles/map/marker_styles.dart';
 import 'package:tultul/utils/jeep/load_jeepney_icon.dart';
@@ -35,7 +35,7 @@ class JeepneyProvider with ChangeNotifier {
   // load route from api and process it
   Future<void> loadRoute(String routeName) async {
     try {
-      List<RouteModel> routes = await RouteService.loadRoutes(routeName);
+      List<RouteModel> routes = await JeepneyApi.getJeepneyPositions(routeName);
 
       if (routes.isEmpty) {
         debugPrint("No routes found for $routeName!");

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+
+import 'package:tultul/constants/jeepney_codes.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
-
 import 'package:tultul/widgets/generic/draggable_container.dart';
 import 'package:tultul/widgets/jeep_routes/jeep_code_list.dart';
-import 'package:tultul/pages/jeeps/JeepRoute.dart';
+import 'package:tultul/pages/jeeps/jeep_route_page.dart';
 
 class SearchJeepsPage extends StatefulWidget {
   const SearchJeepsPage({super.key});
@@ -15,30 +16,30 @@ class SearchJeepsPage extends StatefulWidget {
 
 class _SearchJeepsPageState extends State<SearchJeepsPage> {
   final List<Map<String, dynamic>> jeepRoutes = [
-    
-    {"jeepCode": "04L"},
-    {"jeepCode": "01B"},
-    {"jeepCode": "17B"},
-    {"jeepCode": "17C"},
-    {"jeepCode": "03L"},
-    {"jeepCode": "04C"},
-    {"jeepCode": "04I"},
-    {"jeepCode": "04H"},
-    {"jeepCode": "24"},
-    {"jeepCode": "62B"},
-    {"jeepCode": "62C"},
-    {"jeepCode": "25"}
-  ];
+    {"jeepCode": jeep04L},
+    {"jeepCode": jeep01B},
+    {"jeepCode": jeep17B},
+    {"jeepCode": jeep17C},
+    {"jeepCode": jeep03L},
+    {"jeepCode": jeep04C},
+    {"jeepCode": jeep04I},
+    {"jeepCode": jeep04H},
+    {"jeepCode": jeep24},
+    {"jeepCode": jeep62B},
+    {"jeepCode": jeep62C},
+    {"jeepCode": jeep25}
+];
 
   late final List<Map<String, dynamic>> formattedRoutes;
 
   @override
   void initState() {
     super.initState();
+
     formattedRoutes = jeepRoutes.map((route) {
       return {
         "jeepCode": route["jeepCode"],
-        "route": () => JeepRoutePage(routeCode: route["jeepCode"]),
+        "route": () => JeepRoutePage(jsonFile: route["jeepCode"]),
       };
     }).toList();
   }
