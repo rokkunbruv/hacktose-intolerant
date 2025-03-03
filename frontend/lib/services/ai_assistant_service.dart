@@ -174,6 +174,8 @@ class AIAssistantService {
           await speak("I'll find directions from $origin to $destination.");
         }
         
+        // Trigger the route search with a slight delay to ensure form fields are populated
+        await Future.delayed(Duration(milliseconds: 500));
         onRouteSearch(origin, destination);
       } else {
         await speak("I need to know where you want to go. Could you please specify your destination? For example, say 'Take me to SM City Cebu'.");
