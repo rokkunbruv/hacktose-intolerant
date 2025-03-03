@@ -63,30 +63,33 @@ class _SearchJeepsPageState extends State<SearchJeepsPage> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
+        child: Stack(
           children: [
             SizedBox(height: 150), // Keeps spacing from the top
 
-            Center(
-              child: Image.asset(
-                'assets/img/jeep_big_logo.png',
-                width: 300,
-                height: 300,
+            Container(
+              padding: EdgeInsets.only(bottom: 450),
+              child: Center(
+                child: Image.asset(
+                  'assets/img/jeep_big_logo.png',
+                  width: 300,
+                  height: 300,
+                ),
               ),
             ),
 
             SizedBox(height: 20), // Spacing before DraggableContainer
 
             // Ensure DraggableContainer is inside a SizedBox to prevent layout issues
-            SizedBox(
-              height: 300, // Keep this if DraggableContainer has a fixed height
-              child: DraggableContainer(
+          
+              // Keep this if DraggableContainer has a fixed height
+          DraggableContainer(
                 child: Padding(
                   padding: EdgeInsets.all(20),
                   child: JeepCodeList(jeepRoutes: formattedRoutes),
                 ),
               ),
-            ),
+          
           ],
         ),
       ),
