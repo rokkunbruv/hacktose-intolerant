@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tultul/pages/route/search_location_page.dart';
-import 'package:tultul/pages/route/search_location_page.dart';
-import 'package:tultul/pages/route/search_routes_page.dart';
 import 'package:tultul/widgets/map/map_view.dart';
 import 'package:tultul/theme/colors.dart';
-import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/utils/location/check_location_services.dart';
 

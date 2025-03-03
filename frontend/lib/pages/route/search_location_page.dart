@@ -3,10 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:tultul/api/google_maps_api/places_api.dart';
-import 'package:tultul/classes/location/location.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/provider/search_locations_provider.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
