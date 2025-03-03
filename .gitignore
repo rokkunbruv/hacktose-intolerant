@@ -1,8 +1,14 @@
 .env
-.vscode/
+jeepEnv/
+**/venv/
+**/cebu_jeepney_routes.json/
+backend/commuteProj/venv/
 **/venv/
 
 ### FRONTEND
+
+# Assets
+frontend/Assets/coordinates
 
 # Miscellaneous
 *.class

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:tultul/pages/home_page.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/provider/jeepney_provider.dart'; 
 import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/provider/search_locations_provider.dart';
 import 'package:tultul/utils/location/request_location_services.dart';
@@ -25,6 +26,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => RouteFinderProvider()),
         ChangeNotifierProvider(create: (_) => PositionProvider()),
         ChangeNotifierProvider(create: (_) => SearchLocationsProvider()),
+        ChangeNotifierProvider(create: (_) => JeepneyProvider()), 
       ],
       child: const MyApp(),
     ),
@@ -48,3 +50,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
