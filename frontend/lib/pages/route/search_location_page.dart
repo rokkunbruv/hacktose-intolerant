@@ -132,6 +132,19 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                                   color: AppColors.red,
                                   size: 20,
                                 ),
+                                suffixIcon: provider.locationController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: Colors.grey[600],
+                                        size: 20,
+                                      ),
+                                      onPressed: () {
+                                        provider.locationController.clear();
+                                        provider.searchLocations();
+                                      },
+                                    )
+                                  : null,
                                 isDense: true,
                                 contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               ),
@@ -228,13 +241,51 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                             ],
                           ),
                         )
-                      : LocationsList(
-                          locations: provider.locations,
-                          onLocationSelected: (location) {
-                            provider.selectLocation(location);
-                            navigateToSearchRoutesPage();
-                          },
-                        ),
+                      : provider.locationController.text.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ColorFiltered(
+                                  colorFilter: ColorFilter.matrix([
+                                    0.2126, 0.7152, 0.0722, 0, 0,
+                                    0.2126, 0.7152, 0.0722, 0, 0,
+                                    0.2126, 0.7152, 0.0722, 0, 0,
+                                    0, 0, 0, 1, 0,
+                                  ]),
+                                  child: Image.asset(
+                                    'assets/img/empty_search.png',
+                                    width: 200,
+                                    height: 200,
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Where would you like to go?',
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Type a location to start searching',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : LocationsList(
+                            locations: provider.locations,
+                            onLocationSelected: (location) {
+                              provider.selectLocation(location);
+                              navigateToSearchRoutesPage();
+                            },
+                          ),
                 ),
               ),
             ],
