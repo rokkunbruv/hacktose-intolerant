@@ -49,7 +49,7 @@ class AIAssistantService {
     final apiKey = dotenv.env['GEMINI_API_KEY'];
     if (apiKey != null) {
       _model = GenerativeModel(
-        model: 'gemini-pro',
+        model: 'gemini-pro',  // Use the correct model name
         apiKey: apiKey,
       );
     }
@@ -80,20 +80,27 @@ class AIAssistantService {
   }
 
   Future<void> speak(String text) async {
-    await _flutterTts.speak(text);
+    try {
+      await _flutterTts.stop(); // Stop any ongoing speech
+      await _flutterTts.awaitSpeakCompletion(true); // Wait for speech to complete
+      await _flutterTts.speak(text);
+    } catch (e) {
+      debugPrint('Error in text-to-speech: $e');
+    }
   }
 
   Future<void> processUserInput(String input) async {
     if (_model == null) {
-      speak("I'm sorry, but I'm not properly configured. Please check the Gemini API key.");
+      await speak("I'm sorry, but I'm not properly configured. Please check the Gemini API key.");
       return;
     }
 
     // Check if input contains location-related keywords
-    if (input.toLowerCase().contains('route') || 
+    if (input.toLowerCase().contains('route to') || 
         input.toLowerCase().contains('direction') ||
         input.toLowerCase().contains('how to get') ||
-        input.toLowerCase().contains('take me to')) {
+        input.toLowerCase().contains('take me to') ||
+        input.toLowerCase().contains('from') && input.toLowerCase().contains('to')) {
       await _handleRouteRequest(input);
     } else {
       await _handleGeneralQuery(input);
@@ -101,56 +108,125 @@ class AIAssistantService {
   }
 
   Future<void> _handleRouteRequest(String input) async {
-    // Prompt Gemini to extract locations
-    final prompt = '''Extract the origin and destination locations from this request: "$input". 
-    Return only two locations in JSON format like this: {"origin": "location1", "destination": "location2"}. 
-    If origin is not specified, return "current location" as origin.''';
-
     try {
-      final content = [Content.text(prompt)];
-      final response = await _model!.generateContent(content);
-      final responseText = response.text;
+      // First, acknowledge that we're processing a route request
+      await speak("I'll help you find that route.");
 
-      // Parse the JSON response to extract locations
-      if (responseText != null && responseText.contains('{') && responseText.contains('}')) {
-        final jsonStr = responseText.substring(
-          responseText.indexOf('{'),
-          responseText.lastIndexOf('}') + 1
-        );
+      // Extract locations using more natural language patterns
+      String origin = "current location";
+      String destination = "";
+
+      // Extract destination patterns
+      final toPatterns = [
+        RegExp(r'to\s+(.+?)(?=\s+from|\s*$)', caseSensitive: false),
+        RegExp(r'take me to\s+(.+?)(?=\s+from|\s*$)', caseSensitive: false),
+        RegExp(r'get to\s+(.+?)(?=\s+from|\s*$)', caseSensitive: false),
+      ];
+
+      // Extract origin patterns
+      final fromPatterns = [
+        RegExp(r'from\s+(.+?)(?=\s+to|\s*$)', caseSensitive: false),
+        RegExp(r'starting from\s+(.+?)(?=\s+to|\s*$)', caseSensitive: false),
+        RegExp(r'at\s+(.+?)(?=\s+to|\s*$)', caseSensitive: false),
+      ];
+
+      // Try to extract destination
+      for (var pattern in toPatterns) {
+        final match = pattern.firstMatch(input);
+        if (match != null && match.group(1) != null) {
+          destination = match.group(1)!.trim();
+          break;
+        }
+      }
+
+      // Try to extract origin if mentioned
+      for (var pattern in fromPatterns) {
+        final match = pattern.firstMatch(input);
+        if (match != null && match.group(1) != null) {
+          origin = match.group(1)!.trim();
+          break;
+        }
+      }
+
+      // If no destination found, try to extract any location mentioned
+      if (destination.isEmpty) {
+        final locationPattern = RegExp(r'(?:to|at|near|around)\s+(.+?)(?=\s+|$)', caseSensitive: false);
+        final match = locationPattern.firstMatch(input);
+        if (match != null && match.group(1) != null) {
+          destination = match.group(1)!.trim();
+        }
+      }
+
+      // Validate and standardize locations
+      if (destination.isNotEmpty) {
+        // Standardize common location names
+        if (destination.toLowerCase().contains('sm') && destination.toLowerCase().contains('cebu')) {
+          destination = "SM City Cebu, North Reclamation Area, Cebu City";
+        }
+        if (origin.toLowerCase().contains('up') || origin.toLowerCase().contains('university of the philippines')) {
+          origin = "University of the Philippines Cebu, Gorordo Avenue, Lahug, Cebu City";
+        }
+
+        // Provide feedback and trigger route search
+        if (origin == "current location") {
+          await speak("I'll find directions to $destination from your current location.");
+        } else {
+          await speak("I'll find directions from $origin to $destination.");
+        }
         
-        // Validate locations using Google Places (implementation needed)
-        await speak("I'll help you find the route. Let me validate those locations.");
-        
-        // Call the route search callback with the extracted locations
-        onRouteSearch(
-          jsonStr.contains('"origin"') ? jsonStr.split('"origin":"')[1].split('"')[1] : "current location",
-          jsonStr.contains('"destination"') ? jsonStr.split('"destination":"')[1].split('"')[1] : ""
-        );
-        
-        await speak("I've found the route for you.");
+        onRouteSearch(origin, destination);
       } else {
-        await speak("I couldn't understand the locations. Could you please try again?");
+        await speak("I need to know where you want to go. Could you please specify your destination? For example, say 'Take me to SM City Cebu'.");
       }
     } catch (e) {
-      await speak("I'm sorry, I encountered an error processing your request.");
-      debugPrint('Error processing route request: $e');
+      debugPrint('Error in route request: $e');
+      await speak("I couldn't understand the locations. Please try again with clearer location names.");
     }
   }
 
   Future<void> _handleGeneralQuery(String input) async {
     try {
-      final content = [Content.text(input)];
+      if (input.trim().isEmpty) {
+        await speak("I didn't catch that. Could you please repeat?");
+        return;
+      }
+
+      // Handle common queries without using AI
+      final lowerInput = input.toLowerCase();
+      if (lowerInput.contains('hello') || lowerInput.contains('hi ')) {
+        await speak("Hello! I'm here to help you find routes or answer your questions.");
+        return;
+      }
+      if (lowerInput.contains('how are you')) {
+        await speak("I'm doing well, thank you! How can I assist you today?");
+        return;
+      }
+      if (lowerInput.contains('thank you') || lowerInput.contains('thanks')) {
+        await speak("You're welcome! Let me know if you need anything else.");
+        return;
+      }
+      
+      // For other queries, use Gemini
+      final prompt = '''Act as a helpful AI assistant. Provide a natural, conversational response to: "$input"
+      Keep it concise and friendly. If unsure, ask for clarification.
+      If it's about locations, provide helpful navigation-related information.''';
+      
+      final content = [Content.text(prompt)];
       final response = await _model!.generateContent(content);
       final responseText = response.text;
       
-      if (responseText != null) {
-        await speak(responseText);
+      if (responseText != null && responseText.isNotEmpty) {
+        String cleanResponse = responseText
+            .replaceAll(RegExp(r'\*\*|\*|`|#|>'), '')
+            .replaceAll(RegExp(r'\n{2,}'), ' ')
+            .trim();
+        await speak(cleanResponse);
       } else {
-        await speak("I'm sorry, I couldn't generate a response.");
+        await speak("I'm not sure about that. Could you please rephrase your question?");
       }
     } catch (e) {
-      await speak("I'm sorry, I encountered an error processing your request.");
-      debugPrint('Error processing general query: $e');
+      debugPrint('Error in general query: $e');
+      await speak("I'm having trouble processing that request. Could you try asking in a different way?");
     }
   }
 
