@@ -18,7 +18,7 @@ Future<void> main() async {
   }
 
   await requestLocationServices();
-  
+
   runApp(
     MultiProvider(
       providers: [
