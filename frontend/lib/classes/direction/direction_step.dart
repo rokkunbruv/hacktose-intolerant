@@ -13,9 +13,9 @@ class DirectionStep {
   final String? jeepneyCode;
   late double? jeepneyFare;
   late Location? origin;
-  final LatLng? originCoords;
+  final LatLng originCoords;
   late Location? destination;
-  final LatLng? destinationCoords;
+  final LatLng destinationCoords;
   final Polyline polyline;
 
   DirectionStep({
@@ -25,9 +25,9 @@ class DirectionStep {
     this.jeepneyName,
     this.jeepneyCode,
     this.origin,
-    this.originCoords,
+    required this.originCoords,
     this.destination,
-    this.destinationCoords,
+    required this.destinationCoords,
     required this.polyline,
   });
 
@@ -45,17 +45,14 @@ class DirectionStep {
     );
     int duration = int.parse(json['staticDuration'].replaceAll(RegExp(r'[^0-9]'), ''));
     Polyline polyline = decodePolyline(json['polyline']['encodedPolyline']);
+    LatLng originCoords = LatLng(originJson['latitude'].toDouble(), originJson['longitude'].toDouble());
+    LatLng destinationCoords = LatLng(destinationJson['latitude'].toDouble(), destinationJson['longitude'].toDouble());
     String? jeepneyName;
     String? jeepneyCode;
-    LatLng? originCoords;
-    LatLng? destinationCoords;
 
     if (travelMode == 'TRANSIT' && json['transitDetails'] != null) {
       jeepneyName = json['transitDetails']['transitLine']['name'];
       jeepneyCode = json['transitDetails']['transitLine']['nameShort'];
-
-      originCoords = LatLng(originJson['latitude'].toDouble(), originJson['longitude'].toDouble());
-      destinationCoords = LatLng(destinationJson['latitude'].toDouble(), destinationJson['longitude'].toDouble());
     }
     
     return DirectionStep(

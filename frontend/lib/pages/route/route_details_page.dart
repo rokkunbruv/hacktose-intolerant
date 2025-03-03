@@ -48,6 +48,7 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
         jeepCode: step.jeepneyCode,
         fare: step.jeepneyFare?.toStringAsFixed(2),
         dropOff: step.destination?.address,
+        duration: '${(step.duration / 60).round().toString()}m',
         distance: step.distance.toStringAsFixed(2),
       ));
 
@@ -58,12 +59,16 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
           jeepCode: step.jeepneyCode,
           fare: step.jeepneyFare?.toStringAsFixed(2),
           dropOff: step.destination?.address,
+          duration: '${(step.duration / 60).round().toString()}m',
           distance: step.distance.toStringAsFixed(2),
         ));
       }
     }
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => FollowRoutePage(stepItems: stepItems)));
+      builder: (context) => FollowRoutePage(
+        route: widget.route,
+        stepItems: stepItems
+      )));
   }
 
   @override
@@ -198,7 +203,7 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
                     Text('Total Fare:',
                         style: AppTextStyles.label5
                             .copyWith(color: AppColors.black)),
-                    Text('₱30.00',
+                    Text('₱${widget.route.totalFare.toStringAsFixed(2)}',
                         style: AppTextStyles.label2.copyWith(
                             color: AppColors.black,
                             fontWeight: FontWeight.bold))

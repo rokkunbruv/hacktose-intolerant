@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:tultul/constants/step_types.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
@@ -26,7 +25,7 @@ class ActiveStepItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(child: _generateContainer());
+    return _generateContainer(); // Removed Expanded to prevent ParentDataWidget error
   }
 
   Widget _generateContainer() {
@@ -35,7 +34,7 @@ class ActiveStepItem extends StatelessWidget {
         return _createWalkContainer();
       case StepType.transport:
         return _createTransportContainer();
-      case StepType.end: //use type 'end' for drop off containers
+      case StepType.end:
         return _createDropOffContainer();
       default:
         return SizedBox();
@@ -45,20 +44,31 @@ class ActiveStepItem extends StatelessWidget {
   Widget _createWalkContainer() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Icon(Icons.directions_walk, color: AppColors.red, size: 20),
-              Text('Walking to $location',
-                  style: AppTextStyles.label3.copyWith(color: AppColors.black)),
-            ],
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Icon(Icons.directions_walk, color: AppColors.red, size: 20),
+                const SizedBox(width: 5),
+                Expanded( // Ensures the text doesn't overflow
+                  child: Text(
+                    'Walking to $dropOff',
+                    style: AppTextStyles.label3.copyWith(color: AppColors.black),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
-          Text('$duration',
-              style: AppTextStyles.label5.copyWith(color: AppColors.lightNavy)),
+          Text(
+            '$duration',
+            style: AppTextStyles.label5.copyWith(color: AppColors.lightNavy),
+          ),
         ],
       ),
     );
@@ -76,49 +86,43 @@ class ActiveStepItem extends StatelessWidget {
             height: 20,
             color: AppColors.red,
           ),
-          const SizedBox(
-            width: 5,
-          ),
+          const SizedBox(width: 5),
           Wrap(
             children: [
               Row(
                 children: [
                   Text(
                     'Riding',
-                    style:
-                        AppTextStyles.label3.copyWith(color: AppColors.black),
+                    style: AppTextStyles.label3.copyWith(color: AppColors.black),
                   ),
-                  const SizedBox(
-                    width: 5.5,
-                  ),
+                  const SizedBox(width: 5.5),
                   Text(
                     '$jeepCode',
-                    style:
-                        AppTextStyles.label3.copyWith(color: AppColors.saffron),
+                    style: AppTextStyles.label3.copyWith(color: AppColors.saffron),
                   )
                 ],
               ),
             ],
           ),
-          const SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('₱$fare',
-                      style:
-                          AppTextStyles.label4.copyWith(color: AppColors.red)),
-                  Expanded(
+                  Text(
+                    '₱$fare',
+                    style: AppTextStyles.label4.copyWith(color: AppColors.red),
+                  ),
+                  Flexible( // Ensures text does not overflow
                     child: Text(
                       'From $location',
-                      style:
-                          AppTextStyles.label5.copyWith(color: AppColors.black),
+                      style: AppTextStyles.label5.copyWith(color: AppColors.black),
                       textAlign: TextAlign.right,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                 ],
@@ -135,7 +139,7 @@ class ActiveStepItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 5),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -147,15 +151,13 @@ class ActiveStepItem extends StatelessWidget {
                 height: 20,
                 color: AppColors.red,
               ),
-              const SizedBox(
-                width: 10,
-              ),
-              Expanded(
+              const SizedBox(width: 10),
+              Expanded( // Prevents text overflow
                 child: Text(
                   'Getting off at $dropOff',
-                  style: AppTextStyles.label4.copyWith(
-                    color: AppColors.black,
-                  ),
+                  style: AppTextStyles.label4.copyWith(color: AppColors.black),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ),
             ],

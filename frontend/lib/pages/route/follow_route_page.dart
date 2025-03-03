@@ -1,152 +1,181 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:provider/provider.dart';
-import 'package:tultul/constants/step_types.dart';
-import 'package:tultul/constants/travel_modes.dart';
-import 'package:tultul/pages/route/finished_route_page.dart';
 
-import 'package:tultul/widgets/generic/draggable_container.dart';
+import 'package:tultul/classes/route/commute_route.dart';
+import 'package:tultul/constants/step_types.dart';
+import 'package:tultul/pages/route/finished_route_page.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/styles/widget/box_shadow_style.dart';
-
+import 'package:tultul/utils/time/format_time.dart';
 import 'package:tultul/widgets/steps/step_item.dart';
 import 'package:tultul/widgets/steps/active_step_item.dart';
+import 'package:tultul/widgets/map/map_view.dart';
 
 class FollowRoutePage extends StatefulWidget {
+  final CommuteRoute route;
   final List<Widget> stepItems;
-  const FollowRoutePage({super.key, required this.stepItems});
+  
+  const FollowRoutePage({
+    super.key, 
+    required this.route,
+    required this.stepItems
+  });
 
   @override
   State<FollowRoutePage> createState() => _FollowRoutePageState();
 }
 
 class _FollowRoutePageState extends State<FollowRoutePage> {
-  // final List<Widget> containerList = ;
-
   int currentIndex = 0;
   int next = 1;
 
-  void swapContent() {
+  void nextStep() {
     setState(() {
-      // Move to the next index or loop back to 0
       if (currentIndex < widget.stepItems.length - 1) {
         currentIndex++;
-        next = (currentIndex + 1) % widget.stepItems.length;
-        print(currentIndex);
-        print(next);
+        next = (currentIndex + 1 < widget.stepItems.length) ? currentIndex + 1 : currentIndex;
       }
     });
   }
+
+  void previousStep() {
+    setState(() {
+      if (currentIndex > 0) { // Prevent going below 0
+        currentIndex--;
+        next = (currentIndex - 1 >= 1) ? currentIndex - 1 : 1; // Prevent 0
+      }
+    });
+  }
+
 
   void navigateExitPage() {
     Navigator.of(context).pop();
   }
 
   void navigateToFinishedRoutePage() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => FinishedRoutePage()));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => FinishedRoutePage()),
+    );
+  }
+
+  StepItem? getCurrentStepItem() {
+    if (widget.stepItems.isNotEmpty && currentIndex >= 0 && currentIndex < widget.stepItems.length) {
+      return widget.stepItems[currentIndex] as StepItem;
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.stepItems.isEmpty) {
+      return Scaffold(
+        body: Center(
+          child: Text('No steps available'),
+        ),
+      );
+    }
+
     double progress = (currentIndex + 1) / widget.stepItems.length;
+
+    final totalDuration = Duration(seconds: widget.route.totalDuration);
+    final totalDurationInHours = totalDuration.inHours.toString().padLeft(2, '0');
+    final totalDurationInMinutes = totalDuration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final formattedTotalDuration = '${totalDurationInHours}h ${totalDurationInMinutes}m';
+
+    final arrivalTime = formatTime(widget.route.arrivalTime);
+
+    final currentStepItem = getCurrentStepItem();
 
     return Scaffold(
       body: Stack(
-        children: [
-          Center(
-            child: ElevatedButton(
-              onPressed: (currentIndex == widget.stepItems.length - 1)
-                  ? navigateToFinishedRoutePage
-                  : swapContent,
-              child: Text("Next"),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 250,
-              width: double.infinity,
-              color: AppColors.bg,
-              child: Expanded(
-                child: Column(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          height: 80,
-                          width: 385,
-                          child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
-                              decoration: BoxDecoration(
-                                color: (widget.stepItems.isNotEmpty &&
-                                        (widget.stepItems[currentIndex]
-                                                    as StepItem)
-                                                .type ==
-                                            StepType.walk)
-                                    ? AppColors.skyBlue
-                                    : AppColors.lightVanilla,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  createBoxShadow(),
-                                ],
-                              ),
-                              child: ActiveStepItem(
-                                type:
-                                    (widget.stepItems[currentIndex] as StepItem)
-                                        .type,
-                                location:
-                                    (widget.stepItems[currentIndex] as StepItem)
-                                        .location,
-                                jeepCode:
-                                    (widget.stepItems[currentIndex] as StepItem)
-                                        .jeepCode,
-                                fare:
-                                    (widget.stepItems[currentIndex] as StepItem)
-                                        .fare,
-                                dropOff:
-                                    (widget.stepItems[currentIndex] as StepItem)
-                                        .dropOff,
-                                duration:
-                                    (widget.stepItems[currentIndex] as StepItem)
-                                        .duration,
-                                distance:
-                                    (widget.stepItems[currentIndex] as StepItem)
-                                        .distance,
-                              )),
+        children: <Widget>[
+          // MAP VIEW
+          MapView(),
+
+          // STEP WIDGETS ABOVE THE BOTTOM NAVIGATION BAR
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.white,
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    if (next != 0 && next < widget.stepItems.length)
-                      SizedBox(
-                        height: 100,
-                        width: double.infinity,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          decoration: BoxDecoration(
-                            color: AppColors.bg,
-                            boxShadow: [
-                              createBoxShadow(),
-                            ],
-                          ),
-                          child: widget.stepItems[next],
+                        onPressed: (currentIndex > 0) ? previousStep : navigateExitPage,
+                        child: Text(
+                          "Back",
+                          style: AppTextStyles.label5,
                         ),
                       ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                  ],
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.white,
+                        ),
+                        onPressed: (currentIndex == widget.stepItems.length - 1)
+                            ? navigateToFinishedRoutePage
+                            : nextStep,
+                        child: Text(
+                          "Next",
+                          style: AppTextStyles.label5,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                SizedBox(height: 10),
+
+                // CURRENT STEP
+                Container(
+                  height: 80,
+                  width: 385,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    color: (currentStepItem != null && currentStepItem.type == StepType.walk)
+                        ? AppColors.skyBlue
+                        : AppColors.lightVanilla,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [createBoxShadow()],
+                  ),
+                  child: currentStepItem != null
+                      ? ActiveStepItem(
+                          type: currentStepItem.type,
+                          location: currentStepItem.location,
+                          jeepCode: currentStepItem.jeepCode,
+                          fare: currentStepItem.fare,
+                          dropOff: currentStepItem.dropOff,
+                          duration: currentStepItem.duration,
+                          distance: currentStepItem.distance,
+                        )
+                      : SizedBox(),
+                ),
+                SizedBox(height: 10),
+
+                // NEXT STEP
+                if (next > 0 && next < widget.stepItems.length)
+                  Container(
+                    height: 80,
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.bg,
+                      boxShadow: [createBoxShadow()],
+                    ),
+                    child: widget.stepItems[next],
+                  ),
+              ],
             ),
           ),
         ],
       ),
+
+      // BOTTOM NAVIGATION BAR
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.bg,
@@ -172,55 +201,71 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
                           child: TextButton(
                             onPressed: navigateExitPage,
                             child: Container(
-                                padding: EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: AppColors.red,
-                                  borderRadius: BorderRadius.circular(20),
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: AppColors.red,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Exit',
+                                  style: AppTextStyles.label3.copyWith(
+                                    color: AppColors.bg,
+                                  ),
                                 ),
-                                child: Center(
-                                  child: Text('Exit',
-                                      style: AppTextStyles.label3.copyWith(
-                                        color: AppColors.bg,
-                                      )),
-                                )),
+                              ),
+                            ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
+                        SizedBox(width: 10),
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Total Travel Time:',
-                                style: AppTextStyles.label5
-                                    .copyWith(color: AppColors.black)),
-                            Text('1 h 14 mins',
-                                style: AppTextStyles.label2.copyWith(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.bold)),
-                            Text('Arrive at 8:00 PM',
-                                style: AppTextStyles.label5
-                                    .copyWith(color: AppColors.gray)),
+                            Text(
+                              'Total Travel Time:',
+                              style: AppTextStyles.label5.copyWith(
+                                color: AppColors.black,
+                              ),
+                            ),
+                            Text(
+                              formattedTotalDuration,
+                              style: AppTextStyles.label2.copyWith(
+                                color: AppColors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Arrive at $arrivalTime',
+                              style: AppTextStyles.label5.copyWith(
+                                color: AppColors.gray,
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Wrap(
                       children: [
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Total Fare:',
-                                style: AppTextStyles.label5
-                                    .copyWith(color: AppColors.black)),
-                            Text('₱30.00',
-                                style: AppTextStyles.label2.copyWith(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.bold)),
+                            Text(
+                              'Total Fare:',
+                              style: AppTextStyles.label5.copyWith(
+                                color: AppColors.black,
+                              ),
+                            ),
+                            Text(
+                              '₱${widget.route.totalFare.toStringAsFixed(2)}',
+                              style: AppTextStyles.label2.copyWith(
+                                color: AppColors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -228,18 +273,16 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 child: LinearProgressIndicator(
-                  value: progress, // Updates based on step progress
-                  backgroundColor: AppColors.skyBlue, // Background color
+                  value: progress.clamp(0.0, 1.0),
+                  backgroundColor: AppColors.skyBlue,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.saffron), // Progress color
-                  minHeight: 8, // Thickness
+                    AppColors.saffron,
+                  ),
+                  minHeight: 8,
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),

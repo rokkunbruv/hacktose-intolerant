@@ -26,7 +26,7 @@ class StepItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(child: _generateContainer());
+    return _generateContainer();
   }
 
   Widget _generateContainer() {
@@ -70,60 +70,62 @@ class StepItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 5),
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset(
-            'assets/icons/jeepney icon-small.png',
-            width: 20,
-            height: 20,
-            color: AppColors.gray,
-          ),
-          const SizedBox(
-            width: 5,
-          ),
-          Wrap(
+          Row(
             children: [
-              Row(
+              Image.asset(
+                'assets/icons/jeepney icon-small.png',
+                width: 20,
+                height: 20,
+                color: AppColors.gray,
+              ),
+              SizedBox(width: 5),
+              Wrap(
                 children: [
-                  Text(
-                    'Ride',
-                    style:
-                        AppTextStyles.label3.copyWith(color: AppColors.black),
+                  Row(
+                    children: [
+                      Text(
+                        'Ride',
+                        style:
+                            AppTextStyles.label3.copyWith(color: AppColors.black),
+                      ),
+                      const SizedBox(
+                        width: 5.5,
+                      ),
+                      Text(
+                        '$jeepCode',
+                        style:
+                            AppTextStyles.label3.copyWith(color: AppColors.saffron),
+                      )
+                    ],
                   ),
-                  const SizedBox(
-                    width: 5.5,
-                  ),
-                  Text(
-                    '$jeepCode',
-                    style:
-                        AppTextStyles.label3.copyWith(color: AppColors.saffron),
-                  )
                 ],
               ),
             ],
           ),
           const SizedBox(
+            width: 5,
+          ),
+          const SizedBox(
             width: 10,
           ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text('₱$fare',
-                      style:
-                          AppTextStyles.label4.copyWith(color: AppColors.red)),
-                  Expanded(
-                    child: Text(
-                      'From $location',
-                      style:
-                          AppTextStyles.label5.copyWith(color: AppColors.black),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                ],
-              ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 2, vertical: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text('₱$fare',
+                    style:
+                        AppTextStyles.label4.copyWith(color: AppColors.red)),
+                Text(
+                  'From $location',
+                  style:
+                      AppTextStyles.label5.copyWith(color: AppColors.black),
+                  textAlign: TextAlign.right,
+                ),
+              ],
             ),
           )
         ],
@@ -167,7 +169,7 @@ class StepItem extends StatelessWidget {
                   style: AppTextStyles.label3.copyWith(color: AppColors.red)),
             ],
           ),
-          Expanded(child: Text('Get off at $dropOff')),
+          Text('Get off at $dropOff'),
         ],
       ),
     );

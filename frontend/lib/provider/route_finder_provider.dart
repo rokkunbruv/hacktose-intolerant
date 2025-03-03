@@ -129,7 +129,6 @@ class RouteFinderProvider extends ChangeNotifier {
     }
 
     isLoading = true;
-    debugPrint(isLoading.toString());
 
     try {
       routes = await RoutesApi.getDirections(
@@ -151,7 +150,7 @@ class RouteFinderProvider extends ChangeNotifier {
       debugPrint(e.toString());
     }
 
-    isLoading = false;debugPrint(isLoading.toString());
+    isLoading = false;
   }
 
   // update fare calculations
@@ -176,10 +175,8 @@ class RouteFinderProvider extends ChangeNotifier {
   Future<void> getStepLocations() async {
     for (CommuteRoute route in routes) {
       for (DirectionStep step in route.path.legs[0].steps) {
-        if (step.travelMode == transit) {
-          step.origin = await PlacesApi.getNearestPlace(step.originCoords ?? LatLng(0, 0));
-          step.destination = await PlacesApi.getNearestPlace(step.destinationCoords ?? LatLng(0, 0));
-        }
+        step.origin = await PlacesApi.getNearestPlace(step.originCoords);
+        step.destination = await PlacesApi.getNearestPlace(step.destinationCoords);
       }
     }
   }

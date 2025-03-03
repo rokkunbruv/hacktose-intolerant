@@ -72,6 +72,8 @@ class DirectionLeg {
       distance: totalDistance,
       duration: totalDuration,
       polyline: combinedPolyline,
+      originCoords: walkSteps[0].originCoords,
+      destinationCoords: walkSteps[walkSteps.length - 1].destinationCoords,
     );
   }
 }
