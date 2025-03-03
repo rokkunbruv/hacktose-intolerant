@@ -20,8 +20,9 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
   GoogleMapController? _mapController;
   Set<Polyline> _polylines = {};
   List<String> _routeNames = [];
-  List<LatLng> _allPoints = []; // Store all route points
-  bool _isCameraMovedByUser = false; // ✅ Track if user has moved the camera
+  List<LatLng> _allPoints = [];
+  bool _isCameraMovedByUser = false;
+  bool _isMapLoaded = false;
 
   @override
   void initState() {
@@ -30,8 +31,7 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
   }
 
   Future<void> loadRoutes() async {
-    final String apiUrl =
-        "http://3.106.113.161:8080/jeepney_routes/${widget.jsonFile}";
+    final String apiUrl = "http://3.106.113.161:8080/jeepney_routes/${widget.jsonFile}";
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -74,9 +74,9 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
           _polylines = polylines;
           _routeNames = routeNames;
           _allPoints = allPoints;
+          _isMapLoaded = true;
         });
 
-        // ✅ Only move camera if the user hasn't manually moved it
         if (_mapController != null && _allPoints.isNotEmpty && !_isCameraMovedByUser) {
           _calculateBounds(_allPoints);
         }
@@ -90,13 +90,9 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-
-    // ✅ Only move camera initially, but never reset user movement
-    Future.delayed(Duration.zero, () {
-      if (_allPoints.isNotEmpty && !_isCameraMovedByUser) {
-        _calculateBounds(_allPoints);
-      }
-    });
+    if (_allPoints.isNotEmpty && !_isCameraMovedByUser) {
+      _calculateBounds(_allPoints);
+    }
   }
 
   void _calculateBounds(List<LatLng> routePoints) {
@@ -117,17 +113,12 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
       northeast: LatLng(maxLat, maxLng),
     );
 
-    // ✅ Move camera only if user hasn't moved it manually
     if (!_isCameraMovedByUser) {
       _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
     }
   }
 
-  /// ✅ Track when user moves the camera
   void _onCameraMove(CameraPosition position) {
-    if (!_isCameraMovedByUser) {
-      print("📍 User moved the camera. Stopping auto-reset.");
-    }
     _isCameraMovedByUser = true;
   }
 
@@ -142,68 +133,66 @@ class _JeepneyRouteMapState extends State<JeepneyRouteMap> {
       ),
       body: Stack(
         children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: LatLng(10.299297, 123.888721),
-              zoom: 14.5,
-            ),
-            polylines: _polylines,
-            onMapCreated: _onMapCreated,
-            onCameraMove: _onCameraMove, // ✅ Detects user zoom/pan
-          ),
-          DraggableContainer(
-            child: Padding(
-              padding: EdgeInsets.all(30),
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(bottom: 20),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: AppColors.lightGray),
+          _isMapLoaded
+              ? GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(10.299297, 123.888721),
+                    zoom: 14.5,
+                  ),
+                  polylines: _polylines,
+                  onMapCreated: _onMapCreated,
+                  onCameraMove: _onCameraMove,
+                )
+              : Center(child: CircularProgressIndicator()),
+          if (_isMapLoaded)
+            DraggableContainer(
+              child: Padding(
+                padding: EdgeInsets.all(30),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: AppColors.lightGray),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.arrow_back_ios),
+                          const SizedBox(width: 120),
+                          Text(
+                            widget.jsonFile,
+                            style: AppTextStyles.label1.copyWith(color: AppColors.red),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.arrow_back_ios),
-                        const SizedBox(width: 120),
-                        Text(
-                          widget.jsonFile,
-                          style: AppTextStyles.label1
-                              .copyWith(color: AppColors.red),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30.0),
-                  Column(
-                    children: _routeNames.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      String name = entry.value;
-                      Image icon = index == 0
-                          ? Image.asset('assets/icons/route_legend_yellow.png',
-                              width: 30, height: 30)
-                          : Image.asset('assets/icons/route_legend_blue.png',
-                              width: 30, height: 30);
+                    const SizedBox(height: 30.0),
+                    Column(
+                      children: _routeNames.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        String name = entry.value;
+                        Image icon = index == 0
+                            ? Image.asset('assets/icons/route_legend_yellow.png', width: 30, height: 30)
+                            : Image.asset('assets/icons/route_legend_blue.png', width: 30, height: 30);
 
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Row(
-                          children: [
-                            icon,
-                            const SizedBox(width: 5),
-                            Text(name,
-                                style: AppTextStyles.label4
-                                    .copyWith(color: AppColors.black)),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Row(
+                            children: [
+                              icon,
+                              const SizedBox(width: 5),
+                              Text(name, style: AppTextStyles.label4.copyWith(color: AppColors.black)),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
