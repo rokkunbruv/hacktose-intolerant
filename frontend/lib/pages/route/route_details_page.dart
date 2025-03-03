@@ -14,6 +14,7 @@ import 'package:tultul/widgets/steps/step_item.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/pages/route/follow_route_page.dart';
 import 'package:tultul/utils/time/format_time.dart';
 
@@ -50,6 +51,7 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
         dropOff: step.destination?.address,
         duration: '${(step.duration / 60).round().toString()}m',
         distance: step.distance.toStringAsFixed(2),
+        polyline: step.polyline
       ));
 
       if (type == StepType.transport) {
@@ -61,6 +63,7 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
           dropOff: step.destination?.address,
           duration: '${(step.duration / 60).round().toString()}m',
           distance: step.distance.toStringAsFixed(2),
+          polyline: step.polyline,
         ));
       }
     }
@@ -74,6 +77,7 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final routeProvider = Provider.of<RouteFinderProvider>(context);
+    final positionProvider = Provider.of<PositionProvider>(context);
 
     final steps = widget.route.path.legs[0].steps;
 
@@ -88,72 +92,72 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
       body: Stack(children: <Widget>[
         // MAP VIEW
         MapView(
-          markers: routeProvider.getMarkers(),
+          markers: routeProvider.getMarkers().union(
+            {positionProvider.currentPositionMarker!}
+          ),
           polylines: {widget.route.path.polyline},
         ),
 
-        Expanded(
-          child: DraggableContainer(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 40),
-              child: Column(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.gray,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: SizedBox(height: 4, width: 64),
+        DraggableContainer(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 40),
+            child: Column(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.gray,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    SizedBox(height: 32),
-
-                    // SUGGESTED ROUTES HEADER
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            'Route Details',
-                            style: AppTextStyles.label2.copyWith(
-                              color: AppColors.black,
-                            ),
+                    child: SizedBox(height: 4, width: 64),
+                  ),
+                  SizedBox(height: 32),
+        
+                  // SUGGESTED ROUTES HEADER
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Route Details',
+                          style: AppTextStyles.label2.copyWith(
+                            color: AppColors.black,
                           ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.cancel,
-                              color: AppColors.lightGray,
-                            ),
-                            onPressed: navigateBack,
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.cancel,
+                            color: AppColors.lightGray,
                           ),
-                        ],
-                      ),
+                          onPressed: navigateBack,
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 16),
-
-                    RouteSteps(type: StepType.start),
-                  ] +
-                  steps.asMap().entries.map((entry) {
-                    DirectionStep step = entry.value;
-                    StepType type = (step.travelMode == transit)
-                        ? StepType.transport
-                        : StepType.walk;
-                    StepType? type2 = (entry.key == steps.length - 1)
-                        ? StepType.end
-                        : null;
-
-                    return RouteSteps(
-                      type: type,
-                      type2: type2,
-                      location: step.origin?.address,
-                      jeepCode: step.jeepneyCode,
-                      fare: step.jeepneyFare?.toStringAsFixed(2),
-                      dropOff: step.destination?.address,
-                      duration: (step.duration / 60).round().toString(),
-                      distance: step.distance.toStringAsFixed(0),
-                    );
-                  }).toList()),
-            ),
+                  ),
+                  SizedBox(height: 16),
+        
+                  RouteSteps(type: StepType.start),
+                ] +
+                steps.asMap().entries.map((entry) {
+                  DirectionStep step = entry.value;
+                  StepType type = (step.travelMode == transit)
+                      ? StepType.transport
+                      : StepType.walk;
+                  StepType? type2 = (entry.key == steps.length - 1)
+                      ? StepType.end
+                      : null;
+        
+                  return RouteSteps(
+                    type: type,
+                    type2: type2,
+                    location: step.origin?.address,
+                    jeepCode: step.jeepneyCode,
+                    fare: step.jeepneyFare?.toStringAsFixed(2),
+                    dropOff: step.destination?.address,
+                    duration: (step.duration / 60).round().toString(),
+                    distance: step.distance.toStringAsFixed(0),
+                  );
+                }).toList()),
           ),
         ),
       ]),

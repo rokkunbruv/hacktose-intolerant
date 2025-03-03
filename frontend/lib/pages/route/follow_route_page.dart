@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+
 import 'package:tultul/classes/route/commute_route.dart';
 import 'package:tultul/constants/step_types.dart';
 import 'package:tultul/pages/route/finished_route_page.dart';
+import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/styles/widget/box_shadow_style.dart';
@@ -29,6 +33,8 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
   int currentIndex = 0;
   int next = 1;
 
+  Polyline? polyline;
+
   void nextStep() {
     setState(() {
       if (currentIndex < widget.stepItems.length - 1) {
@@ -36,6 +42,8 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
         next = (currentIndex + 1 < widget.stepItems.length) ? currentIndex + 1 : currentIndex;
       }
     });
+
+    setPolyline();
   }
 
   void previousStep() {
@@ -45,6 +53,8 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
         next = (currentIndex - 1 >= 1) ? currentIndex - 1 : 1; // Prevent 0
       }
     });
+
+    setPolyline();
   }
 
 
@@ -65,8 +75,23 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
     return null;
   }
 
+  void setPolyline() {
+    setState(() => 
+      polyline = getCurrentStepItem()?.polyline
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    setPolyline();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final positionProvider = Provider.of<PositionProvider>(context);
+    
     if (widget.stepItems.isEmpty) {
       return Scaffold(
         body: Center(
@@ -90,7 +115,12 @@ class _FollowRoutePageState extends State<FollowRoutePage> {
       body: Stack(
         children: <Widget>[
           // MAP VIEW
-          MapView(),
+          MapView(
+            markers: {positionProvider.currentPositionMarker!},
+            polylines: (polyline != null)
+                ? {polyline!}
+                : null,
+          ),
 
           // STEP WIDGETS ABOVE THE BOTTOM NAVIGATION BAR
           Positioned(

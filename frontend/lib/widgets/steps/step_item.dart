@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:tultul/constants/step_types.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
@@ -12,6 +14,7 @@ class StepItem extends StatelessWidget {
   final String? dropOff;
   final String? duration;
   final String? distance;
+  final Polyline? polyline;
 
   const StepItem({
     super.key,
@@ -22,6 +25,7 @@ class StepItem extends StatelessWidget {
     this.dropOff,
     this.duration,
     this.distance,
+    this.polyline,
   });
 
   @override
