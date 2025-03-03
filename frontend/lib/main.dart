@@ -22,6 +22,7 @@ Future<void> main() async {
     debugPrint(e.toString());
   }
 
+
   runApp(
     MultiProvider(
       providers: [
@@ -39,12 +40,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Hacktose Intolerant App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       // home: const SearchRoutesPage(),
+      // home: const SearchLocationPage(),
       // home: const HomePage(),
       // home: const SearchLocationPage(),
       // home: MapScreen(),
@@ -53,3 +56,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

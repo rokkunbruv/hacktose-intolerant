@@ -58,7 +58,7 @@ class _DraggableContainerState extends State<DraggableContainer> {
     return LayoutBuilder(builder: (builder, constraints) {
       return DraggableScrollableSheet(
           key: sheet,
-          initialChildSize: 0.35,
+          initialChildSize: 0.5,
           maxChildSize: 0.95,
           minChildSize: 0,
           expand: true,
@@ -79,6 +79,7 @@ class _DraggableContainerState extends State<DraggableContainer> {
               child: CustomScrollView(
                 controller: scrollController,
                 slivers: [
+                  topButtonIndicator(),
                   SliverToBoxAdapter(
                     child: widget.child,
                   ),
@@ -105,5 +106,35 @@ class _DraggableContainerState extends State<DraggableContainer> {
     //     child: widget.child,
     //   ),
     // );
+  }
+
+  SliverToBoxAdapter topButtonIndicator() {
+    return SliverToBoxAdapter(
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              child: Center(
+                child: Wrap(
+                  children: [
+                    Container(
+                      width: 80,
+                      margin: EdgeInsets.only(top: 10, bottom: 10),
+                      height: 5,
+                      decoration: BoxDecoration(
+                          color: AppColors.gray,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
