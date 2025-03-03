@@ -9,6 +9,7 @@ import 'package:tultul/provider/search_locations_provider.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
 import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/widgets/location/locations_list.dart';
+import 'package:tultul/widgets/generic/loading.dart';
 import 'package:tultul/pages/route/search_routes_page.dart';
 
 class SearchLocationPage extends StatefulWidget {
@@ -168,14 +169,14 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                         children: [
                           Icon(
                             Icons.my_location_outlined,
-                            color: Colors.blue[700],
+                            color: AppColors.navy,
                             size: 24,
                           ),
                           SizedBox(width: 16),
                           Text(
                             'Use Current Location',
                             style: TextStyle(
-                              color: Colors.blue[700],
+                              color: AppColors.navy,
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                             ),
@@ -186,31 +187,17 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                   ),
                 ),
               ),
-              Divider(height: 1, color: Colors.grey[300]),
+              Divider(height: 1, color: AppColors.gray),
               // Search results
               Expanded(
                 child: Container(
-                  color: Colors.grey[50],
+                  color: AppColors.bg,
                   child: provider.isLoading
                     ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[700]!),
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Searching for locations...',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
+                      child: Loading(
+                        loadingMessage: 'Searching for locations'
+                      ),
+                    )
                     : provider.locations.isEmpty && provider.locationController.text.isNotEmpty
                       ? Center(
                           child: Column(

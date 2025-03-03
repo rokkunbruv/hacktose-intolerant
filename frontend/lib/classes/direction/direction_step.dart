@@ -1,7 +1,7 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_polyline_algorithm/google_polyline_algorithm.dart' as google_polyline;
 import 'package:geolocator/geolocator.dart';
 
+import 'package:tultul/classes/location/location.dart';
 import 'package:tultul/utils/route/decode_polyline.dart';
 
 /// models a single transit step.
@@ -12,8 +12,10 @@ class DirectionStep {
   final String? jeepneyName;
   final String? jeepneyCode;
   late double? jeepneyFare;
-  final String? origin;
-  final String? destination;
+  late Location? origin;
+  final LatLng? originCoords;
+  late Location? destination;
+  final LatLng? destinationCoords;
   final Polyline polyline;
 
   DirectionStep({
@@ -23,7 +25,9 @@ class DirectionStep {
     this.jeepneyName,
     this.jeepneyCode,
     this.origin,
+    this.originCoords,
     this.destination,
+    this.destinationCoords,
     required this.polyline,
   });
 
@@ -43,19 +47,15 @@ class DirectionStep {
     Polyline polyline = decodePolyline(json['polyline']['encodedPolyline']);
     String? jeepneyName;
     String? jeepneyCode;
-    String? origin;
-    String? destination;
+    LatLng? originCoords;
+    LatLng? destinationCoords;
 
     if (travelMode == 'TRANSIT' && json['transitDetails'] != null) {
       jeepneyName = json['transitDetails']['transitLine']['name'];
       jeepneyCode = json['transitDetails']['transitLine']['nameShort'];
 
-      LatLng originCoords = LatLng(originJson['latitude'].toDouble(), originJson['longitude'].toDouble());
-      LatLng destinationCoords = LatLng(destinationJson['latitude'].toDouble(), destinationJson['longitude'].toDouble());
-      
-      // convert coordinates to locations using places api
-      origin = originCoords.toString();
-      destination = destinationCoords.toString();
+      originCoords = LatLng(originJson['latitude'].toDouble(), originJson['longitude'].toDouble());
+      destinationCoords = LatLng(destinationJson['latitude'].toDouble(), destinationJson['longitude'].toDouble());
     }
     
     return DirectionStep(
@@ -64,8 +64,8 @@ class DirectionStep {
       duration: duration,
       jeepneyName: jeepneyName,
       jeepneyCode: jeepneyCode,
-      origin: origin,
-      destination: destination,
+      originCoords: originCoords,
+      destinationCoords: destinationCoords,
       polyline: polyline,
     );
   }

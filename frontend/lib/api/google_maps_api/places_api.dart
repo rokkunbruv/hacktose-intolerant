@@ -118,7 +118,7 @@ class PlacesApi {
 
   static Future<Location?> getNearestPlace(LatLng coordinates) async {
     try {
-      print('Getting nearest place for: ${coordinates.latitude}, ${coordinates.longitude}');
+      debugPrint('Getting nearest place for: ${coordinates.latitude}, ${coordinates.longitude}');
       
       // First, search for nearby places
       final nearbyResponse = await _dio.get(
@@ -132,7 +132,7 @@ class PlacesApi {
         },
       );
 
-      print('Nearby search response: ${nearbyResponse.data}');
+      debugPrint('Nearby search response: ${nearbyResponse.data}');
 
       if (nearbyResponse.data['status'] == 'OK' && nearbyResponse.data['results'].isNotEmpty) {
         final nearestPlace = nearbyResponse.data['results'][0];
@@ -146,7 +146,7 @@ class PlacesApi {
           ),
         );
 
-        print('Found nearest place: ${location.address} at ${location.coordinates}');
+        debugPrint('Found nearest place: ${location.address} at ${location.coordinates}');
         return location;
       }
 
@@ -191,7 +191,7 @@ class PlacesApi {
       
       return null;
     } catch (e) {
-      print('Error getting nearest place: $e');
+      debugPrint('Error getting nearest place: $e');
       return null;
     }
   }

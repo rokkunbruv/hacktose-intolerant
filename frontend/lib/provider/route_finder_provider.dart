@@ -14,7 +14,6 @@ import 'package:tultul/styles/map/marker_styles.dart';
 import 'package:tultul/utils/route/calculate_fare.dart';
 import 'package:tultul/utils/route/filter_duplicate_routes.dart';
 import 'package:tultul/utils/route/sort_routes_by_total_fare.dart';
-import 'package:tultul/utils/route/decode_polyline.dart';
 
 class RouteFinderProvider extends ChangeNotifier {
   // controllers for text fields.
@@ -37,6 +36,8 @@ class RouteFinderProvider extends ChangeNotifier {
   String selectedJeepneyType = traditional;
 
   CommuteRoute? selectedRoute;
+
+  bool isLoading = false;
 
   void setPassengerType(String type) {
     selectedPassengerType = type;
@@ -114,6 +115,45 @@ class RouteFinderProvider extends ChangeNotifier {
     return markers;
   }
 
+  /// select a route and calculate its fare.
+  void selectRoute(CommuteRoute route) {
+    selectedRoute = route;
+
+    notifyListeners();
+  }
+
+  /// fetch routes using the directions api.
+  Future<void> findRoutes() async {
+    if (originController.text.isEmpty || destinationController.text.isEmpty) {
+      throw('Origin and destination are not all set.');
+    }
+
+    isLoading = true;
+    debugPrint(isLoading.toString());
+
+    try {
+      routes = await RoutesApi.getDirections(
+        '${origin!.latitude},${origin!.longitude}', 
+        '${destination!.latitude},${destination!.longitude}', 
+      );
+      routes = filterDuplicateRoutes(routes);
+
+      updateFares();
+
+      // sort routes once fares have been initialized
+      sortRoutesByTotalFare(routes);
+
+      // get addresses of origin and destination locations of each step of the route
+      getStepLocations();
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+
+    isLoading = false;debugPrint(isLoading.toString());
+  }
+
   // update fare calculations
   void updateFares() {
     for (CommuteRoute route in routes) {
@@ -132,35 +172,16 @@ class RouteFinderProvider extends ChangeNotifier {
     }
   }
 
-  /// fetch routes using the directions api.
-  Future<void> findRoutes() async {
-    if (originController.text.isEmpty || destinationController.text.isEmpty) {
-      throw('Origin and destination are not all set.');
+  // get origin and destination locations of each direction step in each route
+  Future<void> getStepLocations() async {
+    for (CommuteRoute route in routes) {
+      for (DirectionStep step in route.path.legs[0].steps) {
+        if (step.travelMode == transit) {
+          step.origin = await PlacesApi.getNearestPlace(step.originCoords ?? LatLng(0, 0));
+          step.destination = await PlacesApi.getNearestPlace(step.destinationCoords ?? LatLng(0, 0));
+        }
+      }
     }
-
-    try {
-      routes = await RoutesApi.getDirections(
-        '${origin!.latitude},${origin!.longitude}', 
-        '${destination!.latitude},${destination!.longitude}', 
-      );
-      routes = filterDuplicateRoutes(routes);
-
-      updateFares();
-
-      // sort routes once fares have been initialized
-      sortRoutesByTotalFare(routes);
-
-      notifyListeners();
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
-
-  /// select a route and calculate its fare.
-  void selectRoute(CommuteRoute route) {
-    selectedRoute = route;
-
-    notifyListeners();
   }
 
   void clearOrigin() {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:tultul/classes/direction/direction_step.dart';
 import 'package:tultul/classes/route/commute_route.dart';
@@ -13,7 +12,6 @@ import 'package:tultul/widgets/route/route_steps.dart';
 import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
-import 'package:tultul/utils/route/decode_polyline.dart';
 
 class RouteDetailsPage extends StatefulWidget {
   final CommuteRoute route;
@@ -93,10 +91,10 @@ class _RouteDetailsPageState extends State<RouteDetailsPage> {
                   return RouteSteps(
                     type: type,
                     type2: type2,
-                    location: step.origin,
+                    location: step.origin?.address,
                     jeepCode: step.jeepneyCode,
                     fare: step.jeepneyFare?.toStringAsFixed(2),
-                    dropOff: step.destination,
+                    dropOff: step.destination?.address,
                     duration: (step.duration / 60).round().toString(),
                     distance: step.distance.toStringAsFixed(0),
                   );

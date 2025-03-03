@@ -12,6 +12,7 @@ import 'package:tultul/theme/colors.dart';
 import 'package:tultul/theme/text_styles.dart';
 import 'package:tultul/widgets/generic/dropdown_select_button.dart';
 import 'package:tultul/widgets/generic/draggable_container.dart';
+import 'package:tultul/widgets/generic/loading.dart';
 import 'package:tultul/widgets/route/route_list.dart';
 import 'package:tultul/pages/route/search_location_page.dart';
 
@@ -172,7 +173,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                                       angle: 4.71239, // 270 degrees in radians (3π/2)
                                       child: Icon(
                                         Icons.compare_arrows,
-                                        color: Colors.blue[700],
+                                        color: AppColors.navy,
                                         size: 24,
                                       ),
                                     ),
@@ -274,7 +275,6 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                               ),
                             ),
 
-                            // ROUTES OPTIONS
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 32),
                               child: Row(
@@ -301,6 +301,14 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                             SizedBox(height: 32),
 
                             // ROUTES
+                            (routeProvider.isLoading) ?
+                            Expanded(
+                              child: Center(
+                                child: Loading(
+                                  loadingMessage: 'Searching for routes',
+                                ),
+                              ),
+                            ) :
                             RouteList(
                               routes: routeProvider.routes,
                               onRouteSelected: (route) {
