@@ -1,3 +1,4 @@
+import 'package:tultul/widgets/ai_assistant_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ import 'package:tultul/widgets/generic/draggable_container.dart';
 import 'package:tultul/widgets/generic/loading.dart';
 import 'package:tultul/widgets/route/route_list.dart';
 import 'package:tultul/pages/route/search_location_page.dart';
+import 'package:tultul/widgets/ai_assistant_widget.dart';
 
 class SearchRoutesPage extends StatefulWidget {
   const SearchRoutesPage({
@@ -55,6 +57,49 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
     return Consumer<RouteFinderProvider>(
       builder: (context, routeProvider, child) {
         return Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: AIAssistantWidget(
+                    onRouteSearch: (origin, destination) {
+                      if (origin == "current location") {
+                        if (positionProvider.currentLocation != null) {
+                          routeProvider.setOrigin(positionProvider.currentLocation!);
+                        }
+                      } else {
+                        // Set origin from AI assistant
+                        routeProvider.originController.text = origin;
+                      }
+                      
+                      // Set destination from AI assistant
+                      routeProvider.destinationController.text = destination;
+                      
+                      // Close the bottom sheet
+                      Navigator.pop(context);
+                      
+                      // Find routes if both origin and destination are set
+                      if (routeProvider.origin != null && routeProvider.destination != null) {
+                        routeProvider.findRoutes();
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
+            backgroundColor: AppColors.red,
+            child: Icon(Icons.mic, color: Colors.white),
+          ),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
