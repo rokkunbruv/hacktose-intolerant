@@ -40,16 +40,14 @@ class JeepneyProvider with ChangeNotifier {
 
       _calculateBounds(); 
       _initializeJeepneys();
-      notifyListeners();
-
-      // ✅ Move camera only once when the route is first loaded
-      if (!_isRouteLoaded && !_isCameraMovedByUser && routeBounds != null && _mapController != null) {
-        Future.delayed(Duration(milliseconds: 500), () {
-          _mapController!.animateCamera(CameraUpdate.newLatLngBounds(routeBounds!, 50));
-        });
-        _isRouteLoaded = true; // 🔹 Prevents future resets
+      
+      // Only center on initial load
+      if (!_isRouteLoaded && _mapController != null && routeBounds != null) {
+        centerCamera();
+        _isRouteLoaded = true;
       }
-
+      
+      notifyListeners();
       _startMoving();
     } catch (e) {
       debugPrint("❌ Error fetching route from API: $e");
@@ -59,17 +57,20 @@ class JeepneyProvider with ChangeNotifier {
   /// 🚀 Assign GoogleMapController instance
   void setMapController(GoogleMapController controller) {
     _mapController = controller;
-    if (routeBounds != null && !_isRouteLoaded && !_isCameraMovedByUser) {
-      Future.delayed(Duration(milliseconds: 500), () {
-        _mapController!.animateCamera(CameraUpdate.newLatLngBounds(routeBounds!, 50));
-      });
+    // Only center on initial load
+    if (!_isRouteLoaded && routeBounds != null) {
+      centerCamera();
       _isRouteLoaded = true;
     }
   }
 
-  /// 🚀 Track user interaction with the map
-  void onCameraMove() {
-    _isCameraMovedByUser = true; // ✅ Stops auto-resets after user moves the map
+  /// 🚀 Add this new method to be called from your button
+  void centerCamera() {
+    if (_mapController != null && routeBounds != null) {
+      _mapController!.animateCamera(
+        CameraUpdate.newLatLngBounds(routeBounds!, 50)
+      );
+    }
   }
 
   /// 🔹 Calculates the bounds for centering the camera
@@ -103,14 +104,34 @@ class JeepneyProvider with ChangeNotifier {
       int randomIndex = _random.nextInt(fullRoute.length);
       if (!usedIndices.contains(randomIndex)) {
         usedIndices.add(randomIndex);
+        // Calculate initial bearing
+        double bearing = _calculateBearing(
+          fullRoute[randomIndex],
+          fullRoute[(randomIndex + 1) % fullRoute.length]
+        );
         jeepneys.add({
           'index': randomIndex,
           'position': fullRoute[randomIndex],
+          'bearing': bearing,
         });
       }
     }
 
     debugPrint("🚍 Spawned $jeepneyCount jeepneys at unique positions");
+  }
+
+  // Add this method to calculate bearing
+  double _calculateBearing(LatLng start, LatLng end) {
+    double lat1 = start.latitude * (pi / 180);
+    double lng1 = start.longitude * (pi / 180);
+    double lat2 = end.latitude * (pi / 180);
+    double lng2 = end.longitude * (pi / 180);
+
+    double dLon = lng2 - lng1;
+    double y = sin(dLon) * cos(lat2);
+    double x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+    double bearing = atan2(y, x);
+    return (bearing * (180 / pi) + 360) % 360; // Convert to degrees
   }
 
   /// 🔹 Moves jeepneys along the route and loops them back
@@ -120,8 +141,18 @@ class JeepneyProvider with ChangeNotifier {
       if (fullRoute.isEmpty) return;
 
       for (var jeepney in jeepneys) {
-        jeepney['index'] = (jeepney['index'] + 1) % fullRoute.length;
-        jeepney['position'] = fullRoute[jeepney['index']];
+        int currentIndex = jeepney['index'];
+        int nextIndex = (currentIndex + 1) % fullRoute.length;
+        
+        // Calculate new bearing before updating position
+        double bearing = _calculateBearing(
+          fullRoute[currentIndex],
+          fullRoute[nextIndex]
+        );
+        
+        jeepney['index'] = nextIndex;
+        jeepney['position'] = fullRoute[nextIndex];
+        jeepney['bearing'] = bearing;
       }
 
       notifyListeners();
