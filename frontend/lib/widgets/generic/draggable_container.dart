@@ -56,14 +56,17 @@ class _DraggableContainerState extends State<DraggableContainer> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (builder, constraints) {
+      // Calculate minimum size to show at least the handle and title
+      final minSize = 120 / constraints.maxHeight;
+      
       return DraggableScrollableSheet(
           key: sheet,
-          initialChildSize: 0.35,
+          initialChildSize: 0.5,
           maxChildSize: 0.95,
-          minChildSize: 0,
+          minChildSize: minSize,
           expand: true,
           snap: true,
-          snapSizes: [60 / constraints.maxHeight, 0.5],
+          snapSizes: [minSize, 0.5],
           builder: (BuildContext context, ScrollController scrollController) {
             return DecoratedBox(
               decoration: BoxDecoration(
@@ -79,6 +82,7 @@ class _DraggableContainerState extends State<DraggableContainer> {
               child: CustomScrollView(
                 controller: scrollController,
                 slivers: [
+                  topButtonIndicator(),
                   SliverToBoxAdapter(
                     child: widget.child,
                   ),
@@ -87,23 +91,31 @@ class _DraggableContainerState extends State<DraggableContainer> {
             );
           });
     });
-    // return Positioned(
-    //   left: 0,
-    //   right: 0,
-    //   top: _dragPosition,
-    //   child: GestureDetector(
-    //     onVerticalDragUpdate: (details) {
-    //       setState(() {
-    //         _dragPosition += details.delta.dy;
-    //         _dragPosition = _dragPosition.clamp(
-    //             0.0, MediaQuery.of(context).size.height - 100);
-    //       });
-    //     },
-    //     onVerticalDragEnd: (details) {
-    //       // Smoothly animate to the nearest resting position          _animateToPosition(_dragPosition);
-    //     },
-    //     child: widget.child,
-    //   ),
-    // );
+  }
+
+  SliverToBoxAdapter topButtonIndicator() {
+    return SliverToBoxAdapter(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: Wrap(
+              children: [
+                Container(
+                  width: 80,
+                  margin: EdgeInsets.only(top: 10, bottom: 10),
+                  height: 5,
+                  decoration: BoxDecoration(
+                      color: AppColors.gray,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

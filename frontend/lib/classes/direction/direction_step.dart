@@ -1,28 +1,73 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+
+import 'package:tultul/classes/location/location.dart';
+import 'package:tultul/utils/route/decode_polyline.dart';
+
 /// models a single transit step.
 class DirectionStep {
   final String travelMode;
-  final double distanceValue; // in meters
-  final String? transitLineName;
+  final double distance; // in m
+  final int duration; // in sec
+  final String? jeepneyName;
+  final String? jeepneyCode;
+  late double? jeepneyFare;
+  late Location? origin;
+  final LatLng originCoords;
+  late Location? destination;
+  final LatLng destinationCoords;
+  final Polyline polyline;
 
   DirectionStep({
     required this.travelMode, 
-    required this.distanceValue, 
-    this.transitLineName
+    required this.distance,
+    required this.duration, 
+    this.jeepneyName,
+    this.jeepneyCode,
+    this.origin,
+    required this.originCoords,
+    this.destination,
+    required this.destinationCoords,
+    required this.polyline,
   });
 
   factory DirectionStep.fromJson(Map<String, dynamic> json) {
-    String mode = json['travel_mode'];
-    double dist = json['distance']['value'].toDouble();
-    String? transitName;
+    Map<String, dynamic> originJson = json['startLocation']['latLng'];
+    Map<String, dynamic> destinationJson = json['endLocation']['latLng'];
+    
+    String travelMode = json['travelMode'];
+    double distance = (json['distanceMeters'] != null) 
+    ? json['distanceMeters'].toDouble() : Geolocator.distanceBetween(
+      originJson['latitude'].toDouble(),
+      originJson['longitude'].toDouble(),
+      destinationJson['latitude'].toDouble(),
+      destinationJson['longitude'].toDouble(),
+    );
+    int duration = int.parse(json['staticDuration'].replaceAll(RegExp(r'[^0-9]'), ''));
+    Polyline polyline = decodePolyline(json['polyline']['encodedPolyline']);
+    LatLng originCoords = LatLng(originJson['latitude'].toDouble(), originJson['longitude'].toDouble());
+    LatLng destinationCoords = LatLng(destinationJson['latitude'].toDouble(), destinationJson['longitude'].toDouble());
+    String? jeepneyName;
+    String? jeepneyCode;
 
-    if (mode == 'TRANSIT' && json['transit_details'] != null) {
-      transitName = json['transit_details']['line']['name'];
+    if (travelMode == 'TRANSIT' && json['transitDetails'] != null) {
+      jeepneyName = json['transitDetails']['transitLine']['name'];
+      jeepneyCode = json['transitDetails']['transitLine']['nameShort'];
     }
     
     return DirectionStep(
-      travelMode: mode,
-      distanceValue: dist,
-      transitLineName: transitName,
+      travelMode: travelMode,
+      distance: distance,
+      duration: duration,
+      jeepneyName: jeepneyName,
+      jeepneyCode: jeepneyCode,
+      originCoords: originCoords,
+      destinationCoords: destinationCoords,
+      polyline: polyline,
     );
+  }
+
+  void setJeepneyFare(double jeepneyFare) {
+    this.jeepneyFare = jeepneyFare;
   }
 }

@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'package:tultul/widgets/map/map_view.dart';
+import 'package:tultul/pages/jeeps/search_jeeps_page.dart';
+import 'package:tultul/pages/route/search_location_page.dart';
+import 'package:tultul/pages/route/search_routes_page.dart';
+import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/provider/position_provider.dart';
+import 'package:tultul/styles/widget/box_shadow_style.dart';
 import 'package:tultul/theme/colors.dart';
+import 'package:tultul/theme/text_styles.dart';
+import 'package:tultul/utils/location/check_location_services.dart';
+import 'package:tultul/widgets/ai_assistant_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,252 +20,300 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  void navigateToSearchDestinationPage() {
-    
+  void navigateToSearchJeepsPage() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => SearchJeepsPage(),
+    ));
   }
 
-  void navigateToRecentTripsPage() {
-
+  void navigateToSearchLocationPage() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => SearchLocationPage(),
+    ));
   }
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 80,
-        title: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset(
-            'assets/img/title.png',
-          ),
+
+  void toggleVoiceAssistant() {
+    final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+    final routeProvider = Provider.of<RouteFinderProvider>(context, listen: false);
+ 
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            color: AppColors.bg,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withAlpha(64),
-                blurRadius: 4,
-                offset: Offset(0, 2),
-              ),
-            ],
-          )
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: AIAssistantWidget(
+          onRouteSearch: (origin, destination) {
+            if (origin == "current location") {
+              if (positionProvider.currentLocation != null) {
+                routeProvider.setOrigin(positionProvider.currentLocation!);
+              }
+            } else {
+              routeProvider.originController.text = origin;
+            }
+
+            routeProvider.destinationController.text = destination;
+
+            Navigator.pop(context);
+
+            if (routeProvider.origin != null && routeProvider.destination != null) {
+              routeProvider.findRoutes();
+            }
+
+            Navigator.of(context).push(MaterialPageRoute(builder: 
+              (context) => SearchRoutesPage(),
+            ));
+          },
         ),
       ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+      
+      await checkLocationServices(context);
+      
+      if (mounted) {
+        positionProvider.startPositionUpdates();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    Provider.of<PositionProvider>(context, listen: false).stopPositionUpdates();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final routeProvider = Provider.of<RouteFinderProvider>(context, listen: false);
+    
+    return Scaffold(
       body: Stack(
         children: <Widget>[
-          // MAP VIEW
-          MapView(),
-
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/img/bg1.png'),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            child: AppBar(
+              toolbarHeight: 200,
+              flexibleSpace: SizedBox(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.red,
+                  ),
+                  child: SafeArea(
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    'MABUHAY!',
+                                    style: AppTextStyles.title.copyWith(
+                                      color: AppColors.vanilla,
+                                      height: 0,
+                                      fontSize: 44,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Welcome to Tultul.',
+                                    style: AppTextStyles.label3.copyWith(
+                                      color: AppColors.vanilla,
+                                      height: 0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Image(
+                              image: AssetImage('assets/img/home-page-design.png'),
+                              width: 140,
+                              height: 160,
+                              alignment: Alignment.bottomRight,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              automaticallyImplyLeading: false,
+            ),
+          ),
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            child: Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: AppColors.red,
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 32),
-              child: Transform.translate(
-                offset: Offset(0, -40),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                      child: Column(
+            child: ClipRect(
+              clipBehavior: Clip.none,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                height: 300,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  color: AppColors.white,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: <Widget>[
+                      Column(
                         children: <Widget>[
-                          // WHERE TO
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Icon(
-                                Icons.location_on,
-                                color: AppColors.red,
-                              ),
-                              SizedBox(width: 16),
-                              Expanded(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    labelText: 'Where to?',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  ),
-                                  readOnly: true,
-                                  onTap: navigateToSearchDestinationPage,
-                                ),
-                              ),
-                            ],
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Going somewhere?',
+                              style: AppTextStyles.label3,
+                            ),
                           ),
-                          // SizedBox(height: 8),
-                    
-                          // HOME, WORK, MORE
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          //   crossAxisAlignment: CrossAxisAlignment.center,
-                          //   children: <Widget>[
-                          //     // HOME BUTTON
-                          //     TextButton(
-                          //       onPressed: () {},
-                          //       child: Row(
-                          //         children: <Widget>[
-                          //           CircleAvatar(
-                          //             backgroundColor: AppColors.navy,
-                          //             radius: 10,
-                          //             child: Icon(
-                          //               Icons.home,
-                          //               color: AppColors.white,
-                          //               size: 10,
-                          //             ),
-                          //           ),
-                          //           SizedBox(width: 8),
-                          //           Column(
-                          //               mainAxisAlignment: MainAxisAlignment.center,
-                          //               crossAxisAlignment: CrossAxisAlignment.start,
-                          //               children: <Widget>[
-                          //                 Text(
-                          //                   'Home',
-                          //                   style: AppTextStyles.label5
-                          //                 ),
-                          //                 Text(
-                          //                   'Cebu',
-                          //                   style: AppTextStyles.label6.copyWith(
-                          //                     color: AppColors.gray
-                          //                   )
-                          //                 ),
-                          //               ]
-                          //             )
-                          //         ]
-                          //       )
-                          //     ),
-                          //     Container(
-                          //       decoration: BoxDecoration(
-                          //         color: AppColors.lightGray
-                          //       ),
-                          //       child: SizedBox(height: 32, width: 2)
-                          //     ),
-                                
-                          //     // WORK BUTTON
-                          //     TextButton(
-                          //       onPressed: () {},
-                          //       child: Row(
-                          //         children: <Widget>[
-                          //           CircleAvatar(
-                          //             backgroundColor: AppColors.navy,
-                          //             radius: 10,
-                          //             child: Icon(
-                          //               Icons.work,
-                          //               color: AppColors.white,
-                          //               size: 10,
-                          //             ),
-                          //           ),
-                          //           SizedBox(width: 8),
-                          //           Column(
-                          //               mainAxisAlignment: MainAxisAlignment.center,
-                          //               crossAxisAlignment: CrossAxisAlignment.start,
-                          //               children: <Widget>[
-                          //                 Text(
-                          //                   'Work',
-                          //                   style: AppTextStyles.label5
-                          //                 ),
-                          //                 Text(
-                          //                   'Set Location',
-                          //                   style: AppTextStyles.label6.copyWith(
-                          //                     color: AppColors.gray
-                          //                   )
-                          //                 ),
-                          //               ]
-                          //             )
-                          //         ]
-                          //       )
-                          //     ),
-                          //     Container(
-                          //       decoration: BoxDecoration(
-                          //         color: AppColors.lightGray
-                          //       ),
-                          //       child: SizedBox(height: 32, width: 2)
-                          //     ),
-                                
-                          //     // MORE BUTTON
-                          //     TextButton(
-                          //       onPressed: () {},
-                          //       child: Row(
-                          //         mainAxisAlignment: MainAxisAlignment.center,
-                          //         crossAxisAlignment: CrossAxisAlignment.center,
-                          //         children: <Widget>[
-                          //           Container(
-                          //             decoration: BoxDecoration(
-                          //               borderRadius: BorderRadius.circular(10),
-                          //               boxShadow: [
-                          //                 BoxShadow(
-                          //                   color: AppColors.black.withAlpha(64),
-                          //                   blurRadius: 2,
-                          //                   offset: Offset(0, 2),
-                          //                 ),
-                          //               ],
-                          //             ),
-                          //             child: CircleAvatar(
-                          //               backgroundColor: AppColors.white,
-                          //               radius: 10,
-                          //               child: Icon(
-                          //                 Icons.more_horiz,
-                          //                 color: AppColors.black,
-                          //                 size: 10,
-                          //               ),
-                          //             ),
-                          //           ),
-                          //           SizedBox(width: 8),
-                          //           Text(
-                          //             'More',
-                          //             style: AppTextStyles.label5
-                          //           )
-                          //         ]
-                          //       )
-                          //     ),
-                          //   ]
-                          // )                        
-                        ]
-                      )
-                    ),
-                    // SizedBox(height: 16),
-              
-                    // // RECENT TRIPS
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   children: <Widget>[
-                    //     Text(
-                    //       'Recent trips',
-                    //       style: AppTextStyles.label4.copyWith(
-                    //         color: AppColors.vanilla,
-                    //       ),
-                    //     ),
-                    //     GestureDetector(
-                    //       onTap: navigateToRecentTripsPage,
-                    //       child: Text(
-                    //         'More',
-                    //         style: AppTextStyles.label4.copyWith(
-                    //           color: AppColors.saffron,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ]
-                    // )                                
-                  ],
+                          SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: navigateToSearchLocationPage,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [createBoxShadow()],
+                              ),
+                              child: Column(
+                                children: <Widget>[
+                                  IgnorePointer(
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        icon: Icon(
+                                          Icons.location_on_outlined,
+                                          color: AppColors.navy,
+                                          size: 24,
+                                        ),
+                                        hintText: 'Current Location',
+                                        hintStyle: AppTextStyles.label4,
+                                        border: InputBorder.none,
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                                      ),
+                                      readOnly: true,
+                                      controller: routeProvider.originController,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2),
+                                  IgnorePointer(
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        icon: Icon(
+                                          Icons.location_on,
+                                          color: AppColors.red,
+                                          size: 24,
+                                        ),
+                                        hintText: 'Where to?',
+                                        hintStyle: AppTextStyles.label4,
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                                      ),
+                                      readOnly: true,
+                                      controller: routeProvider.destinationController,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.saffron,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: navigateToSearchJeepsPage,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Image(
+                                      image: AssetImage('assets/icons/jeepney-icon-small-navy.png'),
+                                      height: 16,
+                                      width: 16,
+                                    ),
+                                    SizedBox(width: 16),
+                                    Text(
+                                      'Discover Jeepney Routes',
+                                      style: AppTextStyles.label4,
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: AppColors.black,
+                                  size: 24,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              )
+              ),
             ),
-          )
-        ]
-      )
+          ),
+          Positioned(
+            right: 24,
+            bottom: 250,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.red,
+                boxShadow: [createBoxShadow()],
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.settings_voice,
+                  color: AppColors.white,
+                  size: 32,
+                ),
+                onPressed: toggleVoiceAssistant,
+              ) 
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,10 +1,15 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/services.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tultul/api/google_maps_api/route_service.dart';
+
+import 'package:tultul/api/jeepney_api/jeepney_api.dart';
 import 'package:tultul/classes/route_model.dart';
+import 'package:tultul/styles/map/marker_styles.dart';
+import 'package:tultul/utils/jeep/load_jeepney_icon.dart';
+import 'package:tultul/utils/jeep/calculate_bearing.dart';
 
 class JeepneyProvider with ChangeNotifier {
   List<LatLng> firstRoute = [];
@@ -12,85 +17,115 @@ class JeepneyProvider with ChangeNotifier {
   List<LatLng> fullRoute = [];
 
   List<Map<String, dynamic>> jeepneys = [];
-  Timer? _timer;
+  late BitmapDescriptor jeepneyIcon;
+  Set<Marker> jeepneyMarkers = {};
   LatLngBounds? routeBounds;
+  bool isRouteLoaded = false; 
+
+  Timer? _timer;
   final Random _random = Random();
 
-  Future<void> loadRoute(String fileName) async {
-    String filePath = "assets/coordinates/$fileName.json"; // ✅ Fixed double `.json.json`
-    debugPrint("📂 Loading file: $filePath");
+  // bool _isCameraMovedByUser = false; 
 
+  // load jeepney markers
+  Future<void> initializeJeepneyMarker() async {
+    jeepneyIcon = await loadJeepneyIcon();
+  }
+
+  // load route from api and process it
+  Future<void> loadRoute(String routeName) async {
     try {
-      List<RouteModel> routes = await RouteService.loadRoutes(filePath);
+      List<RouteModel> routes = await JeepneyApi.getJeepneyPositions(routeName);
+
       if (routes.isEmpty) {
-        debugPrint("🚨 No routes found in $fileName!");
+        debugPrint("No routes found for $routeName!");
         return;
       }
 
-      firstRoute = routes.isNotEmpty ? routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList() : [];
-      secondRoute = routes.length > 1 ? routes[1].coordinates.map((c) => LatLng(c[0], c[1])).toList() : [];
+      firstRoute = routes.isNotEmpty
+          ? routes[0].coordinates.map((c) => LatLng(c[0], c[1])).toList()
+          : [];
+      secondRoute = routes.length > 1
+          ? routes[1].coordinates.map((c) => LatLng(c[0], c[1])).toList()
+          : [];
       fullRoute = [...firstRoute, ...secondRoute];
 
-      _calculateBounds();
-      _initializeJeepneys(); // ✅ New: Randomized jeepney start positions
+      _initializeJeepneys();
+      
+      if (!isRouteLoaded && routeBounds != null) {
+        isRouteLoaded = true;
+      }
+
       notifyListeners();
       _startMoving();
     } catch (e) {
-      debugPrint("❌ Error loading route file: $e");
+      debugPrint("Error fetching route from API: $e");
     }
   }
 
-  /// 🔹 Calculates the bounds for centering the camera
-  void _calculateBounds() {
-    if (fullRoute.isEmpty) return;
-    double minLat = fullRoute.first.latitude, maxLat = fullRoute.first.latitude;
-    double minLng = fullRoute.first.longitude, maxLng = fullRoute.first.longitude;
-
-    for (LatLng point in fullRoute) {
-      if (point.latitude < minLat) minLat = point.latitude;
-      if (point.latitude > maxLat) maxLat = point.latitude;
-      if (point.longitude < minLng) minLng = point.longitude;
-      if (point.longitude > maxLng) maxLng = point.longitude;
-    }
-
-    routeBounds = LatLngBounds(
-      southwest: LatLng(minLat, minLng),
-      northeast: LatLng(maxLat, maxLng),
-    );
-  }
-
-  /// 🔹 Initializes multiple jeepneys with unique starting positions
+  // initializes multiple jeepneys with unique starting positions
   void _initializeJeepneys() {
     if (fullRoute.isEmpty) return;
 
     jeepneys.clear();
-    int jeepneyCount = _random.nextInt(4) + 3; // Randomize between 3 and 6 jeepneys
-    Set<int> usedIndices = {}; // Prevents duplicate start positions
+
+    int jeepneyCount = _random.nextInt(4) + 3;
+    Set<int> usedIndices = {};
 
     while (jeepneys.length < jeepneyCount) {
       int randomIndex = _random.nextInt(fullRoute.length);
 
       if (!usedIndices.contains(randomIndex)) {
         usedIndices.add(randomIndex);
-        jeepneys.add({
+
+        // calculate initial bearing
+        double bearing = calculateBearing(
+          fullRoute[randomIndex],
+          fullRoute[(randomIndex + 1) % fullRoute.length]
+        );
+
+        Map<String, dynamic> jeepney = {
           'index': randomIndex,
           'position': fullRoute[randomIndex],
-        });
+          'bearing': bearing,
+        };
+
+        jeepneys.add(jeepney);
       }
     }
-
-    debugPrint("🚍 Spawned $jeepneyCount jeepneys at unique positions");
   }
 
-  /// 🔹 Moves jeepneys along the route and loops them back
+  /// moves jeepneys along the route and loops them back
   void _startMoving() {
     _timer?.cancel();
+
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (fullRoute.isEmpty) return;
 
+      // removes previous positions of jeepney markers
+      jeepneyMarkers.clear();
+
       for (var jeepney in jeepneys) {
-        jeepney['index'] = (jeepney['index'] + 1) % fullRoute.length;
-        jeepney['position'] = fullRoute[jeepney['index']];
+        int currentIndex = jeepney['index'];
+        int nextIndex = (currentIndex + 1) % fullRoute.length;
+        
+        // calculate new bearing before updating position
+        double bearing = calculateBearing(
+          fullRoute[currentIndex],
+          fullRoute[nextIndex]
+        );
+        
+        jeepney['index'] = nextIndex;
+        jeepney['position'] = fullRoute[nextIndex];
+        jeepney['bearing'] = bearing;
+
+        // adding jeepney markers w/ new positions
+        // to give the illusion of movement
+        jeepneyMarkers.add(createJeepneyyMarker(
+          'jeepney_${jeepney['index']}',
+          jeepneyIcon, jeepney['position'],
+          jeepney['bearing'] ?? 0.0)
+        );
       }
 
       notifyListeners();

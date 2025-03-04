@@ -6,10 +6,12 @@ import 'package:tultul/theme/text_styles.dart';
 
 class DropdownSelectButton extends StatefulWidget {
   final List<String> items;
+  final Function(String) onChanged;
 
   const DropdownSelectButton({
     super.key,
     required this.items,
+    required this.onChanged,
   });
 
   @override
@@ -61,6 +63,7 @@ class _DropdownSelectButtonState extends State<DropdownSelectButton> {
         onChanged: (String? newValue) {
           if (newValue != null) {
             setState(() {
+              widget.onChanged(newValue);
               _selectedItem = newValue; // Update the selected value
               _updateButtonWidth(newValue); // Update the button width
             });
