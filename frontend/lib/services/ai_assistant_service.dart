@@ -50,7 +50,7 @@ class AIAssistantService {
     final apiKey = dotenv.env['GEMINI_API_KEY'];
     if (apiKey != null) {
       _model = GenerativeModel(
-        model: 'gemini-pro',  // Use the correct model name
+        model: 'gemini-2.0-flash-lite',  // Use the correct model name
         apiKey: apiKey,
       );
     }
@@ -126,6 +126,15 @@ class AIAssistantService {
       - "Ayala" or "Ayala Center" -> "Ayala Center Cebu, Archbishop Reyes Avenue, Cebu City"
       - "Carbon Market" -> "Carbon Market, Cebu City"
       - "IT Park" -> "Cebu IT Park, Lahug, Cebu City"
+
+      Guidelines for extraction:
+      1. Look for location indicators like "from", "to", "take me to", "route to", "directions to", "how to get to"
+      2. If origin is not specified, use "current location"
+      3. Handle variations in location names (e.g., "SM", "SM Cebu", "SM City" all map to "SM City Cebu")
+      4. Extract the most specific location name possible
+      5. If multiple locations are mentioned, the last one is usually the destination
+      6. Ignore any time-related or other non-location information
+      7. Standardize location names using the mappings above
 
       Use these standardized names in your response.''';
 
