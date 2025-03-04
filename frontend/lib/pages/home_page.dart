@@ -292,23 +292,27 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-        ],
-      ),
-      floatingActionButton: Container(
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.red,
-          boxShadow: [createBoxShadow()],
-        ),
-        child: IconButton(
-          icon: Icon(
-            Icons.settings_voice,
-            color: AppColors.white,
-            size: 32,
+          Positioned(
+            right: 24,
+            bottom: 250,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.red,
+                boxShadow: [createBoxShadow()],
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.settings_voice,
+                  color: AppColors.white,
+                  size: 32,
+                ),
+                onPressed: toggleVoiceAssistant,
+              ) 
+            ),
           ),
-          onPressed: toggleVoiceAssistant,
-        ) 
+        ],
       ),
     );
   }

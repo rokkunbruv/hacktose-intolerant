@@ -12,13 +12,8 @@ class FinishedRoutePage extends StatefulWidget {
 
 class _FinishedRoutePageState extends State<FinishedRoutePage> {
   void navigateToHome() {
-    // navigate to home by popping pages on top of home
-    // since flutter uses a stack to navigate between pages
-    // (na apply na jud ang cmsc 123 HAHAHAHAHAHAHAHAHAHAH)
-    Navigator.of(context).pop();
-    Navigator.of(context).pop();
-    Navigator.of(context).pop();
-    Navigator.of(context).pop();
+    // Pop all routes until we reach home
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   void navigateBack() {

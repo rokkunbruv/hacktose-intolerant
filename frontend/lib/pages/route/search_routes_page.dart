@@ -252,6 +252,14 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                   ),
                 ),
               ),
+              // Show loading indicator when searching for routes
+              if (routeProvider.isLoading)
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Loading(
+                    loadingMessage: 'Finding routes...',
+                  ),
+                ),
               Expanded(
                 child: Stack(
                   children: <Widget>[
