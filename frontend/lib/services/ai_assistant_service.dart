@@ -50,7 +50,7 @@ class AIAssistantService {
     final apiKey = dotenv.env['GEMINI_API_KEY'];
     if (apiKey != null) {
       _model = GenerativeModel(
-        model: 'gemini-pro',  // Use the correct model name
+        model: 'gemini-1.5-pro-002',  
         apiKey: apiKey,
       );
     }
@@ -117,7 +117,7 @@ class AIAssistantService {
       final prompt = '''Extract the origin and destination locations from this navigation request: "$input"
       If no origin is specified, use "current location".
       Format your response exactly like this example, with no other text:
-      Origin: current location
+      Origin: Parkmall (or use "current location" if user did not specify an origin location)
       Destination: SM City Cebu
 
       Common location mappings to use:
@@ -126,12 +126,17 @@ class AIAssistantService {
       - "Ayala" or "Ayala Center" -> "Ayala Center Cebu, Archbishop Reyes Avenue, Cebu City"
       - "Carbon Market" -> "Carbon Market, Cebu City"
       - "IT Park" -> "Cebu IT Park, Lahug, Cebu City"
+      - "SM Seaside" -> "SM Seaside, Cebu South Coastal Rd, Antuwanga, Cebu City"
 
-      Use these standardized names in your response.''';
+      Important Notes:
+      - If the user does not specify an origin, use "current location".
+      - The destination must always match the location specified by the user. Do not assume or default to "SM City Cebu".
+      ''';
 
       final content = [Content.text(prompt)];
       final response = await _model!.generateContent(content);
       final responseText = response.text;
+      print(responseText);
 
       if (responseText == null || responseText.isEmpty) {
         await speak("I had trouble understanding the locations. Could you please try again?");

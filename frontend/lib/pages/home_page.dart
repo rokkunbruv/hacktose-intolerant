@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        padding: EdgeInsets.only(
+        padding: EdgeInsets.only( 
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: AIAssistantWidget(
