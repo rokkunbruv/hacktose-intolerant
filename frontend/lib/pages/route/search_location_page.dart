@@ -30,6 +30,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
   late SearchLocationsProvider locationProvider;
   late PositionProvider positionProvider;
   Timer? _debounce;
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -37,6 +38,11 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
 
     locationProvider = Provider.of<SearchLocationsProvider>(context, listen: false);
     positionProvider = Provider.of<PositionProvider>(context, listen: false);
+
+    // Request focus after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchFocusNode.requestFocus();
+    });
   }
 
   void navigateBack() {
@@ -84,6 +90,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _searchFocusNode.dispose();
     super.dispose();
   }
   
@@ -115,6 +122,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                           SizedBox(width: 32),
                           Expanded(
                             child: TextField(
+                              focusNode: _searchFocusNode,
                               controller: provider.locationController,
                               onChanged: (_) {
                                 if (_debounce?.isActive ?? false) _debounce?.cancel();
