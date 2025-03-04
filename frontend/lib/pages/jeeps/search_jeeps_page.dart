@@ -16,18 +16,26 @@ class SearchJeepsPage extends StatefulWidget {
 
 class _SearchJeepsPageState extends State<SearchJeepsPage> {
   final List<Map<String, dynamic>> jeepRoutes = [
-    {"jeepCode": jeep04L},
     {"jeepCode": jeep01B},
-    {"jeepCode": jeep17B},
-    {"jeepCode": jeep17C},
     {"jeepCode": jeep03L},
     {"jeepCode": jeep04C},
-    {"jeepCode": jeep04I},
     {"jeepCode": jeep04H},
+    {"jeepCode": jeep04I},
+    {"jeepCode": jeep04L},
+    {"jeepCode": jeep06B},
+    {"jeepCode": jeep06C},
+    {"jeepCode": jeep06G},
+    {"jeepCode": jeep06H},
+    {"jeepCode": jeep07B},
+    {"jeepCode": jeep17B},
+    {"jeepCode": jeep17C},
+    {"jeepCode": jeep17D},
+    {"jeepCode": jeep20A},
+    {"jeepCode": jeep21D},
     {"jeepCode": jeep24},
+    {"jeepCode": jeep25},
     {"jeepCode": jeep62B},
-    {"jeepCode": jeep62C},
-    {"jeepCode": jeep25}
+    {"jeepCode": jeep62C}
 ];
 
   late final List<Map<String, dynamic>> formattedRoutes;

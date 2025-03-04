@@ -59,7 +59,11 @@ class StepItem extends StatelessWidget {
               const Icon(Icons.directions_walk,
                   color: AppColors.gray, size: 20),
               Text('Walk to $location',
-                  style: AppTextStyles.label3.copyWith(color: AppColors.black)),
+                  style: AppTextStyles.label3.copyWith(color: AppColors.black),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                  
             ],
           ),
           Text('$duration',

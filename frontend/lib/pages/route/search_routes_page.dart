@@ -28,17 +28,19 @@ class SearchRoutesPage extends StatefulWidget {
 class _SearchRoutesPageState extends State<SearchRoutesPage> {
   final List<String> _passengerTypes = [regular, student, seniorCitizen, pwd];
   final List<String> _jeepneyTypes = [traditional, modern];
-  GoogleMapController? _mapController; // Controller for the map
+  GoogleMapController? _mapController;
 
   @override
   void initState() {
     super.initState();
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return; 
+
       final routeFinderProvider = Provider.of<RouteFinderProvider>(context, listen: false);
       final positionProvider = Provider.of<PositionProvider>(context, listen: false);
 
-      // Set default origin to current location if available
+      // set default origin to current location if available
       if (routeFinderProvider.origin == null && positionProvider.currentLocation != null) {
         routeFinderProvider.setOrigin(positionProvider.currentLocation!);
       }
@@ -49,9 +51,9 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
     });
   }
 
-  // Method to update the camera position to include all markers
+  // update the camera position to include all markers
   void _updateCameraPosition() {
-    if (_mapController == null) return;
+    if (_mapController == null || !mounted) return;
 
     final routeProvider = Provider.of<RouteFinderProvider>(context, listen: false);
     final positionProvider = Provider.of<PositionProvider>(context, listen: false);
@@ -63,7 +65,7 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
     _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50)); // 50 is padding
   }
 
-  // Helper method to calculate bounds from a list of LatLng
+  // calculate bounds from a list of LatLng
   LatLngBounds _boundsFromLatLngList(List<LatLng> list) {
     double? x0, x1, y0, y1;
     for (LatLng latLng in list) {
@@ -78,6 +80,12 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
       }
     }
     return LatLngBounds(northeast: LatLng(x1!, y1!), southwest: LatLng(x0!, y0!));
+  }
+
+  @override
+  void dispose() {
+    // cancel any ongoing asynchronous operations here
+    super.dispose();
   }
 
   @override

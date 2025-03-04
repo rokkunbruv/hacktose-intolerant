@@ -34,6 +34,11 @@ class JeepneyProvider with ChangeNotifier {
 
   // load route from api and process it
   Future<void> loadRoute(String routeName) async {
+    firstRoute.clear();
+    secondRoute.clear();
+    fullRoute.clear();
+    jeepneyMarkers.clear();
+    
     try {
       List<RouteModel> routes = await JeepneyApi.getJeepneyPositions(routeName);
 
