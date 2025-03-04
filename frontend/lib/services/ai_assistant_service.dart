@@ -113,52 +113,49 @@ class AIAssistantService {
       // First, acknowledge that we're processing a route request
       await speak("I'll help you find that route.");
 
-      // Extract locations using more natural language patterns
+      // Use Gemini to extract locations
+      final prompt = '''Extract the origin and destination locations from this navigation request: "$input"
+      If no origin is specified, use "current location".
+      Format your response exactly like this example, with no other text:
+      Origin: current location
+      Destination: SM City Cebu
+
+      Common location mappings to use:
+      - "SM City Cebu" -> "SM City Cebu, North Reclamation Area, Cebu City"
+      - "UP Cebu" or "University of the Philippines" -> "University of the Philippines Cebu, Gorordo Avenue, Lahug, Cebu City"
+      - "Ayala" or "Ayala Center" -> "Ayala Center Cebu, Archbishop Reyes Avenue, Cebu City"
+      - "Carbon Market" -> "Carbon Market, Cebu City"
+      - "IT Park" -> "Cebu IT Park, Lahug, Cebu City"
+
+      Use these standardized names in your response.''';
+
+      final content = [Content.text(prompt)];
+      final response = await _model!.generateContent(content);
+      final responseText = response.text;
+
+      if (responseText == null || responseText.isEmpty) {
+        await speak("I had trouble understanding the locations. Could you please try again?");
+        return;
+      }
+
+      // Parse the AI response
+      final lines = responseText.split('\n');
       String origin = "current location";
       String destination = "";
 
-      // Extract destination patterns
-      final toPatterns = [
-        RegExp(r'(?:to|take me to|get to)\s+(?!go\s+)(.+?)(?=\s+from|\s*$)', caseSensitive: false),
-        RegExp(r'(?:go to|go)\s+(.+?)(?=\s+from|\s*$)', caseSensitive: false),
-      ];
-
-      // Extract origin patterns
-      final fromPatterns = [
-        RegExp(r'from\s+(.+?)(?=\s+to|\s*$)', caseSensitive: false),
-        RegExp(r'starting from\s+(.+?)(?=\s+to|\s*$)', caseSensitive: false),
-        RegExp(r'at\s+(.+?)(?=\s+to|\s*$)', caseSensitive: false),
-      ];
-
-      // Try to extract destination
-      for (var pattern in toPatterns) {
-        final match = pattern.firstMatch(input);
-        if (match != null && match.group(1) != null) {
-          destination = match.group(1)!.trim();
-          break;
+      for (var line in lines) {
+        if (line.startsWith('Origin:')) {
+          final extractedOrigin = line.substring(7).trim();
+          if (extractedOrigin != "current location") {
+            origin = extractedOrigin;
+          }
+        } else if (line.startsWith('Destination:')) {
+          destination = line.substring(12).trim();
         }
       }
 
-      // If no destination found, try to extract any location mentioned
-      if (destination.isEmpty) {
-        final locationPattern = RegExp(r'(?:to|at|near|around)\s+(?!go\s+)(.+?)(?=\s+|$)', caseSensitive: false);
-        final match = locationPattern.firstMatch(input);
-        if (match != null && match.group(1) != null) {
-          destination = match.group(1)!.trim();
-        }
-      }
-
-      // Validate and standardize locations
+      // Validate and proceed
       if (destination.isNotEmpty) {
-        // Standardize common location names
-        if (destination.toLowerCase().contains('sm') && destination.toLowerCase().contains('cebu')) {
-          destination = "SM City Cebu, North Reclamation Area, Cebu City";
-        }
-        if (origin.toLowerCase().contains('up') || origin.toLowerCase().contains('university of the philippines')) {
-          origin = "University of the Philippines Cebu, Gorordo Avenue, Lahug, Cebu City";
-        }
-
-        // Provide feedback and trigger route search
         if (origin == "current location") {
           await speak("I'll find directions to $destination from your current location.");
         } else {
@@ -169,11 +166,11 @@ class AIAssistantService {
         await Future.delayed(Duration(milliseconds: 500));
         onRouteSearch(origin, destination);
       } else {
-        await speak("I need to know where you want to go. Could you please specify your destination? For example, say 'Take me to SM City Cebu'.");
+        await speak("I couldn't understand where you want to go. Could you please specify your destination more clearly? For example, say 'Take me to SM City Cebu' or 'Route to Ayala Center'.");
       }
     } catch (e) {
       debugPrint('Error in route request: $e');
-      await speak("I couldn't understand the locations. Please try again with clearer location names.");
+      await speak("I had trouble understanding the locations. Could you please try again with clearer location names?");
     }
   }
 
