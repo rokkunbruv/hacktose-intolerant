@@ -35,7 +35,7 @@
 <h3 align="center">Tultul</h3>
 
   <p align="center">
-    project_description
+    Wala ka katultul? Gamita ang Tultul!
     <br />
     <br />
     <a href="#usage">View Demo</a>
