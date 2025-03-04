@@ -129,6 +129,7 @@ class RouteFinderProvider extends ChangeNotifier {
     }
 
     isLoading = true;
+    notifyListeners();
 
     try {
       routes = await RoutesApi.getDirections(
@@ -143,14 +144,15 @@ class RouteFinderProvider extends ChangeNotifier {
       sortRoutesByTotalFare(routes);
 
       // get addresses of origin and destination locations of each step of the route
-      getStepLocations();
+      await getStepLocations();
 
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       debugPrint(e.toString());
     }
 
     isLoading = false;
+    notifyListeners();
   }
 
   // update fare calculations
