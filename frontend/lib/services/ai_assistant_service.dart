@@ -94,7 +94,7 @@ class AIAssistantService {
     final apiKey = dotenv.env['GEMINI_API_KEY'];
     if (apiKey != null) {
       _model = GenerativeModel(
-        model: 'gemini-2.0-flash-lite',  // Use the correct model name
+        model: 'gemini-2.0-flash',  // Use the correct model name
         apiKey: apiKey,
       );
     }

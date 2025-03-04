@@ -161,15 +161,21 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
                     // Add user message only if it's not empty
                     if (interaction['user']!.isNotEmpty) {
                       messageWidgets.add(
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.lightGray,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            interaction['user']!,
-                            style: AppTextStyles.label5,
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.75,
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.lightGray,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              interaction['user']!,
+                              style: AppTextStyles.label5,
+                            ),
                           ),
                         ),
                       );
@@ -181,15 +187,21 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
                         messageWidgets.add(const SizedBox(height: 8));
                       }
                       messageWidgets.add(
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.navy.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            interaction['assistant']!,
-                            style: AppTextStyles.label5,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.75,
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.navy.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              interaction['assistant']!,
+                              style: AppTextStyles.label5,
+                            ),
                           ),
                         ),
                       );
