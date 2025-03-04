@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AIAssistantService {

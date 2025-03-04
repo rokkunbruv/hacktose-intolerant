@@ -216,10 +216,10 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.error_outline,
-                                color: Colors.grey[400],
-                                size: 48,
+                              Image.asset(
+                                'assets/img/error-search.png',
+                                width: 200,
+                                height: 200,
                               ),
                               SizedBox(height: 16),
                               Text(
@@ -254,7 +254,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                                     0, 0, 0, 1, 0,
                                   ]),
                                   child: Image.asset(
-                                    'assets/img/empty_search.png',
+                                    'assets/img/empty-search.png',
                                     width: 200,
                                     height: 200,
                                   ),

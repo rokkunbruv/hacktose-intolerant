@@ -32,6 +32,10 @@ class _SearchJeepsPageState extends State<SearchJeepsPage> {
 
   late final List<Map<String, dynamic>> formattedRoutes;
 
+  void navigateBack() {
+    Navigator.of(context).pop();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -56,7 +60,13 @@ class _SearchJeepsPageState extends State<SearchJeepsPage> {
         ),
         backgroundColor: AppColors.red,
         centerTitle: true,
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(
+            Icons.chevron_left,
+            color: AppColors.white,
+          ),
+          onPressed: navigateBack,
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(

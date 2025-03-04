@@ -23,7 +23,7 @@ class RouteFinderProvider extends ChangeNotifier {
   // markers and positions.
   LatLng? origin;
   LatLng? destination;
-  Marker? originMarker;
+  Marker? originMarker; 
   Marker? destinationMarker;
   bool isSettingOrigin = true;
   bool _isOriginManuallySet = false;

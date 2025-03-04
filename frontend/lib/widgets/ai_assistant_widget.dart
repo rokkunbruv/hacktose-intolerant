@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import '../services/ai_assistant_service.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import '../provider/route_finder_provider.dart';
-import '../api/google_maps_api/places_api.dart';
-import '../classes/location/location.dart';
+
+import 'package:tultul/services/ai_assistant_service.dart';
+import 'package:tultul/provider/route_finder_provider.dart';
+import 'package:tultul/api/google_maps_api/places_api.dart';
+import 'package:tultul/classes/location/location.dart';
+import 'package:tultul/theme/colors.dart';
+import 'package:tultul/theme/text_styles.dart';
 
 class AIAssistantWidget extends StatefulWidget {
   final Function(String, String) onRouteSearch;
 
   const AIAssistantWidget({
-    Key? key,
+    super.key,
     required this.onRouteSearch,
-  }) : super(key: key);
+  });
 
   @override
   State<AIAssistantWidget> createState() => _AIAssistantWidgetState();
@@ -107,12 +111,12 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: AppColors.lightGray,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 _transcription,
-                style: const TextStyle(fontSize: 16),
+                style: AppTextStyles.label5,
               ),
             ),
           const SizedBox(height: 16),
@@ -123,11 +127,11 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _isListening ? Colors.green : Colors.blue,
+                color: _isListening ? AppColors.saffron : AppColors.navy,
               ),
               child: Icon(
                 _isListening ? Icons.mic : Icons.mic_none,
-                color: Colors.white,
+                color: AppColors.white,
                 size: 32,
               ),
             ),
@@ -135,7 +139,7 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
           const SizedBox(height: 8),
           Text(
             _isListening ? 'Tap to stop' : 'Tap to speak',
-            style: const TextStyle(fontSize: 14),
+            style: AppTextStyles.label6,
           ),
         ],
       ),

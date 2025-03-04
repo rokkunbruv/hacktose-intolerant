@@ -1,8 +1,6 @@
-import 'package:tultul/widgets/ai_assistant_widget.dart';
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
-
+import 'package:tultul/widgets/ai_assistant_widget.dart';
 import 'package:tultul/constants/jeepney_types.dart';
 import 'package:tultul/constants/passenger_types.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
@@ -16,7 +14,7 @@ import 'package:tultul/widgets/generic/draggable_container.dart';
 import 'package:tultul/widgets/generic/loading.dart';
 import 'package:tultul/widgets/route/route_list.dart';
 import 'package:tultul/pages/route/search_location_page.dart';
-import 'package:tultul/widgets/ai_assistant_widget.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart'; // Import for Google Maps
 
 class SearchRoutesPage extends StatefulWidget {
   const SearchRoutesPage({
@@ -30,6 +28,7 @@ class SearchRoutesPage extends StatefulWidget {
 class _SearchRoutesPageState extends State<SearchRoutesPage> {
   final List<String> _passengerTypes = [regular, student, seniorCitizen, pwd];
   final List<String> _jeepneyTypes = [traditional, modern];
+  GoogleMapController? _mapController; // Controller for the map
 
   @override
   void initState() {
@@ -50,56 +49,49 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
     });
   }
 
+  // Method to update the camera position to include all markers
+  void _updateCameraPosition() {
+    if (_mapController == null) return;
+
+    final routeProvider = Provider.of<RouteFinderProvider>(context, listen: false);
+    final positionProvider = Provider.of<PositionProvider>(context, listen: false);
+
+    final markers = routeProvider.getMarkers().union({positionProvider.currentPositionMarker!});
+    if (markers.isEmpty) return;
+
+    LatLngBounds bounds = _boundsFromLatLngList(markers.map((marker) => marker.position).toList());
+    _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50)); // 50 is padding
+  }
+
+  // Helper method to calculate bounds from a list of LatLng
+  LatLngBounds _boundsFromLatLngList(List<LatLng> list) {
+    double? x0, x1, y0, y1;
+    for (LatLng latLng in list) {
+      if (x0 == null) {
+        x0 = x1 = latLng.latitude;
+        y0 = y1 = latLng.longitude;
+      } else {
+        if (latLng.latitude > x1!) x1 = latLng.latitude;
+        if (latLng.latitude < x0) x0 = latLng.latitude;
+        if (latLng.longitude > y1!) y1 = latLng.longitude;
+        if (latLng.longitude < y0!) y0 = latLng.longitude;
+      }
+    }
+    return LatLngBounds(northeast: LatLng(x1!, y1!), southwest: LatLng(x0!, y0!));
+  }
+
   @override
   Widget build(BuildContext context) {
     final positionProvider = Provider.of<PositionProvider>(context, listen: false);
     
     return Consumer<RouteFinderProvider>(
       builder: (context, routeProvider, child) {
+        // Update camera position whenever markers change
+        if (_mapController != null && (routeProvider.originMarker != null || routeProvider.destinationMarker != null)) {
+          _updateCameraPosition();
+        }
+
         return Scaffold(
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                  ),
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: AIAssistantWidget(
-                    onRouteSearch: (origin, destination) {
-                      if (origin == "current location") {
-                        if (positionProvider.currentLocation != null) {
-                          routeProvider.setOrigin(positionProvider.currentLocation!);
-                        }
-                      } else {
-                        // Set origin from AI assistant
-                        routeProvider.originController.text = origin;
-                      }
-                      
-                      // Set destination from AI assistant
-                      routeProvider.destinationController.text = destination;
-                      
-                      // Close the bottom sheet
-                      Navigator.pop(context);
-                      
-                      // Find routes if both origin and destination are set
-                      if (routeProvider.origin != null && routeProvider.destination != null) {
-                        routeProvider.findRoutes();
-                      }
-                    },
-                  ),
-                ),
-              );
-            },
-            backgroundColor: AppColors.red,
-            child: Icon(Icons.mic, color: Colors.white),
-          ),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -265,6 +257,10 @@ class _SearchRoutesPageState extends State<SearchRoutesPage> {
                   children: <Widget>[
                     // MAP VIEW
                     MapView(
+                      onMapCreated: (controller) {
+                        _mapController = controller; // Store the map controller
+                        _updateCameraPosition(); // Update camera position when the map is created
+                      },
                       onMapTap: (latLng) {
                         routeProvider.setMarker(latLng);
                       },

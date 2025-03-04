@@ -88,52 +88,31 @@ class _DraggableContainerState extends State<DraggableContainer> {
             );
           });
     });
-    // return Positioned(
-    //   left: 0,
-    //   right: 0,
-    //   top: _dragPosition,
-    //   child: GestureDetector(
-    //     onVerticalDragUpdate: (details) {
-    //       setState(() {
-    //         _dragPosition += details.delta.dy;
-    //         _dragPosition = _dragPosition.clamp(
-    //             0.0, MediaQuery.of(context).size.height - 100);
-    //       });
-    //     },
-    //     onVerticalDragEnd: (details) {
-    //       // Smoothly animate to the nearest resting position          _animateToPosition(_dragPosition);
-    //     },
-    //     child: widget.child,
-    //   ),
-    // );
+
   }
 
   SliverToBoxAdapter topButtonIndicator() {
     return SliverToBoxAdapter(
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              child: Center(
-                child: Wrap(
-                  children: [
-                    Container(
-                      width: 80,
-                      margin: EdgeInsets.only(top: 10, bottom: 10),
-                      height: 5,
-                      decoration: BoxDecoration(
-                          color: AppColors.gray,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                    ),
-                  ],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: Wrap(
+              children: [
+                Container(
+                  width: 80,
+                  margin: EdgeInsets.only(top: 10, bottom: 10),
+                  height: 5,
+                  decoration: BoxDecoration(
+                      color: AppColors.gray,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
