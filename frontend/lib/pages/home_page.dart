@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             Image(
                               image: AssetImage('assets/img/home-page-design.png'),
-                              width: 160,
+                              width: 140,
                               height: 160,
                               alignment: Alignment.bottomRight,
                             ),

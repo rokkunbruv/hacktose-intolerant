@@ -119,9 +119,8 @@ class AIAssistantService {
 
       // Extract destination patterns
       final toPatterns = [
-        RegExp(r'to\s+(.+?)(?=\s+from|\s*$)', caseSensitive: false),
-        RegExp(r'take me to\s+(.+?)(?=\s+from|\s*$)', caseSensitive: false),
-        RegExp(r'get to\s+(.+?)(?=\s+from|\s*$)', caseSensitive: false),
+        RegExp(r'(?:to|take me to|get to)\s+(?!go\s+)(.+?)(?=\s+from|\s*$)', caseSensitive: false),
+        RegExp(r'(?:go to|go)\s+(.+?)(?=\s+from|\s*$)', caseSensitive: false),
       ];
 
       // Extract origin patterns
@@ -140,18 +139,9 @@ class AIAssistantService {
         }
       }
 
-      // Try to extract origin if mentioned
-      for (var pattern in fromPatterns) {
-        final match = pattern.firstMatch(input);
-        if (match != null && match.group(1) != null) {
-          origin = match.group(1)!.trim();
-          break;
-        }
-      }
-
       // If no destination found, try to extract any location mentioned
       if (destination.isEmpty) {
-        final locationPattern = RegExp(r'(?:to|at|near|around)\s+(.+?)(?=\s+|$)', caseSensitive: false);
+        final locationPattern = RegExp(r'(?:to|at|near|around)\s+(?!go\s+)(.+?)(?=\s+|$)', caseSensitive: false);
         final match = locationPattern.firstMatch(input);
         if (match != null && match.group(1) != null) {
           destination = match.group(1)!.trim();
