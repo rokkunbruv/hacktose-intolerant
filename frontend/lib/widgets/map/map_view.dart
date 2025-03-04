@@ -115,6 +115,7 @@ class _MapViewState extends State<MapView> {
             ),
             minMaxZoomPreference: MinMaxZoomPreference(_minZoomLevel, _maxZoomLevel),
             zoomControlsEnabled: false,
+            trafficEnabled: true,
             onTap: widget.onMapTap,
             markers: widget.markers ?? <Marker>{},
             polylines: widget.polylines ?? <Polyline>{},
