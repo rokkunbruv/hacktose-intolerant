@@ -56,14 +56,17 @@ class _DraggableContainerState extends State<DraggableContainer> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (builder, constraints) {
+      // Calculate minimum size to show at least the handle and title
+      final minSize = 120 / constraints.maxHeight;
+      
       return DraggableScrollableSheet(
           key: sheet,
           initialChildSize: 0.5,
           maxChildSize: 0.95,
-          minChildSize: 0,
+          minChildSize: minSize,
           expand: true,
           snap: true,
-          snapSizes: [60 / constraints.maxHeight, 0.5],
+          snapSizes: [minSize, 0.5],
           builder: (BuildContext context, ScrollController scrollController) {
             return DecoratedBox(
               decoration: BoxDecoration(
@@ -88,7 +91,6 @@ class _DraggableContainerState extends State<DraggableContainer> {
             );
           });
     });
-
   }
 
   SliverToBoxAdapter topButtonIndicator() {
