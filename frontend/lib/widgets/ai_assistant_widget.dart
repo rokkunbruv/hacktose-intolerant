@@ -26,11 +26,19 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
   late AIAssistantService _aiAssistant;
   bool _isListening = false;
   String _transcription = '';
+  String _aiResponse = '';
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _initializeAIAssistant();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _initializeAIAssistant() async {
@@ -54,7 +62,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
             // Get coordinates for destination
             List<Location> destLocations = await PlacesApi.getLocations(destination);
             if (destLocations.isEmpty) {
-              _aiAssistant.speak("I couldn't find that destination. Please try again with a different location.");
+              final errorMessage = "I couldn't find that destination. Please try again with a different location.";
+              setState(() => _aiResponse = errorMessage);
+              _aiAssistant.speak(errorMessage);
               return;
             }
             
@@ -62,7 +72,9 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
             if (origin != "current location") {
               List<Location> originLocations = await PlacesApi.getLocations(origin);
               if (originLocations.isEmpty) {
-                _aiAssistant.speak("I couldn't find that starting location. Please try again with a different location.");
+                final errorMessage = "I couldn't find that starting location. Please try again with a different location.";
+                setState(() => _aiResponse = errorMessage);
+                _aiAssistant.speak(errorMessage);
                 return;
               }
               routeProvider.setOrigin(originLocations[0]);
@@ -76,16 +88,31 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
             
             // Find routes
             await routeProvider.findRoutes();
-            
           } catch (e) {
             debugPrint('Error in route search: $e');
-            _aiAssistant.speak("I had trouble finding that route. Please try again.");
+            final errorMessage = "I had trouble finding that route. Please try again.";
+            setState(() => _aiResponse = errorMessage);
+            _aiAssistant.speak(errorMessage);
           }
+        },
+        onAIResponse: (response) {
+          setState(() => _aiResponse = response);
+          // Scroll to bottom after a short delay to ensure the new content is rendered
+          Future.delayed(Duration(milliseconds: 100), () {
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          });
         },
       );
       
       // Initial greeting
-      _aiAssistant.speak("Hello! I'm your AI assistant. How can I help you today?");
+      final greeting = "Hello! I'm your AI assistant. How can I help you today?";
+      await _aiAssistant.addGreeting(greeting);
     } else {
       debugPrint('Microphone permission denied');
     }
@@ -106,19 +133,94 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Transcription display
-          if (_transcription.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.lightGray,
-                borderRadius: BorderRadius.circular(12),
+          // Header with close button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'AI Assistant',
+                style: AppTextStyles.label3,
               ),
-              child: Text(
-                _transcription,
-                style: AppTextStyles.label5,
+              IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+          // Conversation history
+          Flexible(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Display conversation history
+                  ..._aiAssistant.conversationHistory.map((interaction) {
+                    final List<Widget> messageWidgets = [];
+                    
+                    // Add user message only if it's not empty
+                    if (interaction['user']!.isNotEmpty) {
+                      messageWidgets.add(
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.lightGray,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            interaction['user']!,
+                            style: AppTextStyles.label5,
+                          ),
+                        ),
+                      );
+                    }
+                    
+                    // Add AI response if it exists
+                    if (interaction['assistant']!.isNotEmpty) {
+                      if (messageWidgets.isNotEmpty) {
+                        messageWidgets.add(const SizedBox(height: 8));
+                      }
+                      messageWidgets.add(
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.navy.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            interaction['assistant']!,
+                            style: AppTextStyles.label5,
+                          ),
+                        ),
+                      );
+                    }
+                    
+                    if (messageWidgets.isNotEmpty) {
+                      messageWidgets.add(const SizedBox(height: 16));
+                    }
+                    
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: messageWidgets,
+                    );
+                  }).toList(),
+                  // Current transcription if any
+                  if (_transcription.isNotEmpty && !_aiAssistant.conversationHistory.any((m) => m['user'] == _transcription))
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightGray,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _transcription,
+                        style: AppTextStyles.label5,
+                      ),
+                    ),
+                ],
               ),
             ),
+          ),
           const SizedBox(height: 16),
           // Microphone button
           GestureDetector(
