@@ -133,7 +133,7 @@ Hackathon Event managed by UPCSG.
 <!-- DOWNLOADS -->
 ## Installation
 
-You can download the versions of the app [here]().
+You can download the versions of the app [here](https://github.com/rokkunbruv/hacktose-intolerant/releases/tag/v1.0.0-alpha).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
