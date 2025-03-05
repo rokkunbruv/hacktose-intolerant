@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'package:tultul/constants/jeepney_codes.dart';
 
 class AIAssistantService {
   final SpeechToText _speechToText = SpeechToText();
@@ -21,13 +22,15 @@ class AIAssistantService {
   final Function(String) onTranscription;
   final Function(bool) onListeningStateChanged;
   final Function(String, String) onRouteSearch;
+  final Function(String) onJeepneyRouteRequest;
   final Function(String) onAIResponse; // Add callback for AI responses
 
   AIAssistantService({
     required this.onTranscription,
     required this.onListeningStateChanged,
     required this.onRouteSearch,
-    required this.onAIResponse, // Add to constructor
+    required this.onJeepneyRouteRequest,
+    required this.onAIResponse,
   }) {
     _initializeServices();
   }
@@ -149,11 +152,30 @@ class AIAssistantService {
       'assistant': ''  // Will be updated when AI responds
     });
 
+    // Check if input contains jeepney route query
+    final jeepneyPattern = RegExp(r'(what is|show me|tell me about) (the )?route (of )?(jeepney )?(\d{1,2}[A-Za-z]?)');
+    final jeepneyMatch = jeepneyPattern.firstMatch(input.toLowerCase());
+
+    if (jeepneyMatch != null) {
+      final jeepneyCode = jeepneyMatch.group(5)?.toUpperCase(); // Extract jeepney code
+      if (jeepneyCode != null && jeepCodesList.contains(jeepneyCode)) {
+        // Notify the widget to handle the jeepney route request
+        onJeepneyRouteRequest(jeepneyCode);
+        return;
+      } else {
+        final errorMessage = "I couldn't find a route for jeepney $jeepneyCode. Please try again with a valid jeepney code.";
+        _updateConversationHistory(input, errorMessage);
+        await speak(errorMessage);
+        return;
+      }
+    }
+
     // Check if input contains location-related keywords
     if (input.toLowerCase().contains('route to') || 
         input.toLowerCase().contains('direction') ||
         input.toLowerCase().contains('how to get') ||
         input.toLowerCase().contains('take me to') ||
+        input.toLowerCase().contains('to go to') ||
         input.toLowerCase().contains('from') && input.toLowerCase().contains('to')) {
       await _handleRouteRequest(input);
     } else {
@@ -189,7 +211,8 @@ class AIAssistantService {
       6. Ignore any time-related or other non-location information
       7. Standardize location names using the mappings above
 
-      Use these standardized names in your response.''';
+      Use these standardized names in your response.
+      ''';
 
       final content = [Content.text(prompt)];
       final response = await _model!.generateContent(content);
@@ -266,96 +289,109 @@ class AIAssistantService {
       } else if (lowerInput.contains('thank you') || lowerInput.contains('thanks')) {
         responseMessage = "You're welcome! Let me know if you need anything else.";
       } else {
-        // For other queries, use Gemini with location extraction
-        final prompt = '''${_getConversationContext()}Based on the conversation context and this message: "$input"
-        Determine the intent and extract location information. Consider these cases:
-        1. User is stating their current location (e.g., "I'm at", "I am in", "I'm currently at")
-        2. User is asking for directions (needs both origin and destination)
-        3. General query (no location information)
+        // Check if the query is outside the app's scope
+        final isOutOfScope = !lowerInput.contains('route') &&
+                            !lowerInput.contains('direction') &&
+                            !lowerInput.contains('how to get') &&
+                            !lowerInput.contains('take me to') &&
+                            !lowerInput.contains('to go to') &&
+                            !lowerInput.contains('from') &&
+                            !lowerInput.contains('jeepney');
 
-        Format the response in one of these ways:
+        if (isOutOfScope) {
+          responseMessage = "I'm sorry, I cannot help with your request as I am merely an assistant to help you reach your destination. But if you have questions on how to go to a certain location or what is the route of a jeepney, you can always tap on me!";
+        } else {
+          // For other queries, use Gemini with location extraction
+          final prompt = '''${_getConversationContext()}Based on the conversation context and this message: "$input"
+          Determine the intent and extract location information. Consider these cases:
+          1. User is stating their current location (e.g., "I'm at", "I am in", "I'm currently at")
+          2. User is asking for directions (needs both origin and destination)
+          3. General query (no location information)
 
-        For current location statements:
-        CURRENT_LOCATION
-        Location: [standardized location name]
+          Format the response in one of these ways:
 
-        For route requests:
-        ROUTE_REQUEST
-        Origin: [origin]
-        Destination: [destination]
+          For current location statements:
+          CURRENT_LOCATION
+          Location: [standardized location name]
 
-        For general queries:
-        GENERAL_RESPONSE
-        [Your helpful response here]
+          For route requests:
+          ROUTE_REQUEST
+          Origin: [origin]
+          Destination: [destination]
 
-        Common location mappings to use:
-        - "SM City Cebu" -> "SM City Cebu, North Reclamation Area, Cebu City"
-        - "UP Cebu" or "University of the Philippines" -> "University of the Philippines Cebu, Gorordo Avenue, Lahug, Cebu City"
-        - "Ayala" or "Ayala Center" -> "Ayala Center Cebu, Archbishop Reyes Avenue, Cebu City"
-        - "Carbon Market" -> "Carbon Market, Cebu City"
-        - "IT Park" -> "Cebu IT Park, Lahug, Cebu City"''';
-        
-        final content = [Content.text(prompt)];
-        final response = await _model!.generateContent(content);
-        final responseText = response.text;
-        
-        if (responseText != null && responseText.isNotEmpty) {
-          final lines = responseText.split('\n');
-          final responseType = lines[0].trim();
+          For general queries:
+          GENERAL_RESPONSE
+          [Your helpful response here]
+
+          Common location mappings to use:
+          - "SM City Cebu" -> "SM City Cebu, North Reclamation Area, Cebu City"
+          - "UP Cebu" or "University of the Philippines" -> "University of the Philippines Cebu, Gorordo Avenue, Lahug, Cebu City"
+          - "Ayala" or "Ayala Center" -> "Ayala Center Cebu, Archbishop Reyes Avenue, Cebu City"
+          - "Carbon Market" -> "Carbon Market, Cebu City"
+          - "IT Park" -> "Cebu IT Park, Lahug, Cebu City"''';
           
-          if (responseType == 'CURRENT_LOCATION') {
-            // User is stating their current location
-            responseMessage = "I'm not sure where you are. Could you please be more specific?"; // Default message
-            for (var line in lines) {
-              if (line.startsWith('Location:')) {
-                final location = line.substring(9).trim();
-                _userCurrentLocation = location; // Store the location
-                responseMessage = "I understand you're at $location. Where would you like to go?";
-                break;
-              }
-            }
-          } else if (responseType == 'ROUTE_REQUEST') {
-            String origin = _userCurrentLocation ?? "current location";
-            String destination = "";
-            responseMessage = "I couldn't understand your route request. Could you please specify where you want to go?"; // Default message
+          final content = [Content.text(prompt)];
+          final response = await _model!.generateContent(content);
+          final responseText = response.text;
+          
+          if (responseText != null && responseText.isNotEmpty) {
+            final lines = responseText.split('\n');
+            final responseType = lines[0].trim();
             
-            for (var line in lines) {
-              if (line.startsWith('Origin:')) {
-                final extractedOrigin = line.substring(7).trim();
-                if (extractedOrigin != "current location") {
-                  origin = extractedOrigin;
+            if (responseType == 'CURRENT_LOCATION') {
+              // User is stating their current location
+              responseMessage = "I'm not sure where you are. Could you please be more specific?"; // Default message
+              for (var line in lines) {
+                if (line.startsWith('Location:')) {
+                  final location = line.substring(9).trim();
+                  _userCurrentLocation = location; // Store the location
+                  responseMessage = "I understand you're at $location. Where would you like to go?";
+                  break;
                 }
-              } else if (line.startsWith('Destination:')) {
-                destination = line.substring(12).trim();
               }
-            }
-            
-            if (destination.isNotEmpty) {
-              // We have both origin and destination, proceed with route search
-              if (origin == "current location") {
-                responseMessage = "I'll find directions to $destination from your current location.";
-              } else {
-                responseMessage = "I'll find directions from $origin to $destination.";
+            } else if (responseType == 'ROUTE_REQUEST') {
+              String origin = _userCurrentLocation ?? "current location";
+              String destination = "";
+              responseMessage = "I couldn't understand your route request. Could you please specify where you want to go?"; // Default message
+              
+              for (var line in lines) {
+                if (line.startsWith('Origin:')) {
+                  final extractedOrigin = line.substring(7).trim();
+                  if (extractedOrigin != "current location") {
+                    origin = extractedOrigin;
+                  }
+                } else if (line.startsWith('Destination:')) {
+                  destination = line.substring(12).trim();
+                }
               }
               
-              _updateConversationHistory(input, responseMessage);
-              await speak(responseMessage);
-              
-              // Trigger route search
-              await Future.delayed(Duration(milliseconds: 500));
-              onRouteSearch(origin, destination);
-              return;
+              if (destination.isNotEmpty) {
+                // We have both origin and destination, proceed with route search
+                if (origin == "current location") {
+                  responseMessage = "I'll find directions to $destination from your current location.";
+                } else {
+                  responseMessage = "I'll find directions from $origin to $destination.";
+                }
+                
+                _updateConversationHistory(input, responseMessage);
+                await speak(responseMessage);
+                
+                // Trigger route search
+                await Future.delayed(Duration(milliseconds: 500));
+                onRouteSearch(origin, destination);
+                return;
+              }
+            } else {
+              // General response
+              responseMessage = responseText
+                  .replaceAll('GENERAL_RESPONSE\n', '')
+                  .replaceAll(RegExp(r'\*\*|\*|`|#|>'), '')
+                  .replaceAll(RegExp(r'\n{2,}'), ' ')
+                  .trim();
             }
           } else {
-            // General response
-            responseMessage = responseText
-                .replaceAll('GENERAL_RESPONSE\n', '')
-                .replaceAll(RegExp(r'\*\*|\*|`|#|>'), '')
-                .replaceAll(RegExp(r'\n{2,}'), ' ')
-                .trim();
+            responseMessage = "I'm not sure about that. Could you please rephrase your question?";
           }
-        } else {
-          responseMessage = "I'm not sure about that. Could you please rephrase your question?";
         }
       }
       

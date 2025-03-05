@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:tultul/pages/jeeps/search_jeeps_page.dart';
 import 'package:tultul/pages/route/search_location_page.dart';
 import 'package:tultul/pages/route/search_routes_page.dart';
+import 'package:tultul/pages/jeeps/jeep_route_page.dart';
 import 'package:tultul/provider/route_finder_provider.dart';
 import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/styles/widget/box_shadow_style.dart';
@@ -29,6 +30,12 @@ class _HomePageState extends State<HomePage> {
   void navigateToSearchLocationPage() {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => SearchLocationPage(),
+    ));
+  }
+
+  void navigateToJeepRoutePage(String jeepneyCode) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => JeepRoutePage(jsonFile: jeepneyCode),
     ));
   }
 
@@ -69,6 +76,10 @@ class _HomePageState extends State<HomePage> {
             Navigator.of(context).push(MaterialPageRoute(builder: 
               (context) => SearchRoutesPage(),
             ));
+          },
+          onJeepneyRouteRequest: (jeepneyCode) {
+            // Handle jeepney route request
+            navigateToJeepRoutePage(jeepneyCode);
           },
         ),
       ),

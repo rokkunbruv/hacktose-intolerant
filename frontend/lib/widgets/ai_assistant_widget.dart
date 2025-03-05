@@ -12,10 +12,12 @@ import 'package:tultul/theme/text_styles.dart';
 
 class AIAssistantWidget extends StatefulWidget {
   final Function(String, String) onRouteSearch;
+  final Function(String) onJeepneyRouteRequest;
 
   const AIAssistantWidget({
     super.key,
     required this.onRouteSearch,
+    required this.onJeepneyRouteRequest,
   });
 
   @override
@@ -94,6 +96,10 @@ class _AIAssistantWidgetState extends State<AIAssistantWidget> {
             setState(() => _aiResponse = errorMessage);
             _aiAssistant.speak(errorMessage);
           }
+        },
+        onJeepneyRouteRequest: (jeepneyCode) {
+          // Handle jeepney route request
+          widget.onJeepneyRouteRequest(jeepneyCode);
         },
         onAIResponse: (response) {
           setState(() => _aiResponse = response);
