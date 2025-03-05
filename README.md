@@ -32,13 +32,20 @@
     <img src="assets/tultul-logo.svg" alt="Logo" width="80" height="80">
   </a>
 
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXoxMDV5Z2s0bXp4NjQ1cG92eW5kaWl4eWowbW9ncjU1eGF0N2IwdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xFxJSMW5Z3mLiRvtxP/giphy.gif" alt="output routes gif" width="80" height="80">
+
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXJjcW05bzJ4bjZsbnc2bWh1cDFpMTZjcmF2anEwN2Y3OTdxOTUwZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/pGNrBuYBLmdfe0YzjL/giphy.gif" alt="ai gif" width="80" height="80">
+
+  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWZyZjZtaWZybGFzY29zYmI0a3prMjltMHRnYzFvYzB3cTk5cW02dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CO60g9CHMdqYLRXjKE/giphy.gif" alt="tara gif" width="80" height="80">
+
+  
+	
+
 <h3 align="center">Tultul</h3>
 
   <p align="center">
-    project_description
-    <br />
-    <br />
-    <a href="#usage">View Demo</a>
+    <i><strong>Wala ka katultul? Gamita ang Tultul!</strong></i>
+   <!-- <a href="#usage">View Demo</a> -->
     <br />
     <br />
     <p><i>Note: README template borrowed <a href="https://github.com/othneildrew/Best-README-Template">here.</a></i></p>
@@ -56,8 +63,9 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
+    <li><a href="#installation">Installation</a></li>
     <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="#manually-run-the-app">Manually Run the App</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#app-installation">App Installation</a></li>
@@ -110,43 +118,15 @@ Hackathon Event managed by UPCSG.
 
 ### Built With
 
-<div align="center" style="display:grid; grid; grid-template-columns: repeat(3, 1fr); row-gap: 20px; padding: 0 64px; align-items: center;">
-  <a href="https://flutter.dev" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter" />
-      <div>Flutter</div>
-    </div>
-  </a>
-  <a href="https://www.djangoproject.com/" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django" />
-      <div>Django</div>
-    </div>
-  </a>
-  <a href="https://aws.amazon.com/" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS" />
-      <div>AWS</div>
-    </div>
-  </a>
-  <a href="https://www.postgresql.org/" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL" />
-      <div>PostgreSQL</div>
-    </div>
-  </a>
-  <a href="https://developers.google.com/maps" style="text-decoration: none;">
-    <div align="center">
-      <img width="39" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps Platform" title="Google Maps Platform" />
-      <div>Google Maps Platform</div>
-    </div>
-  </a>
-  <a href="https://fastapi.tiangolo.com/" style="text-decoration: none;">
-    <div align="center">
-      <img width="50" src="https://icon.icepanel.io/Technology/svg/FastAPI.svg" alt="FastAPI" title="FastAPI" />
-      <div>FastAPI</div>
-    </div>
-  </a>
+<div align="center">
+	<code><img width="100" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/flutter.png" alt="Flutter" title="Flutter" />Flutter</code>
+	<code><img width="100" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/django.png" alt="Django" title="Django" />Django</code>
+	<code><img width="100" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/aws.png" alt="AWS" title="AWS" />AWS</code>
+</div>
+<div align="center">
+  <code><img width="100" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/postgresql.png" alt="PostgreSQL" title="PostgreSQL" />PostgreSQL</code>
+  <code><img width="85" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps Platform" title="Google Maps Platform" />Google Maps Platform</code>
+  <code><img width="100" src="https://icon.icepanel.io/Technology/svg/FastAPI.svg" alt="FastAPI" title="FastAPI" />FastAPI</code>
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -159,7 +139,7 @@ You can download the versions of the app [here]().
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- INSTALLATION GUIDE -->
-## Set Up for Development
+## Manually Run the App
 
 The following steps below walk you through the process of running the app locally on your computer:
 
@@ -284,7 +264,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 * This README template is borrowed from the [Best-README-Template](https://github.com/othneildrew/Best-README-Template/blob/main/README.md) Github repository
 * The tech stack icons were generated using [Profile Technology Icons](https://marwin1991.github.io/profile-technology-icons/)
 * The jeepney route polylines were obtained from [Cebu Jeepneys Route Map](https://cebujeepneys.weebly.com/jeepney-routes.html)
-* The custom map style is obtained from []().
+* The custom map style used on the map view is [Interface map by samisel on Snazzy Maps](https://snazzymaps.com/style/1243/xxxxxxxxxxx).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -292,6 +272,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+<!--
 [contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
 [contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
@@ -305,3 +286,4 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: images/screenshot.png
+-->
