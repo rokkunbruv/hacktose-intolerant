@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,11 @@ Future<void> main() async {
     debugPrint(e.toString());
   }
 
+  // Request location services
   await requestLocationServices();
+  
+  // Request audio permission
+  await Permission.microphone.request();
 
   runApp(
     MultiProvider(
