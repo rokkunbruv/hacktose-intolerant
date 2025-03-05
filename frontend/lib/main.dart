@@ -9,6 +9,7 @@ import 'package:tultul/provider/route_finder_provider.dart';
 import 'package:tultul/provider/jeepney_provider.dart'; 
 import 'package:tultul/provider/position_provider.dart';
 import 'package:tultul/provider/search_locations_provider.dart';
+import 'package:tultul/theme/colors.dart';
 import 'package:tultul/utils/location/request_location_services.dart';
 import 'package:tultul/utils/navigation/navigator_key.dart';
 
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Hacktose Intolerant App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.red),
         useMaterial3: true,
       ),
       home: const HomePage(),
