@@ -32,15 +32,6 @@
     <img src="assets/tultul-logo.svg" alt="Logo" width="80" height="80">
   </a>
 
-  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXoxMDV5Z2s0bXp4NjQ1cG92eW5kaWl4eWowbW9ncjU1eGF0N2IwdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xFxJSMW5Z3mLiRvtxP/giphy.gif" alt="output routes gif" width="80" height="80">
-
-  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXJjcW05bzJ4bjZsbnc2bWh1cDFpMTZjcmF2anEwN2Y3OTdxOTUwZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/pGNrBuYBLmdfe0YzjL/giphy.gif" alt="ai gif" width="80" height="80">
-
-  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWZyZjZtaWZybGFzY29zYmI0a3prMjltMHRnYzFvYzB3cTk5cW02dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CO60g9CHMdqYLRXjKE/giphy.gif" alt="tara gif" width="80" height="80">
-
-  
-	
-
 <h3 align="center">Tultul</h3>
 
   <p align="center">
@@ -113,6 +104,14 @@ Hackathon Event managed by UPCSG.
 * ***Voice Assistant***
   * **AI-Powered Route Recommendations**: Tultul's voice assistant can suggest a route given specified landmarks.
   * **Accessibility**: Tultul's voice assistant can assist persons with disabilities in suggesting a route.
+
+<div align="center">
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXoxMDV5Z2s0bXp4NjQ1cG92eW5kaWl4eWowbW9ncjU1eGF0N2IwdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xFxJSMW5Z3mLiRvtxP/giphy.gif" alt="output routes gif" width="320" height="790">
+
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXJjcW05bzJ4bjZsbnc2bWh1cDFpMTZjcmF2anEwN2Y3OTdxOTUwZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/pGNrBuYBLmdfe0YzjL/giphy.gif" alt="ai gif" width="320" height="790">
+
+  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWZyZjZtaWZybGFzY29zYmI0a3prMjltMHRnYzFvYzB3cTk5cW02dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CO60g9CHMdqYLRXjKE/giphy.gif" alt="tara gif" width="320" height="790">
+</div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
